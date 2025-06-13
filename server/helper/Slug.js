@@ -1,12 +1,20 @@
-export const createSlug = (text) => {
-  if (!text) return "";
-
+export function createSlug(text) {
   return text
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, "") // Remove all non-word chars (except spaces and hyphens)
-    .replace(/[\s_-]+/g, "-") // Replace spaces, underscores, and hyphens with a single dash
-    .replace(/^-+|-+$/g, "") // Remove leading/trailing dashes
-    .replace(/--+/g, "-"); // Replace multiple dashes with single dash
-};
+    .replace(/[\s\W-]+/g, "-") // Replace spaces and special characters with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
+export function generateUniqueSlug(baseSlug, existingSlugs = []) {
+  let slug = baseSlug;
+  let counter = 1;
+
+  while (existingSlugs.includes(slug)) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return slug;
+}

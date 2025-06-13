@@ -1,3 +1,6 @@
+// Housing Website Simplified Prisma Schema
+// PostgreSQL Database
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,3 +10,242 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Admin Model - Separate admin management
+model Admin {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// Property Model - Complete property management
+model Property {
+  id          String @id @default(cuid())
+  title       String
+  slug        String @unique
+  description String
+  price       Float
+
+  // Property details
+  propertyType PropertyType
+  listingType  ListingType
+  bedrooms     Int?
+  bathrooms    Int?
+  area         Float? // in sq ft
+  builtYear    Int?
+  floor        Int?
+  totalFloors  Int?
+
+  // Location
+  address   String
+  locality  String?
+  city      String
+  state     String
+  pincode   String
+  latitude  Float?
+  longitude Float?
+  mapLink   String? // Google Maps link for the property
+
+  // Features & Amenities
+  furnished   Boolean @default(false)
+  parking     Boolean @default(false)
+  balcony     Boolean @default(false)
+  garden      Boolean @default(false)
+  swimming    Boolean @default(false)
+  gym         Boolean @default(false)
+  security    Boolean @default(false)
+  elevator    Boolean @default(false)
+  powerBackup Boolean @default(false)
+
+  // Property status
+  isActive   Boolean        @default(true)
+  isVerified Boolean        @default(false)
+  status     PropertyStatus @default(AVAILABLE)
+
+  // Admin highlights - NEW, TRENDING, FEATURED
+  highlight PropertyHighlight?
+
+  // Main image (required)
+  mainImage String
+
+  // Contact Information
+  contactName  String?
+  contactPhone String?
+  contactEmail String?
+
+  // Analytics
+  views  Int @default(0)
+  clicks Int @default(0)
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime?
+
+  images    PropertyImage[]
+  videos    PropertyVideo[]
+  inquiries Inquiry[]
+
+  @@map("properties")
+}
+
+// Property Images - Multiple images support
+model PropertyImage {
+  id      String  @id @default(cuid())
+  url     String
+  caption String?
+  order   Int     @default(0)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("property_images")
+}
+
+// Property Videos
+model PropertyVideo {
+  id        String  @id @default(cuid())
+  url       String
+  title     String?
+  thumbnail String?
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("property_videos")
+}
+
+// Inquiry System
+model Inquiry {
+  id      String  @id @default(cuid())
+  name    String
+  email   String
+  phone   String?
+  message String
+  subject String?
+
+  // Inquiry type and source
+  type   String? @default("GENERAL") // GENERAL, PROPERTY, BUYING, SELLING, etc.
+  source String? @default("WEBSITE") // WEBSITE, CONTACT_FORM, PHONE, etc.
+
+  // Additional info for general inquiries
+  propertyType String? // For general property inquiries
+
+  // Inquiry status
+  status InquiryStatus @default(PENDING)
+
+  // Property reference (optional for general inquiries)
+  propertyId String?
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // Admin response
+  adminResponse String?
+  respondedAt   DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("inquiries")
+}
+
+// Analytics & Reports
+model Analytics {
+  id   String   @id @default(cuid())
+  date DateTime @default(now())
+
+  // Daily metrics
+  totalViews     Int @default(0)
+  totalClicks    Int @default(0)
+  totalInquiries Int @default(0)
+  newProperties  Int @default(0)
+
+  // Property type breakdown
+  apartmentViews  Int @default(0)
+  houseViews      Int @default(0)
+  plotViews       Int @default(0)
+  commercialViews Int @default(0)
+
+  @@unique([date])
+  @@map("analytics")
+}
+
+// Right Sidebar Content - Admin controlled
+model SidebarContent {
+  id String @id @default(cuid())
+
+  // Contact Information
+  phoneNumber    String?
+  whatsappNumber String?
+
+  // Display settings
+  isActive Boolean @default(true)
+
+  // Media
+  imageUrl String?
+  videoUrl String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sidebar_content")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  VILLA
+  PLOT
+  COMMERCIAL
+  WAREHOUSE
+  OFFICE
+  SHOP
+  PG
+  HOSTEL
+}
+
+enum ListingType {
+  SALE
+  RENT
+  LEASE
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  SOLD
+  RENTED
+  UNDER_NEGOTIATION
+  WITHDRAWN
+}
+
+enum PropertyHighlight {
+  NEW
+  TRENDING
+  FEATURED
+  HOT_DEAL
+  PREMIUM
+}
+
+enum InquiryStatus {
+  PENDING
+  RESPONDED
+  CLOSED
+  SPAM
+}

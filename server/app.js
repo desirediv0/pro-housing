@@ -3,12 +3,27 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import Razorpay from "razorpay";
 
+// Import routes
+import adminRoutes from "./routes/admin.routes.js";
+import propertyRoutes from "./routes/property.routes.js";
+import inquiryRoutes from "./routes/inquiry.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
+import sidebarRoutes from "./routes/sidebar.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
+
+// Import upload configuration
+import { createUploadDirs, UPLOAD_FOLDER } from "./config/upload.js";
 
 const app = express();
 
+// Initialize upload directories
+createUploadDirs();
+
+// Serve static files from uploads folder
+app.use("/uploads", express.static(UPLOAD_FOLDER));
+
 // Security & Parse Middlewares
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
@@ -31,6 +46,7 @@ app.use(
     optionsSuccessStatus: 204,
   })
 );
+
 // Cache Control Headers
 app.use((req, res, next) => {
   res.header("Cache-Control", "no-store, no-cache, must-revalidate, private");
@@ -45,7 +61,6 @@ app.use((req, res, next) => {
   );
   next();
 });
-
 
 // Initialize Razorpay
 let razorpay;
@@ -62,8 +77,40 @@ try {
 
 export { razorpay };
 
+// API Routes
+app.use("/api/admin", adminRoutes);
+app.use("/api/properties", propertyRoutes);
+app.use("/api/inquiries", inquiryRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/sidebar", sidebarRoutes);
+app.use("/api/upload", uploadRoutes);
 
+// Health check route
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Pro Housing Server is running!",
+    timestamp: new Date().toISOString(),
+  });
+});
 
+// Root route
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to Pro Housing API",
+    version: "1.0.0",
+    endpoints: {
+      admin: "/api/admin",
+      properties: "/api/properties",
+      inquiries: "/api/inquiries",
+      analytics: "/api/analytics",
+      sidebar: "/api/sidebar",
+      upload: "/api/upload",
+      health: "/api/health",
+    },
+  });
+});
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
