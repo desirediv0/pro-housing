@@ -76,7 +76,7 @@ export const createProperty = asyncHandler(async (req, res) => {
   const mainImageFile = req.files.mainImage[0];
   const mainImageResult = await uploadImageToS3(
     mainImageFile,
-    "properties/main",
+    `${process.env.UPLOAD_FOLDER}/properties/main`,
     85,
     1920
   );
@@ -141,7 +141,7 @@ export const createProperty = asyncHandler(async (req, res) => {
   if (req.files && req.files.images && req.files.images.length > 0) {
     const imageResults = await uploadMultipleImagesToS3(
       req.files.images,
-      "properties/gallery",
+      `${process.env.UPLOAD_FOLDER}/properties/gallery`,
       80,
       1920
     );
@@ -160,7 +160,9 @@ export const createProperty = asyncHandler(async (req, res) => {
   // Handle videos upload
   if (req.files && req.files.videos && req.files.videos.length > 0) {
     const videoResults = await Promise.all(
-      req.files.videos.map((video) => uploadToS3(video, "properties/videos"))
+      req.files.videos.map((video) =>
+        uploadToS3(video, `${process.env.UPLOAD_FOLDER}/properties/videos`)
+      )
     );
 
     const videoData = videoResults.map((result, index) => ({
@@ -449,7 +451,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
     const mainImageFile = req.files.mainImage[0];
     const mainImageResult = await uploadImageToS3(
       mainImageFile,
-      "properties/main",
+      `${process.env.UPLOAD_FOLDER}/properties/main`,
       85,
       1920
     );
@@ -569,7 +571,7 @@ export const addPropertyImages = asyncHandler(async (req, res) => {
   // Upload images
   const imageResults = await uploadMultipleImagesToS3(
     req.files.images,
-    "properties/gallery",
+    `${process.env.UPLOAD_FOLDER}/properties/gallery`,
     80,
     1920
   );
@@ -646,7 +648,9 @@ export const addPropertyVideos = asyncHandler(async (req, res) => {
 
   // Upload videos
   const videoResults = await Promise.all(
-    req.files.videos.map((video) => uploadToS3(video, "properties/videos"))
+    req.files.videos.map((video) =>
+      uploadToS3(video, `${process.env.UPLOAD_FOLDER}/properties/videos`)
+    )
   );
 
   const videoData = videoResults.map((result, index) => ({

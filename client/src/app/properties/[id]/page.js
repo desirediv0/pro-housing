@@ -30,20 +30,70 @@ import {
   MessageCircle,
   Eye,
   ChevronLeft,
+  ExternalLink,
+  Navigation,
+  Home,
+  Calendar,
+  Ruler,
 } from "lucide-react";
 import Link from "next/link";
 import { AreaConverter } from "@/components/ui/area-converter";
 
 const amenityIcons = {
-  furnished: { icon: "🪑", label: "Furnished" },
-  parking: { icon: <Car className="h-4 w-4" />, label: "Parking" },
-  balcony: { icon: "🏗️", label: "Balcony" },
-  garden: { icon: <Trees className="h-4 w-4" />, label: "Garden" },
-  swimming: { icon: <Waves className="h-4 w-4" />, label: "Swimming Pool" },
-  gym: { icon: <Dumbbell className="h-4 w-4" />, label: "Gym" },
-  security: { icon: <Shield className="h-4 w-4" />, label: "24/7 Security" },
-  elevator: { icon: <ArrowUpDown className="h-4 w-4" />, label: "Elevator" },
-  powerBackup: { icon: <Zap className="h-4 w-4" />, label: "Power Backup" },
+  furnished: {
+    icon: <Home className="h-5 w-5" />,
+    label: "Furnished",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  parking: {
+    icon: <Car className="h-5 w-5" />,
+    label: "Parking",
+    color: "text-green-600",
+    bg: "bg-green-50",
+  },
+  balcony: {
+    icon: <Building2 className="h-5 w-5" />,
+    label: "Balcony",
+    color: "text-purple-600",
+    bg: "bg-purple-50",
+  },
+  garden: {
+    icon: <Trees className="h-5 w-5" />,
+    label: "Garden",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+  },
+  swimming: {
+    icon: <Waves className="h-5 w-5" />,
+    label: "Swimming Pool",
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
+  },
+  gym: {
+    icon: <Dumbbell className="h-5 w-5" />,
+    label: "Gym",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+  },
+  security: {
+    icon: <Shield className="h-5 w-5" />,
+    label: "24/7 Security",
+    color: "text-red-600",
+    bg: "bg-red-50",
+  },
+  elevator: {
+    icon: <ArrowUpDown className="h-5 w-5" />,
+    label: "Elevator",
+    color: "text-indigo-600",
+    bg: "bg-indigo-50",
+  },
+  powerBackup: {
+    icon: <Zap className="h-5 w-5" />,
+    label: "Power Backup",
+    color: "text-yellow-600",
+    bg: "bg-yellow-50",
+  },
 };
 
 export default function PropertyDetail() {
@@ -385,7 +435,7 @@ export default function PropertyDetail() {
                         <div className="flex items-center justify-center mb-2">
                           <Bed className="h-6 w-6 text-blue-600" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl font-bold text-gray-900">
                           {property.bedrooms && property.bedrooms > 0
                             ? property.bedrooms
                             : "N/A"}
@@ -398,7 +448,7 @@ export default function PropertyDetail() {
                         <div className="flex items-center justify-center mb-2">
                           <Bath className="h-6 w-6 text-green-600" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl font-bold text-gray-900">
                           {property.bathrooms && property.bathrooms > 0
                             ? property.bathrooms
                             : "N/A"}
@@ -411,7 +461,7 @@ export default function PropertyDetail() {
                         <div className="flex items-center justify-center mb-2">
                           <Square className="h-6 w-6 text-purple-600" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl font-bold text-gray-900">
                           <AreaConverter
                             value={property.area}
                             originalUnit="sq_feet"
@@ -426,7 +476,7 @@ export default function PropertyDetail() {
                         <div className="flex items-center justify-center mb-2">
                           <Building2 className="h-6 w-6 text-orange-600" />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl font-bold text-gray-900">
                           {property.propertyType || "N/A"}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">
@@ -451,13 +501,15 @@ export default function PropertyDetail() {
                         <h3 className="text-xl font-bold mb-6 text-gray-900">
                           Amenities & Features
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                           {activeAmenities.map((amenity) => (
                             <div
                               key={amenity}
-                              className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                              className={`flex items-center gap-3 p-4 ${amenityIcons[amenity]?.bg} border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105`}
                             >
-                              <div className="text-[#5E4CBB]">
+                              <div
+                                className={`p-2 bg-white rounded-lg ${amenityIcons[amenity]?.color}`}
+                              >
                                 {amenityIcons[amenity]?.icon}
                               </div>
                               <span className="font-medium text-gray-800">
@@ -474,57 +526,207 @@ export default function PropertyDetail() {
                       <h3 className="text-xl font-bold mb-6 text-gray-900">
                         Property Details
                       </h3>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl">
-                          <p className="text-gray-500 text-sm font-medium">
-                            Property Type
-                          </p>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                          <div className="flex items-center mb-2">
+                            <Building2 className="h-4 w-4 text-blue-600 mr-2" />
+                            <p className="text-gray-500 text-sm font-medium">
+                              Property Type
+                            </p>
+                          </div>
                           <p className="font-bold text-gray-900 text-lg">
                             {property.propertyType}
                           </p>
                         </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl">
-                          <p className="text-gray-500 text-sm font-medium">
-                            Listing Type
-                          </p>
+                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                          <div className="flex items-center mb-2">
+                            <Home className="h-4 w-4 text-green-600 mr-2" />
+                            <p className="text-gray-500 text-sm font-medium">
+                              Listing Type
+                            </p>
+                          </div>
                           <p className="font-bold text-gray-900 text-lg">
                             {property.listingType}
                           </p>
                         </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl">
-                          <p className="text-gray-500 text-sm font-medium">
-                            Built Year
-                          </p>
+                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                          <div className="flex items-center mb-2">
+                            <Calendar className="h-4 w-4 text-purple-600 mr-2" />
+                            <p className="text-gray-500 text-sm font-medium">
+                              Built Year
+                            </p>
+                          </div>
                           <p className="font-bold text-gray-900 text-lg">
                             {property.builtYear || "N/A"}
                           </p>
                         </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl">
-                          <p className="text-gray-500 text-sm font-medium">
-                            Floor
-                          </p>
+                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                          <div className="flex items-center mb-2">
+                            <ArrowUpDown className="h-4 w-4 text-orange-600 mr-2" />
+                            <p className="text-gray-500 text-sm font-medium">
+                              Floor
+                            </p>
+                          </div>
                           <p className="font-bold text-gray-900 text-lg">
                             {property.floor && property.totalFloors
                               ? `${property.floor} of ${property.totalFloors}`
                               : "N/A"}
                           </p>
                         </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl">
-                          <p className="text-gray-500 text-sm font-medium">
-                            Status
-                          </p>
+                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                          <div className="flex items-center mb-2">
+                            <Shield className="h-4 w-4 text-red-600 mr-2" />
+                            <p className="text-gray-500 text-sm font-medium">
+                              Status
+                            </p>
+                          </div>
                           <p className="font-bold text-gray-900 text-lg">
                             {property.status.replace("_", " ")}
                           </p>
                         </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl">
-                          <p className="text-gray-500 text-sm font-medium">
-                            Listed On
-                          </p>
+                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                          <div className="flex items-center mb-2">
+                            <Calendar className="h-4 w-4 text-indigo-600 mr-2" />
+                            <p className="text-gray-500 text-sm font-medium">
+                              Listed On
+                            </p>
+                          </div>
                           <p className="font-bold text-gray-900 text-lg">
                             {formatDate(property.createdAt)}
                           </p>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Location & Map Section */}
+                    <div>
+                      <h3 className="text-xl font-bold mb-6 text-gray-900">
+                        Location & Map
+                      </h3>
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100">
+                        {/* Address Details */}
+                        <div className="mb-6">
+                          <div className="flex items-start space-x-3 mb-4">
+                            <MapPin className="h-6 w-6 text-red-500 mt-1 flex-shrink-0" />
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900 mb-2">
+                                Complete Address
+                              </h4>
+                              <p className="text-gray-700 leading-relaxed">
+                                {property.address}
+                              </p>
+                              <div className="flex flex-wrap gap-4 mt-3 text-sm">
+                                <span className="bg-white px-3 py-1 rounded-full text-gray-600">
+                                  <strong>Locality:</strong> {property.locality}
+                                </span>
+                                <span className="bg-white px-3 py-1 rounded-full text-gray-600">
+                                  <strong>City:</strong> {property.city}
+                                </span>
+                                <span className="bg-white px-3 py-1 rounded-full text-gray-600">
+                                  <strong>State:</strong> {property.state}
+                                </span>
+                                <span className="bg-white px-3 py-1 rounded-full text-gray-600">
+                                  <strong>PIN:</strong> {property.pincode}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Map Actions */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {property.mapLink && (
+                            <Button
+                              onClick={() =>
+                                window.open(property.mapLink, "_blank")
+                              }
+                              className="bg-green-600 hover:bg-green-700 text-white flex items-center justify-center py-3 px-6 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
+                            >
+                              <MapPin className="h-5 w-5 mr-2" />
+                              View on Google Maps
+                              <ExternalLink className="h-4 w-4 ml-2" />
+                            </Button>
+                          )}
+
+                          {property.latitude && property.longitude && (
+                            <Button
+                              onClick={() =>
+                                window.open(
+                                  `https://www.google.com/maps/dir/?api=1&destination=${property.latitude},${property.longitude}`,
+                                  "_blank"
+                                )
+                              }
+                              variant="outline"
+                              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center py-3 px-6 rounded-xl font-medium transition-all"
+                            >
+                              <Navigation className="h-5 w-5 mr-2" />
+                              Get Directions
+                              <ExternalLink className="h-4 w-4 ml-2" />
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Coordinates Display */}
+                        {property.latitude && property.longitude && (
+                          <div className="mt-4 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/20">
+                            <h5 className="font-medium text-gray-900 mb-2">
+                              GPS Coordinates
+                            </h5>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-500">Latitude:</span>
+                                <span className="font-mono ml-2 text-gray-800">
+                                  {property.latitude}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500">
+                                  Longitude:
+                                </span>
+                                <span className="font-mono ml-2 text-gray-800">
+                                  {property.longitude}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Embedded Map */}
+                        {property.latitude && property.longitude && (
+                          <div className="mt-6">
+                            <div className="bg-white p-4 rounded-xl shadow-inner">
+                              <div className="aspect-video rounded-lg overflow-hidden">
+                                <iframe
+                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${
+                                    property.longitude
+                                  }!3d${
+                                    property.latitude
+                                  }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
+                                    property.latitude
+                                  ).toFixed(6)}°${
+                                    property.latitude >= 0 ? "N" : "S"
+                                  }%20${Math.abs(property.longitude).toFixed(
+                                    6
+                                  )}°${
+                                    property.longitude >= 0 ? "E" : "W"
+                                  }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
+                                  width="100%"
+                                  height="100%"
+                                  style={{ border: 0 }}
+                                  allowFullScreen=""
+                                  loading="lazy"
+                                  referrerPolicy="no-referrer-when-downgrade"
+                                  title={`Map showing location of ${property.title}`}
+                                  className="rounded-lg"
+                                ></iframe>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-2 text-center">
+                                📍 Interactive map showing the exact location of
+                                this property
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 

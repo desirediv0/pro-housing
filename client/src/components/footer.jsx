@@ -22,7 +22,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="gradient-primary text-white relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD] text-white relative overflow-hidden">
       {/* Premium background decoration */}
       <div className="absolute inset-0 opacity-20">
         <div
@@ -66,25 +66,25 @@ const Footer = () => {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="w-12 h-12 glass backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Facebook className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
                 href="#"
-                className="w-12 h-12 glass backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Twitter className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
                 href="#"
-                className="w-12 h-12 glass backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Instagram className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
                 href="#"
-                className="w-12 h-12 glass backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Linkedin className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
@@ -212,7 +212,7 @@ const Footer = () => {
             </h4>
             <ul className="space-y-6">
               <li className="flex items-start group">
-                <div className="w-10 h-10 glass backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 mt-1 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 mt-1 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
                   <MapPin className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -226,7 +226,7 @@ const Footer = () => {
                 </div>
               </li>
               <li className="flex items-center group">
-                <div className="w-10 h-10 glass backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
                   <Phone className="h-5 w-5 text-white" />
                 </div>
                 <a
@@ -237,7 +237,7 @@ const Footer = () => {
                 </a>
               </li>
               <li className="flex items-center group">
-                <div className="w-10 h-10 glass backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
                   <Mail className="h-5 w-5 text-white" />
                 </div>
                 <a
@@ -288,7 +288,7 @@ const Footer = () => {
               {/* Premium Scroll to top button */}
               <button
                 onClick={scrollToTop}
-                className="w-10 h-10 glass backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-all duration-300 hover:scale-110 shadow-premium border border-white/20 hover:border-white/40 group"
+                className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-all duration-300 hover:scale-110 shadow-premium border border-white/20 hover:border-white/40 group"
                 aria-label="Scroll to top"
               >
                 <ArrowUp className="h-5 w-5 group-hover:scale-110 transition-transform" />

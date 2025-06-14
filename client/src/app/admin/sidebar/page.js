@@ -5,741 +5,1052 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Switch } from "@/components/ui/form";
 import {
-  Layout,
-  Menu,
-  Settings,
-  Eye,
-  EyeOff,
   Plus,
   Trash2,
-  GripVertical,
   Save,
   RefreshCw,
-  Home,
-  Building,
-  Users,
-  MessageSquare,
-  BarChart3,
-  Shield,
-  FileText,
-  HelpCircle,
-  Bell,
-  Search,
-  Archive,
+  Image,
+  Video,
+  Phone,
+  MessageCircle,
+  Eye,
+  EyeOff,
+  Upload,
+  X,
+  Edit,
+  GripVertical,
+  AlertCircle,
+  CheckCircle,
+  Camera,
+  Film,
+  Globe,
+  Smartphone,
+  ExternalLink,
+  Copy,
+  Check,
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 
-export default function SidebarManagement() {
+export default function SidebarContentManagement() {
   const [loading, setLoading] = useState(false);
-  const [sidebarConfig, setSidebarConfig] = useState({
-    collapsed: false,
-    theme: "light",
-    position: "left",
-    width: 280,
-    showIcons: true,
-    showLabels: true,
-    animation: true,
+  const [sidebarContent, setSidebarContent] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingContent, setEditingContent] = useState(null);
+  const [uploading, setUploading] = useState({ image: false, video: false });
+  const [copiedUrl, setCopiedUrl] = useState("");
+  const [previewUrls, setPreviewUrls] = useState({ image: "", video: "" });
+
+  const [formData, setFormData] = useState({
+    imageUrl: "",
+    videoUrl: "",
+    phoneNumber: "",
+    whatsappNumber: "",
+    isActive: true,
   });
-
-  const [menuItems, setMenuItems] = useState([
-    {
-      id: "1",
-      label: "Dashboard",
-      icon: "Home",
-      path: "/admin/dashboard",
-      visible: true,
-      order: 1,
-      hasSubmenu: false,
-      submenu: [],
-    },
-    {
-      id: "2",
-      label: "Properties",
-      icon: "Building",
-      path: "/admin/properties",
-      visible: true,
-      order: 2,
-      hasSubmenu: true,
-      submenu: [
-        {
-          id: "2a",
-          label: "All Properties",
-          path: "/admin/properties",
-          visible: true,
-        },
-        {
-          id: "2b",
-          label: "Add Property",
-          path: "/admin/properties/create",
-          visible: true,
-        },
-        {
-          id: "2c",
-          label: "Categories",
-          path: "/admin/properties/categories",
-          visible: true,
-        },
-        {
-          id: "2d",
-          label: "Featured",
-          path: "/admin/properties/featured",
-          visible: true,
-        },
-      ],
-    },
-    {
-      id: "3",
-      label: "Analytics",
-      icon: "BarChart3",
-      path: "/admin/analytics",
-      visible: true,
-      order: 3,
-      hasSubmenu: false,
-      submenu: [],
-    },
-    {
-      id: "4",
-      label: "Inquiries",
-      icon: "MessageSquare",
-      path: "/admin/inquiries",
-      visible: true,
-      order: 4,
-      hasSubmenu: false,
-      submenu: [],
-    },
-    {
-      id: "5",
-      label: "Users",
-      icon: "Users",
-      path: "/admin/users",
-      visible: true,
-      order: 5,
-      hasSubmenu: true,
-      submenu: [
-        { id: "5a", label: "All Users", path: "/admin/users", visible: true },
-        {
-          id: "5b",
-          label: "Agents",
-          path: "/admin/users/agents",
-          visible: true,
-        },
-        {
-          id: "5c",
-          label: "Customers",
-          path: "/admin/users/customers",
-          visible: true,
-        },
-      ],
-    },
-    {
-      id: "6",
-      label: "Reports",
-      icon: "FileText",
-      path: "/admin/reports",
-      visible: true,
-      order: 6,
-      hasSubmenu: false,
-      submenu: [],
-    },
-    {
-      id: "7",
-      label: "Settings",
-      icon: "Settings",
-      path: "/admin/settings",
-      visible: true,
-      order: 7,
-      hasSubmenu: false,
-      submenu: [],
-    },
-  ]);
-
-  const [newMenuItem, setNewMenuItem] = useState({
-    label: "",
-    icon: "Menu",
-    path: "",
-    visible: true,
-    hasSubmenu: false,
-  });
-
-  const iconOptions = [
-    { value: "Home", label: "Home" },
-    { value: "Building", label: "Building" },
-    { value: "Users", label: "Users" },
-    { value: "MessageSquare", label: "Messages" },
-    { value: "BarChart3", label: "Analytics" },
-    { value: "Settings", label: "Settings" },
-    { value: "FileText", label: "Reports" },
-    { value: "Shield", label: "Security" },
-    { value: "Bell", label: "Notifications" },
-    { value: "Search", label: "Search" },
-    { value: "Archive", label: "Archive" },
-    { value: "HelpCircle", label: "Help" },
-  ];
 
   useEffect(() => {
-    loadSidebarConfig();
+    loadSidebarContent();
   }, []);
 
-  const loadSidebarConfig = async () => {
+  const getAuthToken = () => {
+    // Try different token sources in order of preference
+    const localStorageToken = localStorage.getItem("adminToken");
+    const accessTokenCookie = getCookie("accessToken");
+    const adminTokenCookie = getCookie("adminToken");
+    const refreshTokenCookie = getCookie("refreshToken");
+
+    const token =
+      localStorageToken ||
+      accessTokenCookie ||
+      adminTokenCookie ||
+      refreshTokenCookie;
+
+    // Debug logging
+    console.log("🔍 Token Debug:");
+    console.log(
+      "localStorage adminToken:",
+      localStorageToken ? "Found" : "Not found"
+    );
+    console.log(
+      "Cookie accessToken:",
+      accessTokenCookie ? "Found" : "Not found"
+    );
+    console.log("Cookie adminToken:", adminTokenCookie ? "Found" : "Not found");
+    console.log(
+      "Cookie refreshToken:",
+      refreshTokenCookie ? "Found" : "Not found"
+    );
+    console.log("Selected token:", token ? "Found" : "Not found");
+
+    return token;
+  };
+
+  const getCookie = (name) => {
+    if (typeof document === "undefined") return null;
+    try {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const cookieValue = parts.pop().split(";").shift();
+        return cookieValue && cookieValue !== "undefined" ? cookieValue : null;
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error reading cookie ${name}:`, error);
+      return null;
+    }
+  };
+
+  const loadSidebarContent = async () => {
     try {
       setLoading(true);
-      // Load sidebar configuration from API
-      // const response = await adminAPI.getSidebarConfig();
-      // setSidebarConfig(response.data.data.config);
-      // setMenuItems(response.data.data.menuItems);
+
+      // Debug: Show all cookies and localStorage
+      console.log("🍪 All cookies:", document.cookie);
+      console.log(
+        "💾 localStorage adminToken:",
+        localStorage.getItem("adminToken")
+      );
+
+      const token = getAuthToken();
+
+      if (!token) {
+        console.error("❌ No token found!");
+        toast.error("🔒 Please login to access admin features", {
+          style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+        });
+        return;
+      }
+
+      console.log(
+        "🚀 Making API call with token:",
+        token.substring(0, 20) + "..."
+      );
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sidebar`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error("🔑 Authentication failed. Please login again.", {
+            style: {
+              borderRadius: "12px",
+              background: "#EF4444",
+              color: "#fff",
+            },
+          });
+          return;
+        }
+        throw new Error("Failed to fetch sidebar content");
+      }
+
+      const result = await response.json();
+      setSidebarContent(result.data.content || []);
     } catch (error) {
-      console.error("Error loading sidebar config:", error);
-      toast.error("Failed to load sidebar configuration");
+      console.error("Error loading sidebar content:", error);
+      toast.error("❌ Failed to load sidebar content", {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const saveSidebarConfig = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Enhanced validation
+    if (
+      !formData.imageUrl &&
+      !formData.videoUrl &&
+      !formData.phoneNumber &&
+      !formData.whatsappNumber
+    ) {
+      toast.error("📝 Please fill at least one field", {
+        style: { borderRadius: "12px", background: "#F59E0B", color: "#fff" },
+      });
+      return;
+    }
+
     try {
       setLoading(true);
-      // await adminAPI.updateSidebarConfig({ config: sidebarConfig, menuItems });
-      toast.success("Sidebar configuration saved successfully!", {
-        icon: "💾",
-        style: {
-          borderRadius: "10px",
-          background: "#10B981",
-          color: "#fff",
+      const token = getAuthToken();
+
+      if (!token) {
+        toast.error("🔒 Authentication required");
+        return;
+      }
+
+      const url = editingContent
+        ? `${process.env.NEXT_PUBLIC_API_URL}/sidebar/${editingContent.id}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/sidebar`;
+      const method = editingContent ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify(formData),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save sidebar content");
+      }
+
+      toast.success(
+        editingContent
+          ? "✅ Content updated successfully!"
+          : "✅ Content created successfully!",
+        {
+          style: {
+            borderRadius: "12px",
+            background: "#10B981",
+            color: "#fff",
+            fontWeight: "600",
+          },
+        }
+      );
+
+      resetForm();
+      loadSidebarContent();
     } catch (error) {
-      toast.error("Failed to save sidebar configuration", {
-        icon: "❌",
+      toast.error(error.message || "❌ Failed to save sidebar content", {
         style: {
-          borderRadius: "10px",
+          borderRadius: "12px",
           background: "#EF4444",
           color: "#fff",
+          fontWeight: "500",
         },
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "⚠️ Are you sure you want to delete this content?\n\nThis action cannot be undone."
+    );
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+      const token = getAuthToken();
+      const response = await fetch(`http://localhost:4000/api/sidebar/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete sidebar content");
+      }
+
+      toast.success("🗑️ Content deleted successfully", {
+        style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+      });
+      loadSidebarContent();
+    } catch (error) {
+      toast.error("❌ Failed to delete sidebar content", {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (content) => {
+    setEditingContent(content);
+    setFormData({
+      imageUrl: content.imageUrl || "",
+      videoUrl: content.videoUrl || "",
+      phoneNumber: content.phoneNumber || "",
+      whatsappNumber: content.whatsappNumber || "",
+      isActive: content.isActive,
+    });
+    setPreviewUrls({
+      image: content.imageUrl || "",
+      video: content.videoUrl || "",
+    });
+    setShowAddForm(true);
+  };
+
+  const toggleStatus = async (id, currentStatus) => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sidebar/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isActive: !currentStatus }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update status");
+      }
+
+      toast.success(
+        `📱 Content ${
+          !currentStatus ? "activated" : "deactivated"
+        } successfully`,
+        {
+          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+        }
+      );
+      loadSidebarContent();
+    } catch (error) {
+      toast.error("❌ Failed to update status", {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+      });
+    }
+  };
+
+  const handleFileUpload = async (file, type) => {
+    if (!file) return;
+
+    // Enhanced file validation
+    const maxSize = type === "image" ? 5 * 1024 * 1024 : 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error(
+        `📏 File size must be less than ${type === "image" ? "5MB" : "50MB"}`,
+        {
+          style: { borderRadius: "12px", background: "#F59E0B", color: "#fff" },
+        }
+      );
+      return;
+    }
+
+    try {
+      setUploading((prev) => ({ ...prev, [type]: true }));
+      const token = getAuthToken();
+      const uploadData = new FormData();
+      uploadData.append(type, file);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sidebar/upload/${type}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: uploadData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to upload ${type}`);
+      }
+
+      const result = await response.json();
+
+      setFormData((prev) => ({
+        ...prev,
+        [`${type}Url`]: result.data.url,
+      }));
+
+      setPreviewUrls((prev) => ({
+        ...prev,
+        [type]: result.data.url,
+      }));
+
+      toast.success(
+        `📸 ${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } uploaded successfully`,
+        {
+          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+        }
+      );
+    } catch (error) {
+      toast.error(error.message || `❌ Failed to upload ${type}`, {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+      });
+    } finally {
+      setUploading((prev) => ({ ...prev, [type]: false }));
     }
   };
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
 
-    const items = Array.from(menuItems);
+    const items = Array.from(sidebarContent);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    // Update order
-    const updatedItems = items.map((item, index) => ({
-      ...item,
-      order: index + 1,
+    setSidebarContent(items);
+    toast.success("🔄 Order updated successfully", {
+      style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+    });
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedUrl(text);
+      toast.success("📋 URL copied to clipboard", {
+        style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+      });
+      setTimeout(() => setCopiedUrl(""), 2000);
+    } catch (error) {
+      toast.error("❌ Failed to copy URL", {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+      });
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      imageUrl: "",
+      videoUrl: "",
+      phoneNumber: "",
+      whatsappNumber: "",
+      isActive: true,
+    });
+    setPreviewUrls({ image: "", video: "" });
+    setEditingContent(null);
+    setShowAddForm(false);
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
     }));
 
-    setMenuItems(updatedItems);
-  };
-
-  const toggleMenuItemVisibility = (itemId) => {
-    setMenuItems((items) =>
-      items.map((item) =>
-        item.id === itemId ? { ...item, visible: !item.visible } : item
-      )
-    );
-  };
-
-  const deleteMenuItem = (itemId) => {
-    setMenuItems((items) => items.filter((item) => item.id !== itemId));
-    toast.success("Menu item deleted successfully");
-  };
-
-  const addMenuItem = () => {
-    if (!newMenuItem.label || !newMenuItem.path) {
-      toast.error("Label and path are required");
-      return;
+    if (field === "imageUrl") {
+      setPreviewUrls((prev) => ({ ...prev, image: value }));
+    } else if (field === "videoUrl") {
+      setPreviewUrls((prev) => ({ ...prev, video: value }));
     }
-
-    const newItem = {
-      id: Date.now().toString(),
-      ...newMenuItem,
-      order: menuItems.length + 1,
-      submenu: [],
-    };
-
-    setMenuItems([...menuItems, newItem]);
-    setNewMenuItem({
-      label: "",
-      icon: "Menu",
-      path: "",
-      visible: true,
-      hasSubmenu: false,
-    });
-    toast.success("Menu item added successfully");
   };
 
-  const IconComponent = ({ iconName, className = "h-5 w-5" }) => {
-    const icons = {
-      Home,
-      Building,
-      Users,
-      MessageSquare,
-      BarChart3,
-      Settings,
-      FileText,
-      Shield,
-      Bell,
-      Search,
-      Archive,
-      HelpCircle,
-      Menu,
-    };
-    const Icon = icons[iconName] || Menu;
-    return <Icon className={className} />;
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ""));
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Sidebar Management
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Enhanced Header */}
+        <div className="text-center space-y-6">
+          <div className="inline-flex items-center px-4 py-2 bg-white rounded-full shadow-lg border border-indigo-100">
+            <Globe className="h-5 w-5 text-indigo-600 mr-2" />
+            <span className="text-sm font-medium text-gray-600">
+              Pro Housing Admin
+            </span>
+          </div>
+
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Sidebar Content Manager
           </h1>
-          <p className="text-gray-600 mt-1">
-            Customize your admin sidebar layout and navigation
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Create and manage beautiful sidebar content with drag-and-drop
+            reordering, stunning image uploads, and seamless contact integration
           </p>
+
+          <div className="flex justify-center gap-4">
+            <Button
+              onClick={loadSidebarContent}
+              variant="outline"
+              size="lg"
+              className="bg-white hover:bg-gray-50 border-gray-200 shadow-sm px-6"
+              disabled={loading}
+            >
+              <RefreshCw
+                className={`h-5 w-5 mr-2 ${loading ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+            <Button
+              onClick={() => setShowAddForm(true)}
+              size="lg"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-xl px-8"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add New Content
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={loadSidebarConfig}
-            variant="outline"
-            size="sm"
-            className="hover:bg-gray-50"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button
-            onClick={saveSidebarConfig}
-            disabled={loading}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
-          >
-            {loading ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Saving...
+
+        {/* Enhanced Add/Edit Form */}
+        {showAddForm && (
+          <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg">
+            <CardHeader className="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-b border-gray-100 rounded-t-xl">
+              <CardTitle className="flex items-center justify-between text-gray-900">
+                <div className="flex items-center">
+                  {editingContent ? (
+                    <Edit className="h-7 w-7 mr-3 text-emerald-600" />
+                  ) : (
+                    <Plus className="h-7 w-7 mr-3 text-emerald-600" />
+                  )}
+                  <span className="text-2xl font-bold">
+                    {editingContent ? "Edit Content" : "Create New Content"}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetForm}
+                  className="hover:bg-red-100 hover:text-red-600 transition-colors"
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="p-10">
+              <form onSubmit={handleSubmit} className="space-y-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                  {/* Enhanced Image Upload */}
+                  <div className="space-y-6">
+                    <Label className="text-xl font-bold text-gray-800 flex items-center">
+                      <Camera className="h-6 w-6 mr-3 text-indigo-600" />
+                      Sidebar Image
+                    </Label>
+
+                    <div className="space-y-6">
+                      <Input
+                        value={formData.imageUrl}
+                        onChange={(e) =>
+                          handleInputChange("imageUrl", e.target.value)
+                        }
+                        placeholder="🔗 Enter image URL or upload file below"
+                        className="border-2 border-gray-300 focus:border-indigo-500 rounded-xl p-4 text-lg"
+                      />
+
+                      <div className="relative">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) handleFileUpload(file, "image");
+                          }}
+                          className="hidden"
+                          id="image-upload"
+                        />
+                        <label
+                          htmlFor="image-upload"
+                          className={`flex items-center justify-center w-full h-40 border-3 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-300 ${
+                            uploading.image
+                              ? "opacity-50 cursor-not-allowed bg-indigo-50"
+                              : ""
+                          }`}
+                        >
+                          {uploading.image ? (
+                            <div className="flex flex-col items-center text-indigo-600">
+                              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-indigo-600 mb-3"></div>
+                              <span className="text-lg font-semibold">
+                                Uploading image...
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                              <p className="text-lg font-semibold text-gray-700 mb-2">
+                                Click to upload image
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Maximum file size: 5MB • Supported: JPG, PNG,
+                                GIF
+                              </p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+
+                      {previewUrls.image && (
+                        <div className="relative group">
+                          <img
+                            src={previewUrls.image}
+                            alt="Preview"
+                            className="w-full h-64 object-cover rounded-xl shadow-xl"
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 rounded-xl flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-x-3">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  copyToClipboard(previewUrls.image)
+                                }
+                                className="bg-white shadow-lg hover:shadow-xl"
+                              >
+                                {copiedUrl === previewUrls.image ? (
+                                  <Check className="h-4 w-4 mr-2 text-green-600" />
+                                ) : (
+                                  <Copy className="h-4 w-4 mr-2" />
+                                )}
+                                Copy URL
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  window.open(previewUrls.image, "_blank")
+                                }
+                                className="bg-white shadow-lg hover:shadow-xl"
+                              >
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                Open
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Enhanced Video Upload */}
+                  <div className="space-y-6">
+                    <Label className="text-xl font-bold text-gray-800 flex items-center">
+                      <Film className="h-6 w-6 mr-3 text-purple-600" />
+                      Sidebar Video
+                    </Label>
+
+                    <div className="space-y-6">
+                      <Input
+                        value={formData.videoUrl}
+                        onChange={(e) =>
+                          handleInputChange("videoUrl", e.target.value)
+                        }
+                        placeholder="🎥 Enter video URL or upload file below"
+                        className="border-2 border-gray-300 focus:border-purple-500 rounded-xl p-4 text-lg"
+                      />
+
+                      <div className="relative">
+                        <Input
+                          type="file"
+                          accept="video/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) handleFileUpload(file, "video");
+                          }}
+                          className="hidden"
+                          id="video-upload"
+                        />
+                        <label
+                          htmlFor="video-upload"
+                          className={`flex items-center justify-center w-full h-40 border-3 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-all duration-300 ${
+                            uploading.video
+                              ? "opacity-50 cursor-not-allowed bg-purple-50"
+                              : ""
+                          }`}
+                        >
+                          {uploading.video ? (
+                            <div className="flex flex-col items-center text-purple-600">
+                              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-purple-600 mb-3"></div>
+                              <span className="text-lg font-semibold">
+                                Uploading video...
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-center">
+                              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                              <p className="text-lg font-semibold text-gray-700 mb-2">
+                                Click to upload video
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Maximum file size: 50MB • Supported: MP4, AVI,
+                                MOV
+                              </p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+
+                      {previewUrls.video && (
+                        <div className="relative group">
+                          <video
+                            src={previewUrls.video}
+                            className="w-full h-64 object-cover rounded-xl shadow-xl"
+                            controls
+                          />
+                          <div className="absolute top-4 right-4 space-x-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => copyToClipboard(previewUrls.video)}
+                              className="bg-white shadow-lg hover:shadow-xl"
+                            >
+                              {copiedUrl === previewUrls.video ? (
+                                <Check className="h-4 w-4 mr-2 text-green-600" />
+                              ) : (
+                                <Copy className="h-4 w-4 mr-2" />
+                              )}
+                              Copy URL
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Enhanced Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <Label className="text-xl font-bold text-gray-800 flex items-center">
+                      <Phone className="h-6 w-6 mr-3 text-blue-600" />
+                      Phone Number
+                    </Label>
+                    <Input
+                      value={formData.phoneNumber}
+                      onChange={(e) =>
+                        handleInputChange("phoneNumber", e.target.value)
+                      }
+                      placeholder="📞 +91 98765 43210"
+                      className="border-2 border-gray-300 focus:border-blue-500 rounded-xl p-4 text-lg"
+                    />
+                    {formData.phoneNumber &&
+                      !validatePhoneNumber(formData.phoneNumber) && (
+                        <p className="text-sm text-red-600 flex items-center bg-red-50 p-3 rounded-lg">
+                          <AlertCircle className="h-4 w-4 mr-2" />
+                          Please enter a valid phone number
+                        </p>
+                      )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label className="text-xl font-bold text-gray-800 flex items-center">
+                      <Smartphone className="h-6 w-6 mr-3 text-green-600" />
+                      WhatsApp Number
+                    </Label>
+                    <Input
+                      value={formData.whatsappNumber}
+                      onChange={(e) =>
+                        handleInputChange("whatsappNumber", e.target.value)
+                      }
+                      placeholder="💬 +91 98765 43210"
+                      className="border-2 border-gray-300 focus:border-green-500 rounded-xl p-4 text-lg"
+                    />
+                    {formData.whatsappNumber &&
+                      !validatePhoneNumber(formData.whatsappNumber) && (
+                        <p className="text-sm text-red-600 flex items-center bg-red-50 p-3 rounded-lg">
+                          <AlertCircle className="h-4 w-4 mr-2" />
+                          Please enter a valid WhatsApp number
+                        </p>
+                      )}
+                  </div>
+                </div>
+
+                {/* Enhanced Active Status */}
+                <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                  <div className="flex items-center space-x-4">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                    <div>
+                      <Label className="text-xl font-bold text-gray-800">
+                        Active Status
+                      </Label>
+                      <p className="text-gray-600 mt-1">
+                        Enable this content to display on the website
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) =>
+                      handleInputChange("isActive", checked)
+                    }
+                    className="scale-150"
+                  />
+                </div>
+
+                {/* Enhanced Form Actions */}
+                <div className="flex flex-col sm:flex-row gap-6 pt-8 border-t-2 border-gray-200">
+                  <Button
+                    type="submit"
+                    disabled={loading || uploading.image || uploading.video}
+                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-14 text-xl font-bold shadow-xl rounded-xl"
+                  >
+                    {loading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                        Saving...
+                      </div>
+                    ) : (
+                      <>
+                        <Save className="h-6 w-6 mr-3" />
+                        {editingContent ? "Update Content" : "Create Content"}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetForm}
+                    className="flex-1 h-14 text-xl font-bold border-2 border-gray-300 hover:border-gray-400 rounded-xl"
+                  >
+                    <X className="h-6 w-6 mr-3" />
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Enhanced Content List with Drag & Drop */}
+        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b border-gray-100 rounded-t-xl">
+            <CardTitle className="flex items-center text-gray-900">
+              <GripVertical className="h-7 w-7 mr-3 text-blue-600" />
+              <span className="text-2xl font-bold">
+                Sidebar Content ({sidebarContent.length})
+              </span>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="p-10">
+            {loading && !sidebarContent.length ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mb-6"></div>
+                <p className="text-xl text-gray-600 font-semibold">
+                  Loading content...
+                </p>
+              </div>
+            ) : sidebarContent.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="w-32 h-32 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                  <Image className="h-16 w-16 text-indigo-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-800 mb-4">
+                  No content found
+                </h3>
+                <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto">
+                  Create your first sidebar content to get started with your
+                  amazing website
+                </p>
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  size="lg"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-xl px-8"
+                >
+                  <Plus className="h-6 w-6 mr-3" />
+                  Add First Content
+                </Button>
               </div>
             ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sidebar Configuration */}
-        <Card className="lg:col-span-1 shadow-lg border-0">
-          <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
-            <CardTitle className="flex items-center text-gray-900">
-              <Layout className="h-5 w-5 mr-2 text-indigo-600" />
-              Configuration
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {/* General Settings */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900">General Settings</h3>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="collapsed">Collapsed by Default</Label>
-                <Switch
-                  id="collapsed"
-                  checked={sidebarConfig.collapsed}
-                  onCheckedChange={(checked) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      collapsed: checked,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showIcons">Show Icons</Label>
-                <Switch
-                  id="showIcons"
-                  checked={sidebarConfig.showIcons}
-                  onCheckedChange={(checked) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      showIcons: checked,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showLabels">Show Labels</Label>
-                <Switch
-                  id="showLabels"
-                  checked={sidebarConfig.showLabels}
-                  onCheckedChange={(checked) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      showLabels: checked,
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <Label htmlFor="animation">Enable Animation</Label>
-                <Switch
-                  id="animation"
-                  checked={sidebarConfig.animation}
-                  onCheckedChange={(checked) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      animation: checked,
-                    }))
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Appearance */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900">Appearance</h3>
-
-              <div>
-                <Label htmlFor="theme">Theme</Label>
-                <select
-                  id="theme"
-                  value={sidebarConfig.theme}
-                  onChange={(e) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      theme: e.target.value,
-                    }))
-                  }
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="light">Light</option>
-                  <option value="dark">Dark</option>
-                  <option value="auto">Auto</option>
-                </select>
-              </div>
-
-              <div>
-                <Label htmlFor="position">Position</Label>
-                <select
-                  id="position"
-                  value={sidebarConfig.position}
-                  onChange={(e) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      position: e.target.value,
-                    }))
-                  }
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="left">Left</option>
-                  <option value="right">Right</option>
-                </select>
-              </div>
-
-              <div>
-                <Label htmlFor="width">Width (px)</Label>
-                <Input
-                  id="width"
-                  type="number"
-                  value={sidebarConfig.width}
-                  onChange={(e) =>
-                    setSidebarConfig((prev) => ({
-                      ...prev,
-                      width: parseInt(e.target.value),
-                    }))
-                  }
-                  min="200"
-                  max="400"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            {/* Add New Menu Item */}
-            <div className="space-y-4 border-t pt-6">
-              <h3 className="font-semibold text-gray-900">Add Menu Item</h3>
-
-              <div>
-                <Label htmlFor="newLabel">Label</Label>
-                <Input
-                  id="newLabel"
-                  value={newMenuItem.label}
-                  onChange={(e) =>
-                    setNewMenuItem((prev) => ({
-                      ...prev,
-                      label: e.target.value,
-                    }))
-                  }
-                  placeholder="Menu item label"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="newIcon">Icon</Label>
-                <select
-                  id="newIcon"
-                  value={newMenuItem.icon}
-                  onChange={(e) =>
-                    setNewMenuItem((prev) => ({
-                      ...prev,
-                      icon: e.target.value,
-                    }))
-                  }
-                  className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  {iconOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <Label htmlFor="newPath">Path</Label>
-                <Input
-                  id="newPath"
-                  value={newMenuItem.path}
-                  onChange={(e) =>
-                    setNewMenuItem((prev) => ({
-                      ...prev,
-                      path: e.target.value,
-                    }))
-                  }
-                  placeholder="/admin/new-page"
-                  className="mt-1"
-                />
-              </div>
-
-              <Button
-                onClick={addMenuItem}
-                className="w-full bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Menu Item
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Menu Items Management */}
-        <Card className="lg:col-span-2 shadow-lg border-0">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
-            <CardTitle className="flex items-center text-gray-900">
-              <Menu className="h-5 w-5 mr-2 text-blue-600" />
-              Menu Items
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="menuItems">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-3"
-                  >
-                    {menuItems
-                      .sort((a, b) => a.order - b.order)
-                      .map((item, index) => (
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="sidebar-content">
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="space-y-8"
+                    >
+                      {sidebarContent.map((content, index) => (
                         <Draggable
-                          key={item.id}
-                          draggableId={item.id}
+                          key={content.id}
+                          draggableId={content.id}
                           index={index}
                         >
                           {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
-                              className={`p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-200 ${
+                              className={`p-8 bg-white border-2 border-gray-200 rounded-2xl shadow-xl transition-all duration-300 ${
                                 snapshot.isDragging
-                                  ? "shadow-lg scale-105"
-                                  : "hover:shadow-md"
+                                  ? "shadow-2xl scale-105 rotate-2 border-indigo-300"
+                                  : "hover:shadow-2xl hover:border-indigo-200"
                               }`}
                             >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
+                              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+                                {/* Enhanced Drag Handle & Status */}
+                                <div className="flex flex-col items-center space-y-4">
                                   <div
                                     {...provided.dragHandleProps}
-                                    className="cursor-grab"
+                                    className="cursor-grab active:cursor-grabbing p-4 hover:bg-gray-100 rounded-xl transition-colors border-2 border-dashed border-gray-300 hover:border-indigo-400"
                                   >
-                                    <GripVertical className="h-5 w-5 text-gray-400" />
+                                    <GripVertical className="h-8 w-8 text-gray-400" />
                                   </div>
 
-                                  <IconComponent
-                                    iconName={item.icon}
-                                    className="h-5 w-5 text-gray-600"
-                                  />
-
-                                  <div>
-                                    <h4 className="font-medium text-gray-900">
-                                      {item.label}
-                                    </h4>
-                                    <p className="text-sm text-gray-500">
-                                      {item.path}
-                                    </p>
-                                    {item.hasSubmenu && (
-                                      <p className="text-xs text-indigo-600">
-                                        {item.submenu.length} submenu items
-                                      </p>
+                                  <span
+                                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
+                                      content.isActive
+                                        ? "bg-green-100 text-green-800 border-2 border-green-200"
+                                        : "bg-gray-100 text-gray-600 border-2 border-gray-200"
+                                    }`}
+                                  >
+                                    {content.isActive ? (
+                                      <CheckCircle className="h-5 w-5 mr-2" />
+                                    ) : (
+                                      <AlertCircle className="h-5 w-5 mr-2" />
                                     )}
+                                    {content.isActive ? "Active" : "Inactive"}
+                                  </span>
+                                </div>
+
+                                {/* Enhanced Image Preview */}
+                                <div className="text-center">
+                                  <p className="text-lg font-bold text-gray-700 mb-4 flex items-center justify-center">
+                                    <Camera className="h-5 w-5 mr-2 text-indigo-600" />
+                                    Image
+                                  </p>
+                                  {content.imageUrl ? (
+                                    <div className="relative group">
+                                      <img
+                                        src={content.imageUrl}
+                                        alt="Sidebar"
+                                        className="w-full h-32 object-cover rounded-xl shadow-lg"
+                                      />
+                                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-xl flex items-center justify-center">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            window.open(
+                                              content.imageUrl,
+                                              "_blank"
+                                            )
+                                          }
+                                          className="opacity-0 group-hover:opacity-100 bg-white shadow-lg"
+                                        >
+                                          <ExternalLink className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                                      <Image className="h-10 w-10 text-gray-400" />
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Enhanced Video Preview */}
+                                <div className="text-center">
+                                  <p className="text-lg font-bold text-gray-700 mb-4 flex items-center justify-center">
+                                    <Film className="h-5 w-5 mr-2 text-purple-600" />
+                                    Video
+                                  </p>
+                                  {content.videoUrl ? (
+                                    <div className="relative">
+                                      <video
+                                        src={content.videoUrl}
+                                        className="w-full h-32 object-cover rounded-xl shadow-lg"
+                                        muted
+                                      />
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          window.open(
+                                            content.videoUrl,
+                                            "_blank"
+                                          )
+                                        }
+                                        className="absolute top-2 right-2 bg-white shadow-lg"
+                                      >
+                                        <ExternalLink className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                                      <Video className="h-10 w-10 text-gray-400" />
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Enhanced Contact Info */}
+                                <div className="space-y-4">
+                                  <div>
+                                    <p className="text-lg font-bold text-gray-700 flex items-center mb-2">
+                                      <Phone className="h-5 w-5 mr-2 text-blue-600" />
+                                      Phone
+                                    </p>
+                                    <p className="text-base text-gray-600 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
+                                      {content.phoneNumber || "Not set"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-lg font-bold text-gray-700 flex items-center mb-2">
+                                      <MessageCircle className="h-5 w-5 mr-2 text-green-600" />
+                                      WhatsApp
+                                    </p>
+                                    <p className="text-base text-gray-600 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
+                                      {content.whatsappNumber || "Not set"}
+                                    </p>
                                   </div>
                                 </div>
 
-                                <div className="flex items-center space-x-2">
+                                {/* Enhanced Actions */}
+                                <div className="flex flex-col space-y-3">
                                   <Button
                                     size="sm"
                                     variant="outline"
                                     onClick={() =>
-                                      toggleMenuItemVisibility(item.id)
+                                      toggleStatus(content.id, content.isActive)
                                     }
-                                    className={`${
-                                      item.visible
-                                        ? "text-green-600 hover:text-green-700"
-                                        : "text-gray-400 hover:text-gray-500"
+                                    className={`border-2 ${
+                                      content.isActive
+                                        ? "text-green-600 hover:text-green-700 border-green-200 hover:border-green-300 hover:bg-green-50"
+                                        : "text-gray-400 hover:text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                                     }`}
                                   >
-                                    {item.visible ? (
-                                      <Eye className="h-4 w-4" />
+                                    {content.isActive ? (
+                                      <Eye className="h-4 w-4 mr-2" />
                                     ) : (
-                                      <EyeOff className="h-4 w-4" />
+                                      <EyeOff className="h-4 w-4 mr-2" />
                                     )}
+                                    {content.isActive ? "Active" : "Inactive"}
                                   </Button>
 
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => deleteMenuItem(item.id)}
-                                    className="text-red-600 hover:text-red-700"
+                                    onClick={() => handleEdit(content)}
+                                    className="text-blue-600 hover:text-blue-700 border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50"
                                   >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit
+                                  </Button>
+
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleDelete(content.id)}
+                                    className="text-red-600 hover:text-red-700 border-2 border-red-200 hover:border-red-300 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
                                   </Button>
                                 </div>
                               </div>
-
-                              {/* Submenu Items */}
-                              {item.hasSubmenu && item.submenu.length > 0 && (
-                                <div className="mt-3 ml-8 space-y-2">
-                                  {item.submenu.map((subItem) => (
-                                    <div
-                                      key={subItem.id}
-                                      className="flex items-center justify-between p-2 bg-gray-50 rounded border-l-4 border-indigo-200"
-                                    >
-                                      <div>
-                                        <span className="text-sm font-medium text-gray-700">
-                                          {subItem.label}
-                                        </span>
-                                        <span className="text-xs text-gray-500 ml-2">
-                                          {subItem.path}
-                                        </span>
-                                      </div>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className={`${
-                                          subItem.visible
-                                            ? "text-green-600"
-                                            : "text-gray-400"
-                                        }`}
-                                      >
-                                        {subItem.visible ? (
-                                          <Eye className="h-3 w-3" />
-                                        ) : (
-                                          <EyeOff className="h-3 w-3" />
-                                        )}
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
                             </div>
                           )}
                         </Draggable>
                       ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Sidebar Preview */}
-      <Card className="shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
-          <CardTitle className="flex items-center text-gray-900">
-            <Eye className="h-5 w-5 mr-2 text-green-600" />
-            Sidebar Preview
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="bg-gray-100 rounded-lg p-4">
-            <div
-              className="bg-white rounded-lg shadow-md"
-              style={{ width: sidebarConfig.width }}
-            >
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="font-bold text-lg text-gray-900">
-                  Pro Housing Admin
-                </h3>
-              </div>
-              <nav className="p-2">
-                {menuItems
-                  .filter((item) => item.visible)
-                  .sort((a, b) => a.order - b.order)
-                  .map((item) => (
-                    <div key={item.id} className="mb-1">
-                      <div className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-                        {sidebarConfig.showIcons && (
-                          <IconComponent
-                            iconName={item.icon}
-                            className="h-5 w-5 text-gray-600"
-                          />
-                        )}
-                        {sidebarConfig.showLabels && (
-                          <span className="text-gray-700 font-medium">
-                            {item.label}
-                          </span>
-                        )}
-                      </div>
-                      {item.hasSubmenu &&
-                        item.submenu.filter((sub) => sub.visible).length >
-                          0 && (
-                          <div className="ml-6 space-y-1">
-                            {item.submenu
-                              .filter((sub) => sub.visible)
-                              .map((subItem) => (
-                                <div
-                                  key={subItem.id}
-                                  className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900 cursor-pointer"
-                                >
-                                  {sidebarConfig.showLabels && subItem.label}
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                    </div>
-                  ))}
-              </nav>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

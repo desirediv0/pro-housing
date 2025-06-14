@@ -6,29 +6,15 @@ import {
   Search,
   MapPin,
   Home,
-  Building,
-  TrendingUp,
-  Star,
   Bed,
   Bath,
   Square,
   Eye,
-  Phone,
-  Calendar,
-  Filter,
   SlidersHorizontal,
   Grid,
   List,
-  ArrowLeft,
   X,
   MessageCircle,
-  Car,
-  Dumbbell,
-  Building2,
-  Shield,
-  Zap,
-  Trees,
-  Wifi,
   ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -104,10 +90,8 @@ export default function PropertiesPage() {
       Object.keys(params).forEach((key) => {
         if (!params[key]) delete params[key];
       });
-
-      console.log("Fetching with params:", params);
+      ``;
       const response = await publicAPI.getAllProperties(params);
-      console.log("Properties Response:", response.data);
 
       // Handle API response
       const data = response.data.data || response.data || {};
@@ -199,25 +183,6 @@ export default function PropertiesPage() {
     { value: "LAND", label: "Land" },
   ];
 
-  const listingTypes = [
-    { value: "", label: "Buy & Rent" },
-    { value: "sale", label: "For Sale" },
-    { value: "rent", label: "For Rent" },
-  ];
-
-  const amenityIcons = {
-    parking: Car,
-    gym: Dumbbell,
-    swimming: Building2,
-    security: Shield,
-    elevator: Building2,
-    powerBackup: Zap,
-    garden: Trees,
-    wifi: Wifi,
-    furnished: Home,
-    balcony: Building2,
-  };
-
   // Simple Select component since it's not imported
   const Select = ({ value, onValueChange, className, children }) => (
     <select
@@ -282,7 +247,7 @@ export default function PropertiesPage() {
                         </Button>
                         <Button
                           type="submit"
-                          className="h-14 px-8 bg-[#5E4CBB] hover:bg-[#4a3d99] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                          className="h-14 gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0"
                         >
                           <Search className="h-5 w-5 mr-2" />
                           Search Properties
@@ -400,7 +365,7 @@ export default function PropertiesPage() {
                             </Button>
                             <Button
                               type="submit"
-                              className="bg-[#5E4CBB] hover:bg-[#4a3d99] text-white px-6"
+                              className="gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0"
                             >
                               Apply Filters
                             </Button>
@@ -436,7 +401,9 @@ export default function PropertiesPage() {
                   size="sm"
                   onClick={() => setViewMode("grid")}
                   className={
-                    viewMode === "grid" ? "bg-[#5E4CBB] hover:bg-[#4a3d99]" : ""
+                    viewMode === "grid"
+                      ? "gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0"
+                      : ""
                   }
                 >
                   <Grid className="h-4 w-4 mr-1" />
@@ -447,7 +414,9 @@ export default function PropertiesPage() {
                   size="sm"
                   onClick={() => setViewMode("list")}
                   className={
-                    viewMode === "list" ? "bg-[#5E4CBB] hover:bg-[#4a3d99]" : ""
+                    viewMode === "list"
+                      ? "gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0"
+                      : ""
                   }
                 >
                   <List className="h-4 w-4 mr-1" />
@@ -489,7 +458,7 @@ export default function PropertiesPage() {
                   </p>
                   <Button
                     onClick={clearAllFilters}
-                    className="bg-[#5E4CBB] hover:bg-[#4a3d99] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0"
                   >
                     Clear All Filters
                   </Button>

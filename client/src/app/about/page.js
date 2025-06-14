@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
+import CTA from "@/components/CTA";
 
 export default function AboutPage() {
   const stats = [
@@ -88,7 +89,7 @@ export default function AboutPage() {
     {
       name: "Rajesh Kumar",
       position: "CEO & Founder",
-      image: "/api/placeholder/300/300",
+      image: "/user1.jpg",
       description:
         "15+ years in real estate industry with expertise in luxury properties.",
       social: {
@@ -99,7 +100,7 @@ export default function AboutPage() {
     {
       name: "Priya Sharma",
       position: "Head of Sales",
-      image: "/api/placeholder/300/300",
+      image: "/user3.jpg",
       description:
         "Expert in property valuation and market analysis with 12+ years experience.",
       social: {
@@ -110,7 +111,7 @@ export default function AboutPage() {
     {
       name: "Amit Patel",
       position: "Technical Director",
-      image: "/api/placeholder/300/300",
+      image: "/user2.jpg",
       description:
         "Technology enthusiast driving digital transformation in real estate.",
       social: {
@@ -146,7 +147,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <motion.section
-        className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-20 overflow-hidden"
+        className="relative bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD] py-20 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -273,7 +274,7 @@ export default function AboutPage() {
               </div>
               <div className="mt-8">
                 <Link href="/contact">
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold">
+                  <Button className="gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0">
                     Learn More
                     <TrendingUp className="h-5 w-5 ml-2" />
                   </Button>
@@ -284,7 +285,7 @@ export default function AboutPage() {
             <motion.div variants={itemVariants} className="relative">
               <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/api/placeholder/600/400"
+                  src="/main.jpg"
                   alt="Pro Housing Office"
                   fill
                   className="object-cover"
@@ -439,62 +440,7 @@ export default function AboutPage() {
       </motion.section>
 
       {/* CTA Section */}
-      <motion.section
-        className="py-20 bg-gradient-to-r from-indigo-600 to-purple-600"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        viewport={{ once: true }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2
-            className="text-4xl font-bold text-white mb-6"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            Ready to Find Your Dream Home?
-          </motion.h2>
-          <motion.p
-            className="text-xl text-white/90 mb-8 max-w-3xl mx-auto"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            Let our experienced team help you navigate the real estate market
-            and find the perfect property.
-          </motion.p>
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <Link href="/properties">
-              <Button
-                size="lg"
-                className="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold"
-              >
-                <Home className="h-5 w-5 mr-2" />
-                Browse Properties
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-indigo-600 px-8 py-4 rounded-full font-semibold"
-              >
-                <Phone className="h-5 w-5 mr-2" />
-                Contact Us
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </motion.section>
+      <CTA />
     </div>
   );
 }

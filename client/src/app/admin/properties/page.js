@@ -300,7 +300,7 @@ export default function AdminProperties() {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Link href={`/admin/properties/${property.id}`}>
+                <Link href={`/properties/${property.id}`}>
                   <Button
                     size="sm"
                     variant="outline"

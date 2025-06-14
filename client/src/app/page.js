@@ -34,6 +34,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { publicAPI } from "@/lib/api-functions";
 import Link from "next/link";
 import { SimpleAreaDisplay } from "@/components/ui/area-converter";
+import CTA from "@/components/CTA";
+import Image from "next/image";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -148,7 +150,7 @@ export default function HomePage() {
       content:
         "Pro Housing helped me find my dream home in Mumbai. Their service was exceptional and the process was smooth.",
       rating: 5,
-      image: "/api/placeholder/60/60",
+      image: "/user1.jpg",
       location: "Mumbai",
     },
     {
@@ -157,7 +159,7 @@ export default function HomePage() {
       content:
         "Amazing experience! The team guided me through every step of buying my first property. Highly recommended!",
       rating: 5,
-      image: "/api/placeholder/60/60",
+      image: "/user3.jpg",
       location: "Delhi",
     },
     {
@@ -166,65 +168,8 @@ export default function HomePage() {
       content:
         "Professional service and great property options. Found the perfect investment property through Pro Housing.",
       rating: 5,
-      image: "/api/placeholder/60/60",
+      image: "/user2.jpg",
       location: "Bangalore",
-    },
-  ];
-
-  const propertyTypes = [
-    {
-      name: "Apartments",
-      icon: Building,
-      count: "200+",
-      color: "from-primary to-primary-dark",
-    },
-    {
-      name: "Houses",
-      icon: Home,
-      count: "150+",
-      color: "from-success to-green-600",
-    },
-    {
-      name: "Villas",
-      icon: Star,
-      count: "80+",
-      color: "gradient-primary",
-    },
-    {
-      name: "Commercial",
-      icon: TrendingUp,
-      count: "70+",
-      color: "from-warning to-orange-600",
-    },
-  ];
-
-  const features = [
-    {
-      icon: Shield,
-      title: "Verified Properties",
-      description:
-        "All properties are legally verified with complete documentation",
-      color: "from-success to-green-600",
-    },
-    {
-      icon: Zap,
-      title: "Instant Booking",
-      description:
-        "Book site visits and properties instantly with our smart system",
-      color: "from-primary to-primary-dark",
-    },
-    {
-      icon: Users,
-      title: "Expert Guidance",
-      description: "Get personalized assistance from our real estate experts",
-      color: "gradient-primary",
-    },
-    {
-      icon: Globe,
-      title: "Pan India Presence",
-      description:
-        "Find properties across 50+ cities in India with local expertise",
-      color: "from-warning to-orange-600",
     },
   ];
 
@@ -282,24 +227,6 @@ export default function HomePage() {
                   verified
                 </p>
               </div>
-
-              {/* Property Type Tabs */}
-              {/* <div className="flex flex-wrap gap-1 bg-white/10 backdrop-blur-sm rounded-2xl p-2">
-                {["BUY", "RENT", "COMMERCIAL", "PG/CO-LIVING", "PLOTS"].map(
-                  (tab, index) => (
-                    <button
-                      key={tab}
-                      className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                        index === 0
-                          ? "bg-white text-primary shadow-lg"
-                          : "text-white hover:bg-white/20"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  )
-                )}
-              </div> */}
 
               {/* Search Bar */}
               <div className="bg-white rounded-2xl p-4 shadow-2xl">
@@ -459,7 +386,7 @@ export default function HomePage() {
                 Explore property related services
               </p>
             </div>
-            <Button className="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-semibold">
+            <Button className="gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0">
               Explore Services →
             </Button>
           </div>
@@ -567,7 +494,7 @@ export default function HomePage() {
                       <h3 className="text-2xl font-bold text-gray-800 mb-2">
                         Homes
                       </h3>
-                      <Button className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm">
+                      <Button className="gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0 text-sm">
                         View Projects
                       </Button>
                     </div>
@@ -586,7 +513,7 @@ export default function HomePage() {
                     </div>
                     <p className="text-gray-600">4 BHK Builder Floor</p>
 
-                    <Button className="w-full bg-primary hover:bg-primary-dark text-white py-4 rounded-xl font-bold text-lg mt-6">
+                    <Button className="gradient-primary text-lg text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0 w-full">
                       Contact
                     </Button>
                   </div>
@@ -595,10 +522,13 @@ export default function HomePage() {
                 {/* Property Image */}
                 <div className="relative h-64 bg-gradient-to-br from-gray-100 to-gray-200">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-gray-400 text-center">
-                      <Building className="h-16 w-16 mx-auto mb-2" />
-                      <p>Property Image</p>
-                    </div>
+                    <Image
+                      src="/main.jpg"
+                      alt="Property Image"
+                      className="h-64 w-full object-cover object-center"
+                      width={400}
+                      height={400}
+                    />
                   </div>
                 </div>
               </Card>
@@ -612,26 +542,48 @@ export default function HomePage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              {["Innovative Homes", "Lavish Floors", "Home Luxury"].map(
-                (property, index) => (
-                  <Card
-                    key={index}
-                    className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="relative h-32 bg-gradient-to-br from-gray-100 to-gray-200">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Home className="h-8 w-8 text-gray-400" />
-                      </div>
+              {[
+                {
+                  title: "Innovative Homes",
+                  description: "Premium Location",
+                  image: "/1.jpg",
+                },
+                {
+                  title: "Lavish Floors",
+                  description: "Premium Location",
+                  image: "/2.jpg",
+                },
+                {
+                  title: "Home Luxury",
+                  description: "Premium Location",
+                  image: "/3.jpg",
+                },
+              ].map((property, index) => (
+                <Card
+                  key={index}
+                  className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="relative h-32 bg-gradient-to-br from-gray-100 to-gray-200">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Image
+                        src={property.image}
+                        alt={property.title}
+                        className="h-40 w-full object-cover object-top"
+                        width={300}
+                        height={300}
+                      />
                     </div>
-                    <div className="p-4">
-                      <h4 className="font-bold text-gray-800 mb-1">
-                        {property}
-                      </h4>
-                      <p className="text-sm text-gray-600">Premium Location</p>
-                    </div>
-                  </Card>
-                )
-              )}
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-gray-800 my-1">
+                      {property.title}
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {property.description}
+                    </p>
+                  </div>
+                </Card>
+              ))}
             </motion.div>
           </div>
 
@@ -972,10 +924,12 @@ export default function HomePage() {
             </blockquote>
 
             <div className="flex items-center justify-center">
-              <img
+              <Image
                 src={testimonials[currentTestimonial].image}
                 alt={testimonials[currentTestimonial].name}
-                className="w-16 h-16 rounded-full mr-4 ring-4 ring-primary/20"
+                className="w-16 h-16 rounded-full object-cover mr-4 ring-4 ring-primary/20"
+                width={64}
+                height={64}
               />
               <div className="text-left">
                 <p className="font-bold text-lg text-text-primary">
@@ -1007,48 +961,7 @@ export default function HomePage() {
       </motion.section>
 
       {/* CTA Section */}
-      <motion.section
-        className="py-24 bg-gradient-to-r from-blue-600 to-purple-600"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Find Your Dream Home?
-            </h2>
-            <p className="text-xl mb-10 text-white/90">
-              Join thousands of happy customers who found their perfect property
-              with Pro Housing
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <Search className="h-5 w-5 mr-2" />
-                Start Searching
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600 font-bold px-8 py-4 rounded-xl transition-all duration-300"
-              >
-                <Phone className="h-5 w-5 mr-2" />
-                Talk to Expert
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
+      <CTA />
     </div>
   );
 }

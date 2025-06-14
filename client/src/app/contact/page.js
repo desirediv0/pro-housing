@@ -177,7 +177,7 @@ export default function ContactPage() {
     {
       name: "Raj Sharma",
       role: "Property Buyer",
-      image: "/api/placeholder/60/60",
+      image: "/user1.jpg",
       rating: 5,
       comment:
         "Excellent service! The team helped me find my dream home within my budget. Highly recommended!",
@@ -185,7 +185,7 @@ export default function ContactPage() {
     {
       name: "Priya Patel",
       role: "Property Seller",
-      image: "/api/placeholder/60/60",
+      image: "/user3.jpg",
       rating: 5,
       comment:
         "Professional and efficient. They sold my property at the best price in the market.",
@@ -193,7 +193,7 @@ export default function ContactPage() {
     {
       name: "Amit Kumar",
       role: "Investor",
-      image: "/api/placeholder/60/60",
+      image: "/user2.jpg",
       rating: 5,
       comment:
         "Great investment advice and market insights. I've invested in multiple properties through them.",
@@ -221,7 +221,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 py-20">
+      <div className="bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-bold text-white mb-6">
             Get in Touch With Us
@@ -451,7 +451,7 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="w-full gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0 hover:scale-105"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center">
@@ -483,11 +483,15 @@ export default function ContactPage() {
               <CardContent className="p-0">
                 {/* Map placeholder - Replace with actual map */}
                 <div className="h-64 bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <MapPin className="h-16 w-16 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold">Pro Housing Office</h3>
-                    <p className="text-green-100">Bandra West, Mumbai</p>
-                  </div>
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112233.29749885356!2d76.88093205871327!3d28.470795407460887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d17957da3b1e7%3A0xe31b6d39c72cc555!2sDesire%20Div%20-%20Website%20Designing%20Company%20in%20Gurgaon!5e0!3m2!1sen!2sin!4v1749832130063!5m2!1sen!2sin"
+                    width="600"
+                    height="450"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
                 </div>
                 <div className="p-6">
                   <h4 className="font-semibold text-gray-900 mb-2">
@@ -498,6 +502,12 @@ export default function ContactPage() {
                     team is ready to assist you with all your real estate needs.
                   </p>
                   <Button
+                    onClick={() => {
+                      window.open(
+                        "https://www.google.com/maps/place/Desire+Div+-+Website+Designing+Company+in+Gurgaon/@28.4707954,76.8809321,15z/data=!4m6!3m5!1s0x390d17957da3b1e7:0xe31b6d39c72cc555!8m2!3d28.4707954!4d76.8809321!16s%2Fg%2F11c4028q7c?entry=ttu&g_ep=EgoyMDI1MDIxMi4wIKXMDSoASAFQAw%3D%3D",
+                        "_blank"
+                      );
+                    }}
                     variant="outline"
                     className="w-full border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
                   >
