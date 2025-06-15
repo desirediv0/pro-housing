@@ -3,11 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Search,
   MapPin,
   Home,
   Building,
-  TrendingUp,
   Star,
   ArrowRight,
   Bed,
@@ -15,27 +13,26 @@ import {
   Square,
   Eye,
   Phone,
-  Mail,
-  Shield,
   Clock,
-  ThumbsUp,
-  Filter,
-  SlidersHorizontal,
-  Users,
-  Award,
   CheckCircle,
   Calendar,
-  Zap,
-  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { publicAPI } from "@/lib/api-functions";
 import Link from "next/link";
 import { SimpleAreaDisplay } from "@/components/ui/area-converter";
 import CTA from "@/components/CTA";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,7 +59,6 @@ export default function HomePage() {
   const fetchFeaturedProperties = async () => {
     try {
       const response = await publicAPI.getFeaturedProperties();
-      console.log("Featured Properties Response:", response.data); // Debug log
 
       // Handle both old and new response formats
       const properties = response.data.data || response.data || [];
@@ -76,7 +72,6 @@ export default function HomePage() {
   const fetchSidebarContent = async () => {
     try {
       const response = await publicAPI.getSidebarContent();
-      console.log("Sidebar Content Response:", response.data); // Debug log
 
       // Handle both old and new response formats
       const content = response.data.data || response.data || [];
@@ -92,13 +87,6 @@ export default function HomePage() {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    // Debug: Log search parameters
-    console.log("Search Parameters:", {
-      searchQuery: searchQuery.trim(),
-      location: location.trim(),
-      propertyType,
-      priceRange,
-    });
 
     const params = new URLSearchParams();
     if (searchQuery.trim()) params.set("search", searchQuery.trim());
@@ -107,7 +95,6 @@ export default function HomePage() {
     if (priceRange) params.set("price", priceRange);
 
     const searchUrl = `/properties?${params.toString()}`;
-    console.log("Navigating to:", searchUrl);
 
     // Use Next.js router for better navigation
     window.location.href = searchUrl;
@@ -182,19 +169,26 @@ export default function HomePage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {/* Premium Purple Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD]"></div>
+        {/* Animated Background with Blur */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD]">
+          <div className="absolute inset-0 backdrop-blur-[100px]">
+            {/* Animated Circles */}
+            <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+            <div className="absolute top-40 right-20 w-72 h-72 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-fuchsia-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+          </div>
+        </div>
 
-        {/* Background Buildings Silhouette */}
+        {/* Background Buildings Silhouette with enhanced opacity */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent"></div>
-          {/* Geometric buildings pattern */}
-          <div className="absolute bottom-0 left-0 opacity-20">
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/30 to-transparent"></div>
+          {/* Geometric buildings pattern with enhanced visibility */}
+          <div className="absolute bottom-0 left-0 opacity-30">
             <svg
               width="300"
               height="200"
               viewBox="0 0 300 200"
-              className="text-white/30 fill-current"
+              className="text-white/40 fill-current"
             >
               <rect x="20" y="80" width="40" height="120" />
               <rect x="70" y="60" width="35" height="140" />
@@ -229,66 +223,85 @@ export default function HomePage() {
               </div>
 
               {/* Search Bar */}
-              <div className="bg-white rounded-2xl p-4 shadow-2xl">
-                <form onSubmit={handleSearch} className="space-y-4">
+              <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
+                <form onSubmit={handleSearch} className="space-y-6">
                   {/* Main Search Row */}
-                  <div className="flex gap-2">
-                    <select
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="px-4 py-4 bg-gray-50 rounded-xl border-0 text-gray-700 font-medium min-w-[120px] focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="">Select City</option>
-                      <option value="Delhi">Delhi</option>
-                      <option value="Mumbai">Mumbai</option>
-                      <option value="Bangalore">Bangalore</option>
-                      <option value="Pune">Pune</option>
-                      <option value="Chennai">Chennai</option>
-                      <option value="Hyderabad">Hyderabad</option>
-                      <option value="Kolkata">Kolkata</option>
-                    </select>
+                  <div className="flex gap-4">
+                    <div className="w-32">
+                      <Select value={location} onValueChange={setLocation}>
+                        <SelectTrigger className="w-full h-12 bg-gray-50/50 border-0 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white">
+                          <SelectValue placeholder="Select City" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Popular Cities</SelectLabel>
+                            <SelectItem value="Delhi">Delhi</SelectItem>
+                            <SelectItem value="Mumbai">Mumbai</SelectItem>
+                            <SelectItem value="Bangalore">Bangalore</SelectItem>
+                            <SelectItem value="Pune">Pune</SelectItem>
+                            <SelectItem value="Chennai">Chennai</SelectItem>
+                            <SelectItem value="Hyderabad">Hyderabad</SelectItem>
+                            <SelectItem value="Kolkata">Kolkata</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     <div className="flex-1 relative">
                       <input
                         type="text"
                         placeholder="Search for locality, landmark, project, or builder"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-4 py-4 bg-gray-50 rounded-xl border-0 text-gray-700 placeholder-gray-500 focus:ring-2 focus:ring-primary"
+                        className="w-full h-12 px-4 bg-gray-50/50 rounded-xl border text-gray-700 placeholder-gray-500 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white"
                       />
+
                     </div>
+
                     <Button
                       type="submit"
-                      className="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="h-12 px-8 bg-gradient-to-r from-primary to-primary/90 hover:to-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       Search
                     </Button>
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex gap-2">
-                    <select
-                      value={propertyType}
-                      onChange={(e) => setPropertyType(e.target.value)}
-                      className="px-4 py-3 bg-gray-50 rounded-xl border-0 text-gray-700 font-medium focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="">Property Type</option>
-                      <option value="apartment">Apartment</option>
-                      <option value="house">House</option>
-                      <option value="villa">Villa</option>
-                      <option value="commercial">Commercial</option>
-                      <option value="plot">Plot</option>
-                    </select>
-                    <select
-                      value={priceRange}
-                      onChange={(e) => setPriceRange(e.target.value)}
-                      className="px-4 py-3 bg-gray-50 rounded-xl border-0 text-gray-700 font-medium focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="">Budget Range</option>
-                      <option value="0-25">Under ₹25 Lakhs</option>
-                      <option value="25-50">₹25-50 Lakhs</option>
-                      <option value="50-100">₹50 Lakhs - ₹1 Crore</option>
-                      <option value="100+">Above ₹1 Crore</option>
-                    </select>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <Select value={propertyType} onValueChange={setPropertyType}>
+                        <SelectTrigger className="w-full h-10 bg-gray-50/50 border-0 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white">
+                          <SelectValue placeholder="Property Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Property Types</SelectLabel>
+                            <SelectItem value="apartment">Apartment</SelectItem>
+                            <SelectItem value="house">House</SelectItem>
+                            <SelectItem value="villa">Villa</SelectItem>
+                            <SelectItem value="commercial">Commercial</SelectItem>
+                            <SelectItem value="plot">Plot</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex-1">
+                      <Select value={priceRange} onValueChange={setPriceRange}>
+                        <SelectTrigger className="w-full h-10 bg-gray-50/50 border-0 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white">
+                          <SelectValue placeholder="Budget Range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Budget Range</SelectLabel>
+                            <SelectItem value="0-25">Under ₹25 Lakhs</SelectItem>
+                            <SelectItem value="25-50">₹25-50 Lakhs</SelectItem>
+                            <SelectItem value="50-100">₹50 Lakhs - ₹1 Crore</SelectItem>
+                            <SelectItem value="100+">Above ₹1 Crore</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -765,10 +778,9 @@ export default function HomePage() {
                             <MapPin className="h-4 w-4 mr-1" />
                             <span className="line-clamp-1">
                               {property.location ||
-                                `${
-                                  property.locality
-                                    ? property.locality + ", "
-                                    : ""
+                                `${property.locality
+                                  ? property.locality + ", "
+                                  : ""
                                 }${property.city}, ${property.state}`}
                             </span>
                           </div>
@@ -810,8 +822,8 @@ export default function HomePage() {
                               {property.listingType === "SALE"
                                 ? "For Sale"
                                 : property.listingType === "RENT"
-                                ? "For Rent"
-                                : "For Lease"}
+                                  ? "For Rent"
+                                  : "For Lease"}
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -881,13 +893,19 @@ export default function HomePage() {
 
       {/* Premium Testimonials Section */}
       <motion.section
-        className="py-24 bg-gradient-to-br from-accent to-primary/10"
+        className="py-24 bg-gradient-to-br from-accent/5 to-primary/5 relative overflow-hidden"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 right-0 w-72 h-72 bg-primary/5 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-20 left-0 w-72 h-72 bg-accent/5 rounded-full filter blur-3xl"></div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             className="mb-16"
             initial={{ y: 30, opacity: 0 }}
@@ -895,10 +913,14 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl font-bold font-display text-text-primary mb-6">
+            <span className="text-primary font-semibold mb-4 block">
+              TESTIMONIALS
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold font-display   py-4 bg-gradient-to-r from-primary to-purple-500
+             bg-clip-text text-transparent">
               What Our Clients Say
             </h2>
-            <p className="text-xl text-text-secondary">
+            <p className="text-xl text-text-secondary/80">
               Real experiences from real people who found their dream homes
             </p>
           </motion.div>
@@ -908,55 +930,123 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="glass backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-premium-lg border border-white/20"
+            className="relative"
           >
-            <div className="flex justify-center mb-6">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className="h-6 w-6 text-warning fill-current mx-1"
-                />
-              ))}
-            </div>
+            <div className="glass backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 relative z-10 overflow-hidden">
+              {/* Decorative elements */}
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full filter blur-2xl"></div>
+              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/10 rounded-full filter blur-2xl"></div>
 
-            <blockquote className="text-xl md:text-2xl text-text-primary mb-8 italic leading-relaxed">
-              &quot;{testimonials[currentTestimonial].content}&quot;
-            </blockquote>
+              <div className="relative">
+                <div className="flex justify-center mb-8">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="h-7 w-7 text-warning fill-current mx-1 animate-pulse"
+                      style={{ animationDelay: `${i * 200}ms` }}
+                    />
+                  ))}
+                </div>
 
-            <div className="flex items-center justify-center">
-              <Image
-                src={testimonials[currentTestimonial].image}
-                alt={testimonials[currentTestimonial].name}
-                className="w-16 h-16 rounded-full object-cover mr-4 ring-4 ring-primary/20"
-                width={64}
-                height={64}
-              />
-              <div className="text-left">
-                <p className="font-bold text-lg text-text-primary">
-                  {testimonials[currentTestimonial].name}
-                </p>
-                <p className="text-primary font-medium">
-                  {testimonials[currentTestimonial].role}
-                </p>
-                <p className="text-text-secondary text-sm">
-                  {testimonials[currentTestimonial].location}
-                </p>
+                <blockquote className="text-xl md:text-2xl text-text-primary mb-10 italic leading-relaxed relative">
+                  <span className="absolute -top-6 -left-4 text-6xl text-primary/20">
+                    &ldquo;
+                  </span>
+                  <span className="relative z-10">
+                    {testimonials[currentTestimonial].content}
+                  </span>
+                  <span className="absolute -bottom-6 -right-4 text-6xl text-primary/20">
+                    &rdquo;
+                  </span>
+                </blockquote>
+
+                <div className="flex items-center justify-center">
+                  <div className="relative">
+                    <Image
+                      src={testimonials[currentTestimonial].image}
+                      alt={testimonials[currentTestimonial].name}
+                      className="w-20 h-20 rounded-full object-cover ring-4 ring-primary/20"
+                      width={80}
+                      height={80}
+                    />
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success rounded-full flex items-center justify-center ring-4 ring-white">
+                      <CheckCircle className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-left ml-6">
+                    <h4 className="font-bold text-xl text-text-primary">
+                      {testimonials[currentTestimonial].name}
+                    </h4>
+                    <p className="text-primary/80 font-medium mb-1">
+                      {testimonials[currentTestimonial].role}
+                    </p>
+                    <p className="text-text-secondary text-sm flex items-center">
+                      <MapPin className="w-4 h-4 mr-1 text-primary/60" />
+                      {testimonials[currentTestimonial].location}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Testimonial indicators */}
-            <div className="flex justify-center mt-8 space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial ? "bg-blue-600" : "bg-gray-300"
-                  }`}
-                />
-              ))}
+            {/* Navigation buttons */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between items-center z-20 pointer-events-none">
+              <button
+                onClick={() =>
+                  setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+                }
+                className="p-3 rounded-full bg-white/80 shadow-lg backdrop-blur-sm border border-white/20 text-primary hover:bg-white transition-all duration-300 pointer-events-auto"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
+                className="p-3 rounded-full bg-white/80 shadow-lg backdrop-blur-sm border border-white/20 text-primary hover:bg-white transition-all duration-300 pointer-events-auto"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
             </div>
           </motion.div>
+
+          {/* Testimonial indicators */}
+          <div className="flex justify-center mt-8 space-x-3">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentTestimonial(index)}
+                className={`w-12 h-1.5 rounded-full transition-all duration-300 ${index === currentTestimonial
+                  ? "bg-primary w-20"
+                  : "bg-gray-300 hover:bg-primary/50"
+                  }`}
+              />
+            ))}
+          </div>
         </div>
       </motion.section>
 
