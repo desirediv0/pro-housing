@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { X, Image, Video, Loader2 } from "lucide-react";
+import { X, Image as ImageIcon, Video, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { adminAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 const SidebarFileUpload = ({
   value = "",
@@ -87,10 +88,13 @@ const SidebarFileUpload = ({
             </div>
           ) : (
             <div className="aspect-square bg-gray-100">
-              <img
+              <Image
                 src={value}
                 alt="Uploaded file"
                 className="w-full h-full object-cover"
+                loading="lazy"
+                width={300}
+                height={300}
               />
             </div>
           )}
@@ -122,11 +126,10 @@ const SidebarFileUpload = ({
         {...getRootProps()}
         className={`
                     border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-                    ${
-                      isDragActive || dragActive
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-300 hover:border-gray-400"
-                    }
+                    ${isDragActive || dragActive
+            ? "border-blue-500 bg-blue-50"
+            : "border-gray-300 hover:border-gray-400"
+          }
                     ${uploading ? "pointer-events-none opacity-50" : ""}
                 `}
       >
@@ -141,7 +144,7 @@ const SidebarFileUpload = ({
             {type === "video" ? (
               <Video className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             ) : (
-              <Image className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <ImageIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             )}
             {isDragActive || dragActive ? (
               <p className="text-blue-600">Drop the {type} here...</p>
