@@ -562,7 +562,7 @@ export default function HomePage() {
         </div>
       </motion.section>
 
-      {/* Housing's Top Picks Section */}
+      {/* Housing&apos;s Top Picks Section */}
       <motion.section
         className="py-20 bg-white"
         initial={{ opacity: 0, y: 50 }}
@@ -573,7 +573,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
             <h2 className="text-4xl font-bold text-gray-800 mb-2">
-              Housing's top picks
+              Housing&apos;s top picks
             </h2>
             <p className="text-gray-600 text-lg">
               Explore top living options with us
@@ -813,7 +813,7 @@ export default function HomePage() {
                   <Card className="border-0 shadow-premium hover:shadow-premium-lg transition-all duration-500 overflow-hidden">
                     <div className="relative">
                       <div className="aspect-video relative overflow-hidden">
-                        <img
+                        <Image
                           src={
                             property.mainImage ||
                             property.images?.[0]?.url ||
@@ -821,6 +821,8 @@ export default function HomePage() {
                           }
                           alt={property.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          width={400}
+                          height={400}
                         />
 
                         {/* Highlight Badge */}

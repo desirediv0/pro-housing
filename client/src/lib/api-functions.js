@@ -88,4 +88,5 @@ export const publicAPI = {
   getSidebarContent: () => apiClient.get("/sidebar/public"),
 };
 
-export default { adminAPI, publicAPI };
+const apiExports = { adminAPI, publicAPI };
+export default apiExports;

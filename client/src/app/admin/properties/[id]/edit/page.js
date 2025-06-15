@@ -12,7 +12,7 @@ import {
   MapPin,
   Home,
   DollarSign,
-  Image,
+  Image as ImageIcon,
   Users,
   Settings,
   Phone,
@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
+import Image from "next/image";
 import toast from "react-hot-toast";
 import LocationPicker from "@/components/ui/LocationPicker";
 
@@ -1044,7 +1045,7 @@ export default function EditProperty() {
         <Card className="shadow-lg border-0 bg-white">
           <CardHeader className="bg-gradient-to-r from-teal-50 to-cyan-50 border-b border-gray-100">
             <CardTitle className="flex items-center text-gray-900">
-              <Image className="h-5 w-5 mr-2 text-teal-600" />
+              <ImageIcon className="h-5 w-5 mr-2 text-teal-600" />
               Property Media
             </CardTitle>
           </CardHeader>
@@ -1059,10 +1060,11 @@ export default function EditProperty() {
                   {existingImages.map((image) => (
                     <div key={image.id} className="relative group">
                       <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                        <img
+                        <Image
                           src={image.url}
-                          alt="Property"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          alt={`Property image ${image.id}`}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200" />
                         <button

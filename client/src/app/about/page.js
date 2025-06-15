@@ -262,7 +262,7 @@ export default function AboutPage() {
                 </p>
                 <p>
                   What started as a small team of passionate real estate
-                  professionals has grown into one of India's most trusted
+                  professionals has grown into one of India&apos;s most trusted
                   property platforms, serving thousands of customers across 50+
                   cities.
                 </p>

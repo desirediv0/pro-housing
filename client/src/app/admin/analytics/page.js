@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { adminAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function AdminAnalytics() {
   const [analytics, setAnalytics] = useState({
@@ -170,10 +171,12 @@ export default function AdminAnalytics() {
         {rank}
       </div>
       <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
-        <img
+        <Image
           src={property.mainImage || "/placeholder-property.jpg"}
           alt={property.title}
           className="w-full h-full object-cover"
+          width={64}
+          height={64}
         />
       </div>
       <div className="flex-1 min-w-0">
@@ -395,10 +398,12 @@ export default function AdminAnalytics() {
                     className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
-                      <img
+                      <Image
                         src={property.mainImage || "/placeholder-property.jpg"}
                         alt={property.title}
                         className="w-full h-full object-cover"
+                        width={64}
+                        height={64}
                       />
                     </div>
                     <div className="flex-1 min-w-0">

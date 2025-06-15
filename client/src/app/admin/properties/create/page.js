@@ -567,11 +567,10 @@ export default function CreateProperty() {
                   return (
                     <div
                       key={amenity.key}
-                      className={`relative rounded-lg border-2 transition-all duration-200 cursor-pointer ${
-                        formData[amenity.key]
+                      className={`relative rounded-lg border-2 transition-all duration-200 cursor-pointer ${formData[amenity.key]
                           ? "border-indigo-500 bg-indigo-50"
                           : "border-gray-200 bg-white hover:border-gray-300"
-                      }`}
+                        }`}
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,

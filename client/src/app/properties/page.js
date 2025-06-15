@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -24,6 +24,7 @@ import { publicAPI } from "@/lib/api-functions";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { SimpleAreaDisplay } from "@/components/ui/area-converter";
+import Image from "next/image";
 
 export default function PropertiesPage() {
   const searchParams = useSearchParams();
@@ -52,6 +53,35 @@ export default function PropertiesPage() {
     limit: 12,
   });
 
+  const fetchProperties = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = {
+        page: filters.page,
+        limit: 12,
+        ...filters,
+      };
+
+      // Remove empty filters
+      Object.keys(params).forEach((key) => {
+        if (!params[key]) delete params[key];
+      });
+
+      const response = await publicAPI.getAllProperties(params);
+
+      // Handle API response
+      const data = response.data.data || response.data || {};
+      setProperties(data.data || data || []);
+      setTotalPages(data.pagination?.pages || 1);
+      setTotalProperties(data.pagination?.total || 0);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+      setProperties([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
+
   // Watch for URL parameter changes and update filters
   useEffect(() => {
     const newFilters = {
@@ -75,36 +105,7 @@ export default function PropertiesPage() {
 
   useEffect(() => {
     fetchProperties();
-  }, [filters]);
-
-  const fetchProperties = async () => {
-    setLoading(true);
-    try {
-      const params = {
-        page: filters.page,
-        limit: 12,
-        ...filters,
-      };
-
-      // Remove empty filters
-      Object.keys(params).forEach((key) => {
-        if (!params[key]) delete params[key];
-      });
-      ``;
-      const response = await publicAPI.getAllProperties(params);
-
-      // Handle API response
-      const data = response.data.data || response.data || {};
-      setProperties(data.data || data || []);
-      setTotalPages(data.pagination?.pages || 1);
-      setTotalProperties(data.pagination?.total || 0);
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-      setProperties([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchProperties]);
 
   const updateURL = (newFilters) => {
     const params = new URLSearchParams();
@@ -452,8 +453,8 @@ export default function PropertiesPage() {
                     No Properties Found
                   </h3>
                   <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                    We couldn't find any properties matching your criteria. Try
-                    adjusting your search filters or browse all available
+                    We couldn&apos;t find any properties matching your criteria.
+                    Try adjusting your search filters or browse all available
                     properties.
                   </p>
                   <Button
@@ -484,8 +485,8 @@ export default function PropertiesPage() {
                       <div className="relative overflow-hidden">
                         {/* Enhanced Image Handling */}
                         {property.mainImage ||
-                        (property.images && property.images.length > 0) ? (
-                          <img
+                          (property.images && property.images.length > 0) ? (
+                          <Image
                             src={
                               property.mainImage ||
                               property.images[0]?.url ||
@@ -498,17 +499,18 @@ export default function PropertiesPage() {
                               e.target.nextElementSibling.style.display =
                                 "flex";
                             }}
+                            width={400}
+                            height={400}
                           />
                         ) : null}
 
                         {/* Fallback Image */}
                         <div
-                          className={`w-full h-64 bg-gradient-to-br from-[#5E4CBB]/10 to-[#7c6bc9]/20 flex items-center justify-center ${
-                            property.mainImage ||
+                          className={`w-full h-64 bg-gradient-to-br from-[#5E4CBB]/10 to-[#7c6bc9]/20 flex items-center justify-center ${property.mainImage ||
                             (property.images && property.images.length > 0)
-                              ? "hidden"
-                              : "flex"
-                          }`}
+                            ? "hidden"
+                            : "flex"
+                            }`}
                         >
                           <div className="text-center">
                             <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-2" />
@@ -552,12 +554,10 @@ export default function PropertiesPage() {
                           <MapPin className="h-5 w-5 mr-2 text-[#5E4CBB] flex-shrink-0" />
                           <span className="text-sm line-clamp-1 font-medium">
                             {property.location ||
-                              `${
-                                property.locality
-                                  ? property.locality + ", "
-                                  : ""
-                              }${property.city || ""}${
-                                property.state ? ", " + property.state : ""
+                              `${property.locality
+                                ? property.locality + ", "
+                                : ""
+                              }${property.city || ""}${property.state ? ", " + property.state : ""
                               }` ||
                               "Location not specified"}
                           </span>
@@ -685,11 +685,10 @@ export default function PropertiesPage() {
                         }
                         size="sm"
                         onClick={() => handleFilterChange("page", pageNum)}
-                        className={`w-12 h-12 rounded-xl font-semibold transition-all duration-200 ${
-                          filters.page === pageNum
-                            ? "bg-[#5E4CBB] hover:bg-[#4a3d99] text-white shadow-lg"
-                            : "border-2 border-gray-200 hover:border-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white"
-                        }`}
+                        className={`w-12 h-12 rounded-xl font-semibold transition-all duration-200 ${filters.page === pageNum
+                          ? "bg-[#5E4CBB] hover:bg-[#4a3d99] text-white shadow-lg"
+                          : "border-2 border-gray-200 hover:border-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white"
+                          }`}
                       >
                         {pageNum}
                       </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { publicAPI } from "@/lib/api-functions";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { AreaConverter } from "@/components/ui/area-converter";
+import Image from "next/image";
 
 const amenityIcons = {
   furnished: {
@@ -114,14 +115,7 @@ export default function PropertyDetail() {
     message: "",
   });
 
-  useEffect(() => {
-    if (params.id) {
-      fetchProperty();
-      fetchSidebarContent();
-    }
-  }, [params.id]);
-
-  const fetchProperty = async () => {
+  const fetchProperty = useCallback(async () => {
     try {
       setLoading(true);
       const response = await publicAPI.getProperty(params.id);
@@ -133,22 +127,29 @@ export default function PropertyDetail() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id, router]);
 
-  const fetchSidebarContent = async () => {
+  const fetchSidebarContent = useCallback(async () => {
     try {
       const response = await publicAPI.getSidebarContent();
       const content = Array.isArray(response.data.data)
         ? response.data.data
         : Array.isArray(response.data)
-        ? response.data
-        : [];
+          ? response.data
+          : [];
       setSidebarContent(content);
     } catch (error) {
       console.error("Error fetching sidebar content:", error);
       setSidebarContent([]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (params.id) {
+      fetchProperty();
+      fetchSidebarContent();
+    }
+  }, [params.id, fetchProperty, fetchSidebarContent]);
 
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
@@ -248,7 +249,8 @@ export default function PropertyDetail() {
             Property Not Found
           </h1>
           <p className="text-text-secondary mb-6">
-            The property you're looking for doesn't exist or has been removed.
+            The property you&apos;re looking for doesn&apos;t exist or has been
+            removed.
           </p>
           <Link href="/properties">
             <Button className="gradient-primary hover:shadow-glow text-white px-6 py-2 rounded-xl shadow-premium">
@@ -321,10 +323,12 @@ export default function PropertyDetail() {
                 <CardContent className="p-0">
                   <div className="relative">
                     <div className="aspect-video relative group">
-                      <img
+                      <Image
                         src={displayImage}
                         alt={property.title}
                         className="w-full h-full object-cover"
+                        width={400}
+                        height={400}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="absolute top-4 right-4 flex space-x-2">
@@ -342,32 +346,34 @@ export default function PropertyDetail() {
                         <div className="flex space-x-3 overflow-x-auto pb-2">
                           <button
                             onClick={() => setActiveImageIndex(-1)}
-                            className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${
-                              activeImageIndex === -1
+                            className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${activeImageIndex === -1
                                 ? "border-[#5E4CBB] shadow-lg scale-105"
                                 : "border-gray-200 hover:border-[#5E4CBB]/50"
-                            }`}
+                              }`}
                           >
-                            <img
+                            <Image
                               src={property.mainImage}
                               alt="Main"
                               className="w-full h-full object-cover"
+                              width={400}
+                              height={400}
                             />
                           </button>
                           {property.images.map((image, index) => (
                             <button
                               key={image.id}
                               onClick={() => setActiveImageIndex(index)}
-                              className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${
-                                index === activeImageIndex
+                              className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${index === activeImageIndex
                                   ? "border-[#5E4CBB] shadow-lg scale-105"
                                   : "border-gray-200 hover:border-[#5E4CBB]/50"
-                              }`}
+                                }`}
                             >
-                              <img
+                              <Image
                                 src={image.url}
                                 alt={`View ${index + 1}`}
                                 className="w-full h-full object-cover"
+                                width={400}
+                                height={400}
                               />
                             </button>
                           ))}
@@ -745,19 +751,15 @@ export default function PropertyDetail() {
                             <div className="bg-white p-4 rounded-xl shadow-inner">
                               <div className="aspect-video rounded-lg overflow-hidden">
                                 <iframe
-                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${
-                                    property.longitude
-                                  }!3d${
-                                    property.latitude
-                                  }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
-                                    property.latitude
-                                  ).toFixed(6)}°${
-                                    property.latitude >= 0 ? "N" : "S"
-                                  }%20${Math.abs(property.longitude).toFixed(
-                                    6
-                                  )}°${
-                                    property.longitude >= 0 ? "E" : "W"
-                                  }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
+                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${property.longitude
+                                    }!3d${property.latitude
+                                    }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
+                                      property.latitude
+                                    ).toFixed(6)}°${property.latitude >= 0 ? "N" : "S"
+                                    }%20${Math.abs(property.longitude).toFixed(
+                                      6
+                                    )}°${property.longitude >= 0 ? "E" : "W"
+                                    }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
                                   width="100%"
                                   height="100%"
                                   style={{ border: 0 }}
@@ -782,44 +784,44 @@ export default function PropertyDetail() {
                     {(property.contactName ||
                       property.contactPhone ||
                       property.contactEmail) && (
-                      <div className="bg-gradient-to-r from-[#5E4CBB]/5 to-[#7B68D9]/5 p-6 rounded-2xl border border-[#5E4CBB]/10">
-                        <h3 className="text-xl font-bold mb-4 text-gray-900">
-                          Contact Information
-                        </h3>
-                        <div className="space-y-4">
-                          {property.contactName && (
-                            <div className="flex items-center gap-3 p-3 bg-white rounded-xl">
-                              <User className="h-5 w-5 text-[#5E4CBB]" />
-                              <span className="font-medium text-gray-800">
-                                {property.contactName}
-                              </span>
-                            </div>
-                          )}
-                          {property.contactPhone && (
-                            <a
-                              href={`tel:${property.contactPhone}`}
-                              className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-blue-50 transition-colors group"
-                            >
-                              <Phone className="h-5 w-5 text-blue-600" />
-                              <span className="font-medium text-blue-600 group-hover:text-blue-700">
-                                {property.contactPhone}
-                              </span>
-                            </a>
-                          )}
-                          {property.contactEmail && (
-                            <a
-                              href={`mailto:${property.contactEmail}`}
-                              className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-green-50 transition-colors group"
-                            >
-                              <Mail className="h-5 w-5 text-green-600" />
-                              <span className="font-medium text-green-600 group-hover:text-green-700">
-                                {property.contactEmail}
-                              </span>
-                            </a>
-                          )}
+                        <div className="bg-gradient-to-r from-[#5E4CBB]/5 to-[#7B68D9]/5 p-6 rounded-2xl border border-[#5E4CBB]/10">
+                          <h3 className="text-xl font-bold mb-4 text-gray-900">
+                            Contact Information
+                          </h3>
+                          <div className="space-y-4">
+                            {property.contactName && (
+                              <div className="flex items-center gap-3 p-3 bg-white rounded-xl">
+                                <User className="h-5 w-5 text-[#5E4CBB]" />
+                                <span className="font-medium text-gray-800">
+                                  {property.contactName}
+                                </span>
+                              </div>
+                            )}
+                            {property.contactPhone && (
+                              <a
+                                href={`tel:${property.contactPhone}`}
+                                className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-blue-50 transition-colors group"
+                              >
+                                <Phone className="h-5 w-5 text-blue-600" />
+                                <span className="font-medium text-blue-600 group-hover:text-blue-700">
+                                  {property.contactPhone}
+                                </span>
+                              </a>
+                            )}
+                            {property.contactEmail && (
+                              <a
+                                href={`mailto:${property.contactEmail}`}
+                                className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-green-50 transition-colors group"
+                              >
+                                <Mail className="h-5 w-5 text-green-600" />
+                                <span className="font-medium text-green-600 group-hover:text-green-700">
+                                  {property.contactEmail}
+                                </span>
+                              </a>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -864,17 +866,15 @@ export default function PropertyDetail() {
         className="lg:hidden fixed right-0 top-1/2 -translate-y-1/2 bg-[#5E4CBB] text-white p-3 rounded-l-xl shadow-lg hover:bg-[#4A3A9B] transition-all z-40"
       >
         <ChevronLeft
-          className={`h-6 w-6 transition-transform ${
-            sidebarOpen ? "rotate-180" : ""
-          }`}
+          className={`h-6 w-6 transition-transform ${sidebarOpen ? "rotate-180" : ""
+            }`}
         />
       </button>
 
       {/* Mobile Sliding Sidebar */}
       <div
-        className={`lg:hidden fixed top-0 right-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-30 ${
-          sidebarOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`lg:hidden fixed top-0 right-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-30 ${sidebarOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="h-full overflow-y-auto p-6">
           <SidebarContent content={sidebarContent} />

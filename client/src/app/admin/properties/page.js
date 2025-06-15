@@ -33,7 +33,6 @@ import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import useAdminProtection from "@/hooks/useAdminProtection";
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState([]);

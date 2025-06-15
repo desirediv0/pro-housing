@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MapPin, Search, Navigation, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
@@ -26,26 +26,56 @@ export function LocationPicker({
   const markerRef = useRef(null);
   const mapContainerRef = useRef(null);
 
-  // Update selectedLocation when props change
-  useEffect(() => {
-    setSelectedLocation({
-      address: address,
-      lat: parseFloat(latitude) || null,
-      lng: parseFloat(longitude) || null,
-    });
-    setSearchQuery(address);
-  }, [address, latitude, longitude]);
+  // Initialize map function with useCallback
+  const initializeMap = useCallback(() => {
+    if (!window.L || !mapContainerRef.current || mapRef.current) return;
 
-  // Load Leaflet when modal opens
-  useEffect(() => {
-    if (isOpen && !window.L && !mapLoaded) {
-      loadLeaflet();
-    } else if (isOpen && window.L && !mapRef.current) {
-      setTimeout(initializeMap, 100);
+    try {
+      // Default to Delhi center if no coordinates provided
+      const defaultLat = selectedLocation.lat || 28.6139;
+      const defaultLng = selectedLocation.lng || 77.209;
+
+      // Create map instance
+      const map = window.L.map(mapContainerRef.current, {
+        center: [defaultLat, defaultLng],
+        zoom: 13,
+        zoomControl: true,
+        scrollWheelZoom: true,
+      });
+
+      mapRef.current = map;
+
+      // Add OpenStreetMap tiles
+      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Add marker
+      const marker = window.L.marker([defaultLat, defaultLng], {
+        draggable: true,
+      }).addTo(map);
+
+      markerRef.current = marker;
+
+      // Handle marker drag events
+      marker.on("dragend", () => {
+        const position = marker.getLatLng();
+        reverseGeocode(position.lat, position.lng);
+      });
+
+      // Handle map click events
+      map.on("click", (e) => {
+        marker.setLatLng(e.latlng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+      });
+    } catch (error) {
+      console.error("Error initializing map:", error);
     }
-  }, [isOpen]);
+  }, [selectedLocation]);
 
-  const loadLeaflet = () => {
+  // Load Leaflet function with useCallback
+  const loadLeaflet = useCallback(() => {
     // Load CSS
     if (!document.querySelector('link[href*="leaflet.css"]')) {
       const css = document.createElement("link");
@@ -71,59 +101,26 @@ export function LocationPicker({
       };
       document.head.appendChild(script);
     }
-  };
+  }, [initializeMap]);
 
-  const initializeMap = () => {
-    if (!window.L || !mapContainerRef.current || mapRef.current) return;
+  // Update selectedLocation when props change
+  useEffect(() => {
+    setSelectedLocation({
+      address: address,
+      lat: parseFloat(latitude) || null,
+      lng: parseFloat(longitude) || null,
+    });
+    setSearchQuery(address);
+  }, [address, latitude, longitude]);
 
-    try {
-      // Default to Delhi center if no coordinates provided
-      const defaultLat = selectedLocation.lat || 28.6139;
-      const defaultLng = selectedLocation.lng || 77.209;
-
-      // Create map instance
-      const map = window.L.map(mapContainerRef.current, {
-        center: [defaultLat, defaultLng],
-        zoom: 13,
-        zoomControl: true,
-        scrollWheelZoom: true,
-      });
-
-      // Add OpenStreetMap tiles
-      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-        maxZoom: 19,
-      }).addTo(map);
-
-      // Add marker
-      const marker = window.L.marker([defaultLat, defaultLng], {
-        draggable: true,
-      }).addTo(map);
-
-      // Handle marker drag
-      marker.on("dragend", function (e) {
-        const position = e.target.getLatLng();
-        updateLocation(position.lat, position.lng);
-      });
-
-      // Handle map click
-      map.on("click", function (e) {
-        const { lat, lng } = e.latlng;
-        marker.setLatLng([lat, lng]);
-        updateLocation(lat, lng);
-      });
-
-      mapRef.current = map;
-      markerRef.current = marker;
-
-      // Force resize after a short delay
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 200);
-    } catch (error) {
-      console.error("Error initializing map:", error);
+  // Load Leaflet when modal opens
+  useEffect(() => {
+    if (isOpen && !window.L && !mapLoaded) {
+      loadLeaflet();
+    } else if (isOpen && window.L && !mapRef.current) {
+      setTimeout(initializeMap, 100);
     }
-  };
+  }, [isOpen, mapLoaded, loadLeaflet, initializeMap]);
 
   const updateLocation = async (lat, lng) => {
     try {

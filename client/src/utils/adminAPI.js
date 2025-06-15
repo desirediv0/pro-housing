@@ -7,29 +7,22 @@ class AdminAPI {
   }
 
   getAuthHeaders() {
-    const accessTokenCookie = this.getCookie("accessToken");
-    const adminTokenCookie = this.getCookie("adminToken");
-    const refreshTokenCookie = this.getCookie("refreshToken");
+    const accessToken = this.getCookie("accessToken");
+    const adminToken = this.getCookie("adminToken");
 
-    const token = accessTokenCookie || adminTokenCookie || refreshTokenCookie;
+    console.log("Tokens found:", {
+      accessToken: !!accessToken,
+      adminToken: !!adminToken,
+    });
 
-    // Debug logging (only in development)
-    if (process.env.NODE_ENV === "development") {
-      console.log("🔍 Auth Debug:", {
-        accessTokenCookie: accessTokenCookie ? "Found" : "Not found",
-        adminTokenCookie: adminTokenCookie ? "Found" : "Not found",
-        refreshTokenCookie: refreshTokenCookie ? "Found" : "Not found",
-        selectedToken: token ? "Found" : "Not found",
-        tokenPreview: token ? token.substring(0, 20) + "..." : "None",
-      });
+    const token = accessToken || adminToken;
 
-      if (!token) {
-        console.error("❌ No authentication token found!");
-      }
+    if (!token) {
+      console.warn("No authentication token found");
     }
 
     return {
-      Authorization: `Bearer ${token}`,
+      Authorization: token ? `Bearer ${token}` : "",
       "Content-Type": "application/json",
     };
   }
@@ -65,24 +58,37 @@ class AdminAPI {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
+    const headers = this.getAuthHeaders();
+
+    console.log("Request URL:", url);
+    console.log("Request Headers:", headers);
+
     const config = {
-      headers: this.getAuthHeaders(),
+      headers,
+      credentials: 'include', // Add this to include cookies
       ...options,
     };
 
     try {
+      console.log("Making request with config:", config);
       const response = await fetch(url, config);
+      console.log("Response Status:", response.status);
+
+      // Try to get the response body regardless of status
+      const responseData = await response.json().catch(() => ({}));
+      console.log("Response Data:", responseData);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
-        );
+        throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      return responseData;
     } catch (error) {
-      console.error("API Request failed:", error);
+      console.error("API Request failed:", {
+        error,
+        endpoint,
+        headers: config.headers,
+      });
       throw error;
     }
   }
@@ -310,7 +316,16 @@ class AdminAPI {
   async getAllInquiries(params = {}) {
     const queryParams = new URLSearchParams(params).toString();
     const endpoint = queryParams ? `/inquiries?${queryParams}` : "/inquiries";
-    return this.request(endpoint);
+    try {
+      const response = await this.request(endpoint);
+      if (!response.success || !response.data) {
+        throw new Error('Failed to fetch inquiries');
+      }
+      return response;
+    } catch (error) {
+      console.error('Error in getAllInquiries:', error);
+      throw error;
+    }
   }
 
   async getInquiryById(id) {
@@ -341,6 +356,21 @@ class AdminAPI {
     return this.request(`/inquiries/${id}/status`, {
       method: "PATCH",
       body: JSON.stringify({ status: "SPAM" }),
+    });
+  }
+
+  // Admin Profile Management
+  async updateProfile(profileData) {
+    return this.request("/admin/profile", {
+      method: "PUT",  // Changed from PATCH to PUT to match server
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  async updatePassword(passwordData) {
+    return this.request("/admin/change-password", {  // Updated endpoint to match server
+      method: "PUT",  // Changed from PATCH to PUT to match server
+      body: JSON.stringify(passwordData),
     });
   }
 }

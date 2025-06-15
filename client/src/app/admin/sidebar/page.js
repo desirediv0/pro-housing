@@ -11,7 +11,7 @@ import {
   Trash2,
   Save,
   RefreshCw,
-  Image,
+  Image as ImageIcon,
   Video,
   Phone,
   MessageCircle,
@@ -21,18 +21,16 @@ import {
   X,
   Edit,
   AlertCircle,
-  CheckCircle,
   Camera,
   Film,
   Globe,
-  Smartphone,
-  ExternalLink,
   Copy,
   Check,
   Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import adminAPI from "@/utils/adminAPI";
+import Image from "next/image";
 
 export default function SidebarContentManagement() {
   const [loading, setLoading] = useState(false);
@@ -388,10 +386,12 @@ export default function SidebarContentManagement() {
 
                     {formData.imageUrl ? (
                       <div className="relative group">
-                        <img
+                        <Image
                           src={formData.imageUrl}
                           alt="Uploaded"
                           className="w-full h-48 object-cover rounded-xl shadow-lg"
+                          width={64}
+                          height={64}
                         />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center space-x-4">
                           <Button
@@ -704,10 +704,12 @@ export default function SidebarContentManagement() {
                       {/* Media Preview */}
                       <div className="relative">
                         {content.imageUrl ? (
-                          <img
+                          <Image
                             src={content.imageUrl}
                             alt="Content"
                             className="w-full h-48 object-cover rounded-lg shadow-md"
+                            width={64}
+                            height={64}
                           />
                         ) : content.videoUrl ? (
                           <video
@@ -753,7 +755,7 @@ export default function SidebarContentManagement() {
 
                         {content.imageUrl && (
                           <div className="flex items-center space-x-2 text-sm text-gray-600">
-                            <Image className="h-4 w-4 text-blue-500" />
+                            <ImageIcon className="h-4 w-4 text-blue-500" />
                             <span className="truncate">Image attached</span>
                           </div>
                         )}

@@ -29,7 +29,7 @@ export function LocationPicker({
     if (isOpen && !mapRef.current) {
       initializeMap();
     }
-  }, [isOpen]);
+  }, [isOpen, initializeMap]);
 
   const initializeMap = () => {
     // Default to Delhi center if no coordinates provided
@@ -339,6 +339,7 @@ export function LocationPicker({
           />
           <script
             src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            async
             onLoad={() => initializeMap()}
           />
         </>

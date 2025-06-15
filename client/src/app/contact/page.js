@@ -29,6 +29,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/form";
 import { publicAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -281,8 +282,8 @@ export default function ContactPage() {
                   Send Us a Message
                 </CardTitle>
                 <p className="text-gray-600 mt-2">
-                  Fill out the form below and we'll get back to you as soon as
-                  possible.
+                  Fill out the form below and we&apos;ll get back to you as soon
+                  as possible.
                 </p>
               </CardHeader>
               <CardContent className="p-8">
@@ -613,8 +614,9 @@ export default function ContactPage() {
               What Our Clients Say
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Don't just take our word for it. Here's what our satisfied clients
-              have to say about their experience with Pro Housing.
+              Don&apos;t just take our word for it. Here&apos;s what our
+              satisfied clients have to say about their experience with Pro
+              Housing.
             </p>
           </div>
 
@@ -626,10 +628,12 @@ export default function ContactPage() {
               >
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    <img
+                    <Image
                       src={testimonial.image}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full mr-4 object-cover"
+                      width={64}
+                      height={64}
                     />
                     <div>
                       <h4 className="font-semibold text-gray-900">
@@ -652,7 +656,7 @@ export default function ContactPage() {
 
                   <Quote className="h-8 w-8 text-gray-300 mb-3" />
                   <p className="text-gray-700 italic leading-relaxed">
-                    "{testimonial.comment}"
+                    &apos;{testimonial.comment}&apos;
                   </p>
                 </CardContent>
               </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/form";
@@ -43,6 +43,7 @@ import { adminAPI } from "@/utils/adminAPI";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminInquiries() {
   const [inquiries, setInquiries] = useState([]);
@@ -81,77 +82,41 @@ export default function AdminInquiries() {
     { value: "SPAM", label: "Spam" },
   ];
 
-  useEffect(() => {
-    fetchInquiries();
-  }, [filters]);
-
-  const fetchInquiries = async () => {
+  const fetchInquiries = useCallback(async () => {
     try {
       setLoading(true);
-      console.log("Fetching inquiries with filters:", filters);
-
       const response = await adminAPI.getAllInquiries(filters);
-      console.log("API Response:", response);
 
-      // Handle different response structures
-      let inquiriesData, paginationData, statusStats;
+      if (response.success && response.data) {
+        const { inquiries, pagination, statusStats } = response.data;
 
-      if (response.data) {
-        // If response has data property
-        inquiriesData = response.data.inquiries || [];
-        paginationData = response.data.pagination || {};
-        statusStats = response.data.statusStats || {};
-      } else if (response.inquiries) {
-        // If response directly has inquiries
-        inquiriesData = response.inquiries || [];
-        paginationData = response.pagination || {};
-        statusStats = response.statusStats || {};
+        // Set inquiries
+        setInquiries(inquiries || []);
+
+        // Set pagination data
+        setPagination({
+          total: pagination?.totalInquiries || 0,
+          pages: pagination?.totalPages || 1,
+          currentPage: pagination?.currentPage || 1,
+          hasNext: pagination?.hasNext || false,
+          hasPrev: pagination?.hasPrev || false,
+        });
+
+        // Set status statistics
+        const total = pagination?.totalInquiries || 0;
+        setStats({
+          total,
+          PENDING: statusStats?.PENDING || 0,
+          RESPONDED: statusStats?.RESPONDED || 0,
+          CLOSED: statusStats?.CLOSED || 0,
+          SPAM: statusStats?.SPAM || 0,
+        });
       } else {
-        // Fallback
-        inquiriesData = [];
-        paginationData = {};
-        statusStats = {};
+        throw new Error(response.message || 'Failed to fetch inquiries');
       }
-
-      console.log("Processed data:", {
-        inquiriesData,
-        paginationData,
-        statusStats,
-      });
-
-      setInquiries(inquiriesData);
-      setPagination({
-        total: paginationData.totalInquiries || paginationData.total || 0,
-        pages: paginationData.totalPages || paginationData.pages || 1,
-        currentPage: paginationData.currentPage || 1,
-        hasNext: paginationData.hasNext || false,
-        hasPrev: paginationData.hasPrev || false,
-      });
-
-      // Calculate stats
-      const totalInquiries = Object.values(statusStats).reduce(
-        (a, b) => a + b,
-        0
-      );
-      setStats({
-        total: totalInquiries,
-        PENDING: statusStats.PENDING || 0,
-        RESPONDED: statusStats.RESPONDED || 0,
-        CLOSED: statusStats.CLOSED || 0,
-        SPAM: statusStats.SPAM || 0,
-      });
     } catch (error) {
       console.error("Error fetching inquiries:", error);
-      toast.error("Failed to load inquiries", {
-        icon: "❌",
-        style: {
-          borderRadius: "10px",
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-
-      // Fallback to empty state
+      toast.error(error.message || "Failed to fetch inquiries");
       setInquiries([]);
       setPagination({
         total: 0,
@@ -160,11 +125,21 @@ export default function AdminInquiries() {
         hasNext: false,
         hasPrev: false,
       });
-      setStats({ total: 0, PENDING: 0, RESPONDED: 0, CLOSED: 0, SPAM: 0 });
+      setStats({
+        total: 0,
+        PENDING: 0,
+        RESPONDED: 0,
+        CLOSED: 0,
+        SPAM: 0,
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchInquiries();
+  }, [fetchInquiries]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
@@ -262,11 +237,11 @@ export default function AdminInquiries() {
           prevInquiries.map((inquiry) =>
             inquiry.id === selectedInquiry.id
               ? {
-                  ...inquiry,
-                  status: "RESPONDED",
-                  adminResponse: responseText,
-                  respondedAt: new Date().toISOString(),
-                }
+                ...inquiry,
+                status: "RESPONDED",
+                adminResponse: responseText,
+                respondedAt: new Date().toISOString(),
+              }
               : inquiry
           )
         );
@@ -355,12 +330,14 @@ export default function AdminInquiries() {
             <div className="lg:col-span-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
               {/* Property Image */}
               <div className="relative w-full h-40 rounded-xl overflow-hidden mb-4 group">
-                <img
+                <Image
                   src={
                     inquiry.property?.mainImage || "/placeholder-property.jpg"
                   }
                   alt={inquiry.property?.title || "Property"}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  width={64}
+                  height={64}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute top-3 right-3">
@@ -881,7 +858,8 @@ export default function AdminInquiries() {
                   className="w-full resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  This response will be sent to the customer's email address.
+                  This response will be sent to the customer&apos;s email
+                  address.
                 </p>
               </div>
 
