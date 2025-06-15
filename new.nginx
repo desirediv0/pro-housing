@@ -49,18 +49,24 @@ server {
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
-    }
-
-    # Next.js Static Files
-    location /_next/static {
-        alias /root/pro-housing/client/.next/static;
+    }    # Next.js Static Files
+    location /_next {
+        alias /root/pro-housing/client/.next;
         expires 365d;
         access_log off;
         add_header Cache-Control "public, no-transform";
     }
 
-    # Public files (images, etc)
-    location /public {
+    # Handle static files
+    location /static {
+        alias /root/pro-housing/client/public;
+        expires 365d;
+        access_log off;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Handle public files
+    location /images {
         alias /root/pro-housing/client/public;
         expires 365d;
         access_log off;
