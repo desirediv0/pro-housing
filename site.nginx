@@ -51,20 +51,20 @@ server {
         
         # WebSocket support
         proxy_set_header Connection "upgrade";
-    }
-
-    # Next.js static files
-    location /_next/static {
-        alias /root/pro-housing/client/.next/static;
+    }    # Next.js static files
+    location /_next {
+        alias /root/pro-housing/client/.next;
         expires 365d;
         access_log off;
+        add_header Cache-Control "public, no-transform";
     }
 
-    # Static files
-    location /static {
+    # Public static files
+    location /public {
         alias /root/pro-housing/client/public;
         expires 365d;
         access_log off;
+        add_header Cache-Control "public, no-transform";
     }
 
     # Server API configuration

@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   swcMinify: true,
+  poweredByHeader: false,
+  compress: true,
+  reactStrictMode: true,
   experimental: {
     forceSwcTransforms: true,
   },
@@ -15,7 +18,9 @@ const nextConfig = {
         hostname: "images.unsplash.com",
       },
     ],
+    unoptimized: true,
   },
+  output: 'standalone',
 };
 
 export default nextConfig;
