@@ -1,24 +1,20 @@
-upstream nextjs_upstream {
-    server localhost:3001;
-    keepalive 64;
-}
-
-upstream api_upstream {
-    server localhost:4001;
-    keepalive 64;
-}
-
+# HTTP configuration for redirecting to HTTPS
 server {
     listen 80;
+    listen [::]:80;
     server_name prohousing.in www.prohousing.in;
+
+    # Redirect to HTTPS
     return 301 https://$host$request_uri;
 }
 
+# HTTPS configuration
 server {
     listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     server_name prohousing.in www.prohousing.in;
 
-    # SSL configuration
+    # SSL certificates
     ssl_certificate /etc/letsencrypt/live/prohousing.in/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/prohousing.in/privkey.pem;
     
@@ -32,7 +28,7 @@ server {
 
     # Next.js client configuration
     location / {
-        proxy_pass http://nextjs_upstream;
+        proxy_pass  http://localhost:3001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -69,7 +65,7 @@ server {
 
     # Server API configuration
     location /api {
-        proxy_pass http://api_upstream;
+        proxy_pass http://localhost:4001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
