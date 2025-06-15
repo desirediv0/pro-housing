@@ -302,7 +302,7 @@ const createGeneralInquiry = async (req, res) => {
 const updateInquiry = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, adminResponse } = req.body;
+    const { status, adminResponse, response } = req.body;
 
     // Validate status
     const validStatuses = ["PENDING", "RESPONDED", "CLOSED", "SPAM"];
@@ -328,12 +328,15 @@ const updateInquiry = async (req, res) => {
     // Prepare update data
     const updateData = {};
 
+    // Handle status update
     if (status) {
       updateData.status = status;
     }
 
-    if (adminResponse) {
-      updateData.adminResponse = adminResponse.trim();
+    // Handle admin response (from both adminResponse and response fields)
+    const responseText = adminResponse || response;
+    if (responseText) {
+      updateData.adminResponse = responseText.trim();
       updateData.respondedAt = new Date();
       // Auto-set status to RESPONDED if admin response is provided
       if (!status) {
@@ -353,6 +356,8 @@ const updateInquiry = async (req, res) => {
             price: true,
             propertyType: true,
             listingType: true,
+            city: true,
+            mainImage: true,
           },
         },
       },

@@ -44,6 +44,9 @@ export const createProperty = asyncHandler(async (req, res) => {
     powerBackup,
     highlight,
     expiresAt,
+    contactName,
+    contactPhone,
+    contactEmail,
   } = req.body;
 
   // Validate required fields
@@ -115,6 +118,10 @@ export const createProperty = asyncHandler(async (req, res) => {
     ...(latitude && { latitude: parseFloat(latitude) }),
     ...(longitude && { longitude: parseFloat(longitude) }),
     ...(mapLink && { mapLink: mapLink.trim() }),
+    // Contact fields - fix for null issue
+    ...(contactName && { contactName: contactName.trim() }),
+    ...(contactPhone && { contactPhone: contactPhone.trim() }),
+    ...(contactEmail && { contactEmail: contactEmail.trim() }),
     // Boolean fields
     furnished: furnished === "true",
     parking: parking === "true",
@@ -445,7 +452,9 @@ export const updateProperty = asyncHandler(async (req, res) => {
   // Handle main image update
   if (req.files && req.files.mainImage && req.files.mainImage.length > 0) {
     // Delete old main image
-    await deleteFromS3(existingProperty.mainImage);
+    if (existingProperty.mainImage) {
+      await deleteFromS3(existingProperty.mainImage);
+    }
 
     // Upload new main image
     const mainImageFile = req.files.mainImage[0];
@@ -456,6 +465,89 @@ export const updateProperty = asyncHandler(async (req, res) => {
       1920
     );
     updateData.mainImage = mainImageResult.url;
+  }
+
+  // Handle images to delete
+  if (req.body.imagesToDelete) {
+    try {
+      const imagesToDelete = JSON.parse(req.body.imagesToDelete);
+
+      // Delete images from S3
+      for (const image of imagesToDelete) {
+        if (image.url) {
+          await deleteFromS3(image.url);
+        }
+        // Delete from database
+        await prisma.propertyImage.delete({ where: { id: image.id } });
+      }
+    } catch (error) {
+      console.error("Error deleting images:", error);
+    }
+  }
+
+  // Handle videos to delete
+  if (req.body.videosToDelete) {
+    try {
+      const videosToDelete = JSON.parse(req.body.videosToDelete);
+
+      // Delete videos from S3
+      for (const video of videosToDelete) {
+        if (video.url) {
+          await deleteFromS3(video.url);
+        }
+        // Delete from database
+        await prisma.propertyVideo.delete({ where: { id: video.id } });
+      }
+    } catch (error) {
+      console.error("Error deleting videos:", error);
+    }
+  }
+
+  // Handle new images
+  if (req.files && req.files.images && req.files.images.length > 0) {
+    const imageResults = await uploadMultipleImagesToS3(
+      req.files.images,
+      `${process.env.UPLOAD_FOLDER}/properties/gallery`,
+      80,
+      1920
+    );
+
+    // Get current max order
+    const maxOrder = await prisma.propertyImage.findFirst({
+      where: { propertyId: existingProperty.id },
+      orderBy: { order: "desc" },
+    });
+
+    const startOrder = maxOrder ? maxOrder.order + 1 : 1;
+
+    const imageData = imageResults.files.map((result, index) => ({
+      url: result.url,
+      propertyId: existingProperty.id,
+      order: startOrder + index,
+    }));
+
+    await prisma.propertyImage.createMany({
+      data: imageData,
+    });
+  }
+
+  // Handle new videos
+  if (req.files && req.files.videos && req.files.videos.length > 0) {
+    const videoResults = await Promise.all(
+      req.files.videos.map((video) =>
+        uploadToS3(video, `${process.env.UPLOAD_FOLDER}/properties/videos`)
+      )
+    );
+
+    const videoData = videoResults.map((result, index) => ({
+      url: result.url,
+      title: `Video ${index + 1}`,
+      propertyId: existingProperty.id,
+    }));
+
+    await prisma.propertyVideo.createMany({
+      data: videoData,
+    });
   }
 
   // Update property

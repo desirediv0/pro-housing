@@ -34,6 +34,9 @@ router.get("/:id", getInquiryById);
 // PUT /inquiries/:id - Update inquiry (status, admin response)
 router.put("/:id", updateInquiry);
 
+// PATCH /inquiries/:id/status - Update inquiry status only
+router.patch("/:id/status", updateInquiry);
+
 // POST /inquiries/:id/respond - Respond to inquiry
 router.post("/:id/respond", updateInquiry);
 

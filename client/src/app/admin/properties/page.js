@@ -21,13 +21,19 @@ import {
   CheckCircle,
   Clock,
   RefreshCw,
+  Grid3X3,
+  List,
+  Image as ImageIcon,
+  Video,
+  Star,
+  Home,
+  DollarSign,
 } from "lucide-react";
-import { adminAPI } from "@/lib/api-functions";
+import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import useAdminProtection from "@/hooks/useAdminProtection";
-import PropertyCard from "@/components/ui/PropertyCard";
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState([]);
@@ -84,6 +90,15 @@ export default function AdminProperties() {
     { value: "LEASE", label: "For Lease" },
   ];
 
+  const highlightOptions = [
+    { value: "", label: "All Highlights" },
+    { value: "FEATURED", label: "Featured" },
+    { value: "NEW", label: "New" },
+    { value: "TRENDING", label: "Trending" },
+    { value: "HOT_DEAL", label: "Hot Deal" },
+    { value: "PREMIUM", label: "Premium" },
+  ];
+
   useEffect(() => {
     fetchProperties();
   }, [filters]);
@@ -91,25 +106,48 @@ export default function AdminProperties() {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.getAllProperties(filters);
-      const data = response.data.data;
+      console.log("Fetching properties with filters:", filters);
 
-      setProperties(data.properties || []);
-      setPagination(data.pagination || {});
+      const response = await adminAPI.getProperties(filters);
+      console.log("API Response:", response);
 
-      // Calculate stats
-      const total = data.properties?.length || 0;
-      const available =
-        data.properties?.filter((p) => p.status === "AVAILABLE").length || 0;
-      const sold =
-        data.properties?.filter((p) => p.status === "SOLD").length || 0;
-      const rented =
-        data.properties?.filter((p) => p.status === "RENTED").length || 0;
+      // Handle the response structure properly
+      let data;
+      if (response.data && response.data.data) {
+        data = response.data.data;
+      } else if (response.data) {
+        data = response.data;
+      } else {
+        data = response;
+      }
+
+      console.log("Parsed data:", data);
+
+      const propertiesList = data.properties || data || [];
+      const paginationData = data.pagination || {
+        total: propertiesList.length,
+        pages: 1,
+        currentPage: 1,
+        limit: propertiesList.length,
+      };
+
+      setProperties(propertiesList);
+      setPagination(paginationData);
+
+      // Calculate stats from the actual data
+      const total = propertiesList.length;
+      const available = propertiesList.filter(
+        (p) => p.status === "AVAILABLE"
+      ).length;
+      const sold = propertiesList.filter((p) => p.status === "SOLD").length;
+      const rented = propertiesList.filter((p) => p.status === "RENTED").length;
 
       setStats({ total, available, sold, rented });
+
+      console.log("Properties loaded:", propertiesList.length);
     } catch (error) {
       console.error("Error fetching properties:", error);
-      toast.error("Failed to load properties", {
+      toast.error("Failed to load properties. Please try again.", {
         icon: "❌",
         style: {
           borderRadius: "10px",
@@ -117,6 +155,10 @@ export default function AdminProperties() {
           color: "#fff",
         },
       });
+      // Set empty state on error
+      setProperties([]);
+      setPagination({ total: 0, pages: 1, currentPage: 1 });
+      setStats({ total: 0, available: 0, sold: 0, rented: 0 });
     } finally {
       setLoading(false);
     }
@@ -153,6 +195,7 @@ export default function AdminProperties() {
         });
         fetchProperties();
       } catch (error) {
+        console.error("Error deleting property:", error);
         toast.error("Failed to delete property", {
           icon: "❌",
           style: {
@@ -176,24 +219,24 @@ export default function AdminProperties() {
   const getStatusColor = (status) => {
     switch (status) {
       case "AVAILABLE":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-emerald-50 text-emerald-700 border border-emerald-200";
       case "SOLD":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-blue-50 text-blue-700 border border-blue-200";
       case "RENTED":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-purple-50 text-purple-700 border border-purple-200";
       case "UNDER_NEGOTIATION":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-amber-50 text-amber-700 border border-amber-200";
       case "WITHDRAWN":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-red-50 text-red-700 border border-red-200";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-50 text-gray-700 border border-gray-200";
     }
   };
 
   const getHighlightColor = (highlight) => {
     switch (highlight) {
       case "FEATURED":
-        return "bg-gradient-to-r from-[#5e4cbb] to-purple-600";
+        return "bg-gradient-to-r from-blue-500 to-blue-600";
       case "TRENDING":
         return "bg-gradient-to-r from-red-500 to-red-600";
       case "NEW":
@@ -201,16 +244,171 @@ export default function AdminProperties() {
       case "HOT_DEAL":
         return "bg-gradient-to-r from-orange-500 to-orange-600";
       case "PREMIUM":
-        return "bg-gradient-to-r from-[#5e4cbb] to-indigo-600";
-      case "EXCLUSIVE":
-        return "bg-gradient-to-r from-yellow-500 to-yellow-600";
+        return "bg-gradient-to-r from-purple-500 to-purple-600";
       default:
         return "bg-gradient-to-r from-gray-500 to-gray-600";
     }
   };
 
+  const PropertyCard = ({ property }) => (
+    <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white overflow-hidden">
+      <div className="relative aspect-video">
+        <Image
+          src={property.mainImage || "/placeholder-property.jpg"}
+          alt={property.title}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+        {/* Highlight Badge */}
+        {property.highlight && (
+          <div
+            className={`absolute top-3 left-3 px-3 py-1 text-xs font-bold text-white rounded-full ${getHighlightColor(
+              property.highlight
+            )}`}
+          >
+            <Star className="h-3 w-3 inline mr-1" />
+            {property.highlight}
+          </div>
+        )}
+
+        {/* Status Badge */}
+        <div
+          className={`absolute top-3 right-3 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
+            property.status
+          )}`}
+        >
+          {property.status.replace("_", " ")}
+        </div>
+
+        {/* Stats Overlay */}
+        <div className="absolute bottom-3 left-3 flex items-center space-x-3 text-white text-sm">
+          {property.images && property.images.length > 0 && (
+            <div className="flex items-center bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <ImageIcon className="h-3 w-3 mr-1" />
+              <span>{property.images.length + 1}</span>
+            </div>
+          )}
+          {property.videos && property.videos.length > 0 && (
+            <div className="flex items-center bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+              <Video className="h-3 w-3 mr-1" />
+              <span>{property.videos.length}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CardContent className="p-6">
+        <div className="space-y-4">
+          {/* Title and Price */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 mb-2">
+              {property.title}
+            </h3>
+            <div className="flex items-center justify-between">
+              <div className="text-2xl font-bold text-blue-600">
+                {formatPrice(property.price)}
+              </div>
+              <div className="text-sm text-gray-500">
+                {property.listingType}
+              </div>
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="flex items-center text-gray-600">
+            <MapPin className="h-4 w-4 mr-2 flex-shrink-0 text-gray-400" />
+            <span className="text-sm truncate">
+              {property.locality && `${property.locality}, `}
+              {property.city}, {property.state}
+            </span>
+          </div>
+
+          {/* Property Details */}
+          <div className="grid grid-cols-3 gap-4 py-3 border-t border-gray-100">
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-1">
+                <Bed className="h-4 w-4 text-blue-500" />
+              </div>
+              <div className="text-lg font-semibold text-gray-900">
+                {property.bedrooms || "N/A"}
+              </div>
+              <div className="text-xs text-gray-500">Bedrooms</div>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-1">
+                <Bath className="h-4 w-4 text-green-500" />
+              </div>
+              <div className="text-lg font-semibold text-gray-900">
+                {property.bathrooms || "N/A"}
+              </div>
+              <div className="text-xs text-gray-500">Bathrooms</div>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-1">
+                <Square className="h-4 w-4 text-purple-500" />
+              </div>
+              <div className="text-lg font-semibold text-gray-900">
+                {property.area ? `${property.area}` : "N/A"}
+              </div>
+              <div className="text-xs text-gray-500">Sq Ft</div>
+            </div>
+          </div>
+
+          {/* Property Type and Views */}
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center">
+              <Home className="h-4 w-4 mr-1 text-gray-400" />
+              <span className="text-gray-600">{property.propertyType}</span>
+            </div>
+            <div className="flex items-center">
+              <Eye className="h-4 w-4 mr-1 text-gray-400" />
+              <span className="text-gray-600">{property.views || 0} views</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div className="flex items-center space-x-2">
+              <Link href={`/properties/${property.slug}`} target="_blank">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  View
+                </Button>
+              </Link>
+              <Link href={`/admin/properties/${property.id}/edit`}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-green-600 border-green-200 hover:bg-green-50"
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
+              </Link>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleDelete(property.id)}
+              className="text-red-600 border-red-200 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   const PropertyListItem = ({ property }) => (
-    <Card className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
+    <Card className="hover:shadow-lg transition-all duration-200 border-0 shadow-sm bg-white">
       <CardContent className="p-6">
         <div className="flex items-center space-x-6">
           <div className="relative w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -222,7 +420,7 @@ export default function AdminProperties() {
             />
             {property.highlight && (
               <div
-                className={`absolute top-2 left-2 px-1 py-0.5 text-xs font-bold text-white rounded ${getHighlightColor(
+                className={`absolute top-2 left-2 px-2 py-1 text-xs font-bold text-white rounded-full ${getHighlightColor(
                   property.highlight
                 )}`}
               >
@@ -231,7 +429,7 @@ export default function AdminProperties() {
             )}
           </div>
 
-          <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex-1 min-w-0 space-y-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-semibold text-gray-900 truncate">
@@ -240,71 +438,62 @@ export default function AdminProperties() {
                 <div className="flex items-center text-sm text-gray-500 mt-1">
                   <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                   <span className="truncate">
-                    {property.address}, {property.city}
+                    {property.locality && `${property.locality}, `}
+                    {property.city}, {property.state}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2 ml-4">
+              <div className="flex items-center space-x-3 ml-4">
                 <div
-                  className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                  className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
                     property.status
                   )}`}
                 >
                   {property.status.replace("_", " ")}
                 </div>
-                <div className="text-lg font-bold text-indigo-600">
+                <div className="text-xl font-bold text-blue-600">
                   {formatPrice(property.price)}
                 </div>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <span className="font-medium">{property.propertyType}</span>
-                <span>•</span>
-                <span>
-                  {property.listingType === "SALE"
-                    ? "For Sale"
-                    : property.listingType === "RENT"
-                    ? "For Rent"
-                    : "For Lease"}
-                </span>
+              <div className="flex items-center space-x-6 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <Home className="h-4 w-4 mr-1" />
+                  <span className="font-medium">{property.propertyType}</span>
+                </div>
+                <div className="flex items-center">
+                  <DollarSign className="h-4 w-4 mr-1" />
+                  <span>{property.listingType}</span>
+                </div>
                 {property.bedrooms && (
-                  <>
-                    <span>•</span>
-                    <div className="flex items-center">
-                      <Bed className="h-3 w-3 mr-1" />
-                      <span>{property.bedrooms}</span>
-                    </div>
-                  </>
+                  <div className="flex items-center">
+                    <Bed className="h-4 w-4 mr-1" />
+                    <span>{property.bedrooms} Bed</span>
+                  </div>
                 )}
                 {property.bathrooms && (
-                  <>
-                    <span>•</span>
-                    <div className="flex items-center">
-                      <Bath className="h-3 w-3 mr-1" />
-                      <span>{property.bathrooms}</span>
-                    </div>
-                  </>
+                  <div className="flex items-center">
+                    <Bath className="h-4 w-4 mr-1" />
+                    <span>{property.bathrooms} Bath</span>
+                  </div>
                 )}
                 {property.area && (
-                  <>
-                    <span>•</span>
-                    <div className="flex items-center">
-                      <Square className="h-3 w-3 mr-1" />
-                      <span>{property.area} sq ft</span>
-                    </div>
-                  </>
+                  <div className="flex items-center">
+                    <Square className="h-4 w-4 mr-1" />
+                    <span>{property.area} sq ft</span>
+                  </div>
                 )}
               </div>
 
               <div className="flex items-center space-x-2">
-                <Link href={`/properties/${property.id}`}>
+                <Link href={`/properties/${property.slug}`} target="_blank">
                   <Button
                     size="sm"
                     variant="outline"
-                    className="hover:bg-indigo-50 hover:text-indigo-600"
+                    className="text-blue-600 border-blue-200 hover:bg-blue-50"
                   >
                     <Eye className="h-4 w-4 mr-1" />
                     View
@@ -314,7 +503,7 @@ export default function AdminProperties() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="hover:bg-blue-50 hover:text-blue-600"
+                    className="text-green-600 border-green-200 hover:bg-green-50"
                   >
                     <Edit className="h-4 w-4 mr-1" />
                     Edit
@@ -324,7 +513,7 @@ export default function AdminProperties() {
                   size="sm"
                   variant="outline"
                   onClick={() => handleDelete(property.id)}
-                  className="hover:bg-red-50 hover:text-red-600"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -336,144 +525,144 @@ export default function AdminProperties() {
     </Card>
   );
 
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="h-24 bg-gray-200 rounded-lg animate-pulse"
+            ></div>
+          ))}
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="h-80 bg-gray-200 rounded-lg animate-pulse"
+            ></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            Properties Management
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Property Management
           </h1>
           <p className="text-gray-600 mt-1">
-            Manage your property listings and track performance
+            Manage all your property listings and track performance
           </p>
         </div>
-        <div className="flex items-center space-x-3">
-          <Button
-            onClick={fetchProperties}
-            variant="outline"
-            size="sm"
-            className="hover:bg-gray-50"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
+        <Link href="/admin/properties/create">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all">
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Property
           </Button>
-          <Link href="/admin/properties/create">
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Property
-            </Button>
-          </Link>
-        </div>
+        </Link>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-0 shadow-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-blue-600 text-sm font-medium">
                   Total Properties
                 </p>
-                <p className="text-3xl font-bold text-blue-600">
+                <p className="text-3xl font-bold text-blue-900">
                   {stats.total}
                 </p>
               </div>
-              <Building className="h-12 w-12 text-blue-600" />
+              <Building className="h-8 w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-0 shadow-lg">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-0 shadow-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Available</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-green-600 text-sm font-medium">Available</p>
+                <p className="text-3xl font-bold text-green-900">
                   {stats.available}
                 </p>
               </div>
-              <CheckCircle className="h-12 w-12 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-0 shadow-lg">
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-0 shadow-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Sold</p>
-                <p className="text-3xl font-bold text-purple-600">
+                <p className="text-purple-600 text-sm font-medium">Sold</p>
+                <p className="text-3xl font-bold text-purple-900">
                   {stats.sold}
                 </p>
               </div>
-              <TrendingUp className="h-12 w-12 text-purple-600" />
+              <TrendingUp className="h-8 w-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-0 shadow-lg">
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-0 shadow-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Rented</p>
-                <p className="text-3xl font-bold text-orange-600">
+                <p className="text-orange-600 text-sm font-medium">Rented</p>
+                <p className="text-3xl font-bold text-orange-900">
                   {stats.rented}
                 </p>
               </div>
-              <Clock className="h-12 w-12 text-orange-600" />
+              <Clock className="h-8 w-8 text-orange-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card className="shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Filter className="h-5 w-5 mr-2 text-gray-600" />
-              Filters & Search
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                variant={viewType === "grid" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewType("grid")}
-                className="hover:bg-indigo-50"
-              >
-                Grid View
-              </Button>
-              <Button
-                variant={viewType === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewType("list")}
-                className="hover:bg-indigo-50"
-              >
-                List View
-              </Button>
-            </div>
+      <Card className="shadow-lg border-0 bg-white">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+          <CardTitle className="flex items-center text-gray-900">
+            <Filter className="h-5 w-5 mr-2" />
+            Filters & Search
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <form
-            onSubmit={handleSearch}
-            className="grid grid-cols-1 md:grid-cols-6 gap-4"
-          >
-            <div className="md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+            {/* Search */}
+            <div className="lg:col-span-2">
               <Input
-                placeholder="Search properties by title, location..."
+                placeholder="Search properties..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange("search", e.target.value)}
                 className="w-full"
               />
             </div>
 
+            {/* Status Filter */}
             <select
               value={filters.status}
               onChange={(e) => handleFilterChange("status", e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -482,12 +671,13 @@ export default function AdminProperties() {
               ))}
             </select>
 
+            {/* Property Type Filter */}
             <select
               value={filters.propertyType}
               onChange={(e) =>
                 handleFilterChange("propertyType", e.target.value)
               }
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {propertyTypes.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -496,12 +686,13 @@ export default function AdminProperties() {
               ))}
             </select>
 
+            {/* Listing Type Filter */}
             <select
               value={filters.listingType}
               onChange={(e) =>
                 handleFilterChange("listingType", e.target.value)
               }
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {listingTypes.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -510,43 +701,62 @@ export default function AdminProperties() {
               ))}
             </select>
 
-            <Button
-              type="submit"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            {/* Highlight Filter */}
+            <select
+              value={filters.highlight}
+              onChange={(e) => handleFilterChange("highlight", e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <Search className="h-4 w-4 mr-2" />
-              Search
+              {highlightOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={() => setViewType("grid")}
+                variant={viewType === "grid" ? "default" : "outline"}
+                size="sm"
+              >
+                <Grid3X3 className="h-4 w-4 mr-1" />
+                Grid
+              </Button>
+              <Button
+                onClick={() => setViewType("list")}
+                variant={viewType === "list" ? "default" : "outline"}
+                size="sm"
+              >
+                <List className="h-4 w-4 mr-1" />
+                List
+              </Button>
+            </div>
+            <Button onClick={fetchProperties} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-1" />
+              Refresh
             </Button>
-          </form>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Properties Grid/List */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="aspect-video bg-gray-200"></div>
-              <CardContent className="p-6 space-y-4">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : properties.length === 0 ? (
-        <Card className="shadow-lg border-0">
+      {/* Properties List */}
+      {properties.length === 0 ? (
+        <Card className="shadow-lg border-0 bg-white">
           <CardContent className="p-12 text-center">
-            <Building className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <Building className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               No Properties Found
             </h3>
             <p className="text-gray-600 mb-6">
-              Get started by adding your first property listing.
+              {Object.values(filters).some((f) => f)
+                ? "No properties match your current filters. Try adjusting the filters or clear them to see all properties."
+                : "You haven't added any properties yet. Start by creating your first property listing."}
             </p>
             <Link href="/admin/properties/create">
-              <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Property
               </Button>
@@ -557,19 +767,13 @@ export default function AdminProperties() {
         <div
           className={
             viewType === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
               : "space-y-4"
           }
         >
           {properties.map((property) =>
             viewType === "grid" ? (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                variant="admin"
-                showActions={true}
-                onDelete={handleDelete}
-              />
+              <PropertyCard key={property.id} property={property} />
             ) : (
               <PropertyListItem key={property.id} property={property} />
             )
@@ -579,35 +783,48 @@ export default function AdminProperties() {
 
       {/* Pagination */}
       {pagination.pages > 1 && (
-        <div className="flex justify-center space-x-2">
-          <Button
-            variant="outline"
-            disabled={pagination.currentPage === 1}
-            onClick={() =>
-              handleFilterChange("page", pagination.currentPage - 1)
-            }
-          >
-            Previous
-          </Button>
-          {[...Array(pagination.pages)].map((_, i) => (
-            <Button
-              key={i + 1}
-              variant={pagination.currentPage === i + 1 ? "default" : "outline"}
-              onClick={() => handleFilterChange("page", i + 1)}
-            >
-              {i + 1}
-            </Button>
-          ))}
-          <Button
-            variant="outline"
-            disabled={pagination.currentPage === pagination.pages}
-            onClick={() =>
-              handleFilterChange("page", pagination.currentPage + 1)
-            }
-          >
-            Next
-          </Button>
-        </div>
+        <Card className="shadow-lg border-0 bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {(pagination.currentPage - 1) * filters.limit + 1} to{" "}
+                {Math.min(
+                  pagination.currentPage * filters.limit,
+                  pagination.total
+                )}{" "}
+                of {pagination.total} properties
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={() =>
+                    handleFilterChange("page", Math.max(1, filters.page - 1))
+                  }
+                  disabled={filters.page <= 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+                <span className="px-3 py-1 text-sm text-gray-600">
+                  Page {pagination.currentPage} of {pagination.pages}
+                </span>
+                <Button
+                  onClick={() =>
+                    handleFilterChange(
+                      "page",
+                      Math.min(pagination.pages, filters.page + 1)
+                    )
+                  }
+                  disabled={filters.page >= pagination.pages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

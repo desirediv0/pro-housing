@@ -26,7 +26,7 @@ import {
   Sofa,
   Building,
 } from "lucide-react";
-import { adminAPI } from "@/lib/api-functions";
+import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import LocationPicker from "@/components/ui/LocationPicker";

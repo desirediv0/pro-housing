@@ -29,15 +29,20 @@ import {
   BedDouble,
   Bath,
   Square,
-  Wifi,
   Car,
   Trees,
   Shield,
   Zap,
+  Loader2,
+  Archive,
+  Trash2,
+  Star,
+  TrendingUp,
 } from "lucide-react";
-import { adminAPI } from "@/lib/api-functions";
+import { adminAPI } from "@/utils/adminAPI";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminInquiries() {
   const [inquiries, setInquiries] = useState([]);
@@ -52,15 +57,18 @@ export default function AdminInquiries() {
     total: 0,
     pages: 1,
     currentPage: 1,
+    hasNext: false,
+    hasPrev: false,
   });
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [responseText, setResponseText] = useState("");
   const [sending, setSending] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
-    pending: 0,
-    responded: 0,
-    closed: 0,
+    PENDING: 0,
+    RESPONDED: 0,
+    CLOSED: 0,
+    SPAM: 0,
   });
 
   const router = useRouter();
@@ -80,21 +88,57 @@ export default function AdminInquiries() {
   const fetchInquiries = async () => {
     try {
       setLoading(true);
+      console.log("Fetching inquiries with filters:", filters);
+
       const response = await adminAPI.getAllInquiries(filters);
+      console.log("API Response:", response);
 
-      setInquiries(response.data.data.inquiries || []);
-      setPagination(
-        response.data.data.pagination || { total: 0, pages: 1, currentPage: 1 }
+      // Handle different response structures
+      let inquiriesData, paginationData, statusStats;
+
+      if (response.data) {
+        // If response has data property
+        inquiriesData = response.data.inquiries || [];
+        paginationData = response.data.pagination || {};
+        statusStats = response.data.statusStats || {};
+      } else if (response.inquiries) {
+        // If response directly has inquiries
+        inquiriesData = response.inquiries || [];
+        paginationData = response.pagination || {};
+        statusStats = response.statusStats || {};
+      } else {
+        // Fallback
+        inquiriesData = [];
+        paginationData = {};
+        statusStats = {};
+      }
+
+      console.log("Processed data:", {
+        inquiriesData,
+        paginationData,
+        statusStats,
+      });
+
+      setInquiries(inquiriesData);
+      setPagination({
+        total: paginationData.totalInquiries || paginationData.total || 0,
+        pages: paginationData.totalPages || paginationData.pages || 1,
+        currentPage: paginationData.currentPage || 1,
+        hasNext: paginationData.hasNext || false,
+        hasPrev: paginationData.hasPrev || false,
+      });
+
+      // Calculate stats
+      const totalInquiries = Object.values(statusStats).reduce(
+        (a, b) => a + b,
+        0
       );
-
-      // Get status stats
-      const statusStats = response.data.data.statusStats || {};
       setStats({
-        total: Object.values(statusStats).reduce((a, b) => a + b, 0),
-        pending: statusStats.PENDING || 0,
-        responded: statusStats.RESPONDED || 0,
-        closed: statusStats.CLOSED || 0,
-        spam: statusStats.SPAM || 0,
+        total: totalInquiries,
+        PENDING: statusStats.PENDING || 0,
+        RESPONDED: statusStats.RESPONDED || 0,
+        CLOSED: statusStats.CLOSED || 0,
+        SPAM: statusStats.SPAM || 0,
       });
     } catch (error) {
       console.error("Error fetching inquiries:", error);
@@ -109,8 +153,14 @@ export default function AdminInquiries() {
 
       // Fallback to empty state
       setInquiries([]);
-      setPagination({ total: 0, pages: 1, currentPage: 1 });
-      setStats({ total: 0, pending: 0, responded: 0, closed: 0, spam: 0 });
+      setPagination({
+        total: 0,
+        pages: 1,
+        currentPage: 1,
+        hasNext: false,
+        hasPrev: false,
+      });
+      setStats({ total: 0, PENDING: 0, RESPONDED: 0, CLOSED: 0, SPAM: 0 });
     } finally {
       setLoading(false);
     }
@@ -120,27 +170,51 @@ export default function AdminInquiries() {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
-      page: 1,
+      page: 1, // Reset to first page when filters change
+    }));
+  };
+
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({
+      ...prev,
+      page: newPage,
     }));
   };
 
   const handleStatusUpdate = async (inquiryId, newStatus) => {
     try {
-      await adminAPI.updateInquiryStatus(inquiryId, newStatus);
+      console.log("Updating status:", { inquiryId, newStatus });
 
-      toast.success("Inquiry status updated successfully", {
-        icon: "✅",
-        style: {
-          borderRadius: "10px",
-          background: "#10B981",
-          color: "#fff",
-        },
-      });
+      const response = await adminAPI.updateInquiryStatus(inquiryId, newStatus);
+      console.log("Status update response:", response);
 
-      fetchInquiries(); // Refresh to update data and stats
+      if (response.success) {
+        toast.success("Inquiry status updated successfully", {
+          icon: "✅",
+          style: {
+            borderRadius: "10px",
+            background: "#10B981",
+            color: "#fff",
+          },
+        });
+
+        // Update local state immediately for better UX
+        setInquiries((prevInquiries) =>
+          prevInquiries.map((inquiry) =>
+            inquiry.id === inquiryId
+              ? { ...inquiry, status: newStatus }
+              : inquiry
+          )
+        );
+
+        // Also refresh data to get latest from server
+        fetchInquiries();
+      } else {
+        throw new Error(response.message || "Failed to update status");
+      }
     } catch (error) {
       console.error("Error updating inquiry status:", error);
-      toast.error("Failed to update inquiry status", {
+      toast.error(error.message || "Failed to update inquiry status", {
         icon: "❌",
         style: {
           borderRadius: "10px",
@@ -159,24 +233,52 @@ export default function AdminInquiries() {
 
     try {
       setSending(true);
-      await adminAPI.respondToInquiry(selectedInquiry.id, responseText);
-
-      setSelectedInquiry(null);
-      setResponseText("");
-
-      toast.success("Response sent successfully", {
-        icon: "📧",
-        style: {
-          borderRadius: "10px",
-          background: "#10B981",
-          color: "#fff",
-        },
+      console.log("Sending response:", {
+        inquiryId: selectedInquiry.id,
+        response: responseText,
       });
 
-      fetchInquiries(); // Refresh to update data and stats
+      const response = await adminAPI.respondToInquiry(
+        selectedInquiry.id,
+        responseText
+      );
+      console.log("Response send result:", response);
+
+      if (response.success) {
+        setSelectedInquiry(null);
+        setResponseText("");
+
+        toast.success("Response sent successfully", {
+          icon: "📧",
+          style: {
+            borderRadius: "10px",
+            background: "#10B981",
+            color: "#fff",
+          },
+        });
+
+        // Update local state immediately
+        setInquiries((prevInquiries) =>
+          prevInquiries.map((inquiry) =>
+            inquiry.id === selectedInquiry.id
+              ? {
+                  ...inquiry,
+                  status: "RESPONDED",
+                  adminResponse: responseText,
+                  respondedAt: new Date().toISOString(),
+                }
+              : inquiry
+          )
+        );
+
+        // Also refresh data to get latest from server
+        fetchInquiries();
+      } else {
+        throw new Error(response.message || "Failed to send response");
+      }
     } catch (error) {
       console.error("Error sending response:", error);
-      toast.error("Failed to send response", {
+      toast.error(error.message || "Failed to send response", {
         icon: "❌",
         style: {
           borderRadius: "10px",
@@ -227,191 +329,183 @@ export default function AdminInquiries() {
     }).format(price);
   };
 
-  const getPropertyFeatures = (property) => {
-    const features = [];
-    if (property.bedrooms)
-      features.push({ icon: BedDouble, label: `${property.bedrooms} Bed` });
-    if (property.bathrooms)
-      features.push({ icon: Bath, label: `${property.bathrooms} Bath` });
-    if (property.area)
-      features.push({ icon: Square, label: `${property.area} sq ft` });
-    if (property.furnished) features.push({ icon: Home, label: "Furnished" });
-    if (property.parking) features.push({ icon: Car, label: "Parking" });
-    if (property.garden) features.push({ icon: Trees, label: "Garden" });
-    if (property.security) features.push({ icon: Shield, label: "Security" });
-    if (property.powerBackup)
-      features.push({ icon: Zap, label: "Power Backup" });
-    return features.slice(0, 4); // Show only first 4 features
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      time: date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
   };
 
-  const InquiryCard = ({ inquiry }) => (
-    <Card className="hover:shadow-lg transition-all duration-200 border-0 shadow-md">
-      <CardContent className="p-0">
-        <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[400px]">
-          {/* Left Side - Property Details */}
-          <div className="lg:col-span-1 bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-l-lg">
-            {/* Property Image */}
-            <div className="relative w-full h-48 rounded-lg overflow-hidden mb-4 group">
-              <img
-                src={inquiry.property.mainImage || "/placeholder-property.jpg"}
-                alt={inquiry.property.title}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="absolute top-3 right-3">
-                <div className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
-                  {inquiry.property.propertyType}
-                </div>
-              </div>
-              <div className="absolute bottom-3 left-3 right-3">
-                <div className="bg-black/70 backdrop-blur-sm text-white p-2 rounded-lg">
-                  <p className="font-semibold text-sm truncate">
-                    {inquiry.property.title}
-                  </p>
-                  <p className="text-xs text-gray-200">
-                    {inquiry.property.city}
-                  </p>
-                </div>
-              </div>
-            </div>
+  const InquiryCard = ({ inquiry }) => {
+    const { date, time } = formatDate(inquiry.createdAt);
 
-            {/* Property Features */}
-            <div className="space-y-3 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-bold text-indigo-600">
-                  {formatPrice(inquiry.property.price)}
-                </span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  {inquiry.property.listingType}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {getPropertyFeatures(inquiry.property).map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-1 text-xs text-gray-600"
-                  >
-                    <feature.icon className="h-3 w-3" />
-                    <span>{feature.label}</span>
+    return (
+      <Card className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg overflow-hidden">
+        <CardContent className="p-0">
+          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[300px]">
+            {/* Property Section - Left */}
+            <div className="lg:col-span-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
+              {/* Property Image */}
+              <div className="relative w-full h-40 rounded-xl overflow-hidden mb-4 group">
+                <img
+                  src={
+                    inquiry.property?.mainImage || "/placeholder-property.jpg"
+                  }
+                  alt={inquiry.property?.title || "Property"}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute top-3 right-3">
+                  <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700">
+                    {inquiry.property?.propertyType || "N/A"}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Location & Map */}
-            <div className="space-y-2">
-              <div className="flex items-start space-x-2">
-                <MapPin className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-xs text-gray-600 leading-relaxed">
-                    {inquiry.property.locality}, {inquiry.property.city}
+                </div>
+                <div className="absolute bottom-3 left-3 right-3">
+                  <h4 className="font-bold text-white text-sm leading-tight mb-1">
+                    {inquiry.property?.title || "Property Title"}
+                  </h4>
+                  <p className="text-xs text-gray-200 flex items-center">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {inquiry.property?.city || "Location"}
                   </p>
-                  {inquiry.property.pincode && (
-                    <p className="text-xs text-gray-500">
-                      PIN: {inquiry.property.pincode}
-                    </p>
+                </div>
+              </div>
+
+              {/* Property Details */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xl font-bold text-indigo-600">
+                    {inquiry.property?.price
+                      ? formatPrice(inquiry.property.price)
+                      : "Price N/A"}
+                  </span>
+                  <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full font-medium">
+                    {inquiry.property?.listingType || "N/A"}
+                  </span>
+                </div>
+
+                {/* Property Features */}
+                <div className="grid grid-cols-2 gap-2">
+                  {inquiry.property?.bedrooms && (
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <BedDouble className="h-3 w-3" />
+                      <span>{inquiry.property.bedrooms} Bed</span>
+                    </div>
+                  )}
+                  {inquiry.property?.bathrooms && (
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <Bath className="h-3 w-3" />
+                      <span>{inquiry.property.bathrooms} Bath</span>
+                    </div>
+                  )}
+                  {inquiry.property?.area && (
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <Square className="h-3 w-3" />
+                      <span>{inquiry.property.area} sq ft</span>
+                    </div>
+                  )}
+                  {inquiry.property?.parking && (
+                    <div className="flex items-center space-x-1 text-xs text-gray-600">
+                      <Car className="h-3 w-3" />
+                      <span>Parking</span>
+                    </div>
                   )}
                 </div>
+
+                {/* Property Action */}
+                <Link href={`/properties/${inquiry.property?.id}`}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full mt-3 hover:bg-indigo-50 hover:text-indigo-600 border-indigo-200"
+                  >
+                    <Building className="h-3 w-3 mr-1" />
+                    View Property
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </Button>
+                </Link>
               </div>
-
-              {inquiry.property.mapLink && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    window.open(inquiry.property.mapLink, "_blank")
-                  }
-                  className="w-full text-xs hover:bg-blue-50 hover:text-blue-600 border-blue-200"
-                >
-                  <MapPin className="h-3 w-3 mr-1" />
-                  View on Map
-                  <ExternalLink className="h-3 w-3 ml-1" />
-                </Button>
-              )}
             </div>
 
-            {/* Property Actions */}
-            <div className="mt-4 space-y-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  router.push(`/properties/${inquiry.property.id}`)
-                }
-                className="w-full hover:bg-indigo-50 hover:text-indigo-600"
-              >
-                <Building className="h-3 w-3 mr-1" />
-                View Property Details
-                <ExternalLink className="h-3 w-3 ml-1" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Right Side - Inquiry Details */}
-          <div className="lg:col-span-2 p-6">
-            <div className="space-y-4 h-full flex flex-col">
+            {/* Inquiry Details - Right */}
+            <div className="lg:col-span-8 p-6 flex flex-col">
               {/* Header */}
-              <div className="flex items-start justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {inquiry.name.charAt(0).toUpperCase()}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className="w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                    {inquiry.name?.charAt(0)?.toUpperCase() || "?"}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {inquiry.name}
+                    <h3 className="font-bold text-gray-900 text-lg">
+                      {inquiry.name || "Unknown"}
                     </h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0 text-sm text-gray-600">
                       <div className="flex items-center">
-                        <Mail className="h-3 w-3 mr-1" />
-                        {inquiry.email}
+                        <Mail className="h-4 w-4 mr-1 text-blue-500" />
+                        <span className="truncate">
+                          {inquiry.email || "No email"}
+                        </span>
                       </div>
                       {inquiry.phone && (
                         <div className="flex items-center">
-                          <Phone className="h-3 w-3 mr-1" />
-                          {inquiry.phone}
+                          <Phone className="h-4 w-4 mr-1 text-green-500" />
+                          <span>{inquiry.phone}</span>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <div
-                    className={`px-3 py-1 text-xs font-medium rounded-full border flex items-center space-x-1 ${getStatusColor(
+                    className={`px-3 py-2 text-sm font-semibold rounded-lg border flex items-center space-x-2 ${getStatusColor(
                       inquiry.status
                     )}`}
                   >
                     {getStatusIcon(inquiry.status)}
-                    <span>{inquiry.status.replace("_", " ")}</span>
+                    <span>
+                      {inquiry.status?.replace("_", " ") || "Unknown"}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Message */}
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-900 mb-2">
+              <div className="flex-1 mb-4">
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <MessageSquare className="h-4 w-4 mr-2 text-indigo-500" />
                   Customer Message:
                 </h4>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {inquiry.message}
+                <div className="bg-gray-50 rounded-xl p-4 border-l-4 border-indigo-500">
+                  <p className="text-gray-700 leading-relaxed">
+                    {inquiry.message || "No message provided"}
                   </p>
                 </div>
               </div>
 
               {/* Admin Response */}
               {inquiry.adminResponse && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-center space-x-2 mb-2">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                  <div className="flex items-center space-x-2 mb-3">
                     <Reply className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-800">
+                    <span className="text-sm font-semibold text-blue-800">
                       Admin Response
                     </span>
-                    <span className="text-xs text-blue-600">
-                      {new Date(inquiry.respondedAt).toLocaleDateString()}
-                    </span>
+                    {inquiry.respondedAt && (
+                      <span className="text-xs text-blue-600">
+                        {formatDate(inquiry.respondedAt).date}
+                      </span>
+                    )}
                   </div>
-                  <p className="text-blue-700 text-sm">
+                  <p className="text-blue-700 leading-relaxed">
                     {inquiry.adminResponse}
                   </p>
                 </div>
@@ -419,29 +513,31 @@ export default function AdminInquiries() {
 
               {/* Footer */}
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center text-xs text-gray-500">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {new Date(inquiry.createdAt).toLocaleDateString()} at{" "}
-                  {new Date(inquiry.createdAt).toLocaleTimeString()}
+                <div className="flex items-center text-sm text-gray-500">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <span>
+                    {date} at {time}
+                  </span>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   {inquiry.status === "PENDING" && (
                     <Button
                       size="sm"
                       onClick={() => setSelectedInquiry(inquiry)}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
                     >
-                      <Reply className="h-3 w-3 mr-1" />
+                      <Reply className="h-4 w-4 mr-1" />
                       Respond
                     </Button>
                   )}
 
                   <Select
                     value={inquiry.status}
-                    onValueChange={(value) =>
-                      handleStatusUpdate(inquiry.id, value)
+                    onChange={(e) =>
+                      handleStatusUpdate(inquiry.id, e.target.value)
                     }
+                    className="text-sm"
                   >
                     {statusOptions
                       .filter((opt) => opt.value)
@@ -455,50 +551,48 @@ export default function AdminInquiries() {
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-            Inquiries Management
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Property Inquiries
           </h1>
-          <p className="text-gray-600 mt-1">
-            Manage property inquiries and customer communications
+          <p className="text-gray-600 mt-2">
+            Manage customer inquiries and property interest
           </p>
         </div>
-        <div className="flex items-center space-x-3">
-          <Button
-            onClick={fetchInquiries}
-            variant="outline"
-            size="sm"
-            className="hover:bg-gray-50"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
+        <Button
+          onClick={fetchInquiries}
+          variant="outline"
+          size="sm"
+          className="hover:bg-gray-50"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardContent className="p-4">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
                   Total Inquiries
                 </p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-3xl font-bold text-blue-600">
                   {stats.total}
                 </p>
               </div>
-              <div className="p-2 bg-blue-100 rounded-full">
+              <div className="p-3 bg-blue-100 rounded-full">
                 <MessageSquare className="h-8 w-8 text-blue-600" />
               </div>
             </div>
@@ -506,15 +600,15 @@ export default function AdminInquiries() {
         </Card>
 
         <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardContent className="p-4">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {stats.pending}
+                <p className="text-3xl font-bold text-yellow-600">
+                  {stats.PENDING}
                 </p>
               </div>
-              <div className="p-2 bg-yellow-100 rounded-full">
+              <div className="p-3 bg-yellow-100 rounded-full">
                 <Clock className="h-8 w-8 text-yellow-600" />
               </div>
             </div>
@@ -522,15 +616,15 @@ export default function AdminInquiries() {
         </Card>
 
         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardContent className="p-4">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Responded</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {stats.responded}
+                <p className="text-3xl font-bold text-green-600">
+                  {stats.RESPONDED}
                 </p>
               </div>
-              <div className="p-2 bg-green-100 rounded-full">
+              <div className="p-3 bg-green-100 rounded-full">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
             </div>
@@ -538,15 +632,15 @@ export default function AdminInquiries() {
         </Card>
 
         <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardContent className="p-4">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Closed</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {stats.closed}
+                <p className="text-3xl font-bold text-purple-600">
+                  {stats.CLOSED}
                 </p>
               </div>
-              <div className="p-2 bg-purple-100 rounded-full">
+              <div className="p-3 bg-purple-100 rounded-full">
                 <Check className="h-8 w-8 text-purple-600" />
               </div>
             </div>
@@ -554,15 +648,13 @@ export default function AdminInquiries() {
         </Card>
 
         <Card className="bg-gradient-to-r from-red-50 to-rose-50 border-0 shadow-lg hover:shadow-xl transition-shadow">
-          <CardContent className="p-4">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Spam</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {stats.spam || 0}
-                </p>
+                <p className="text-3xl font-bold text-red-600">{stats.SPAM}</p>
               </div>
-              <div className="p-2 bg-red-100 rounded-full">
+              <div className="p-3 bg-red-100 rounded-full">
                 <XCircle className="h-8 w-8 text-red-600" />
               </div>
             </div>
@@ -579,19 +671,22 @@ export default function AdminInquiries() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <Input
-                placeholder="Search by name, email, or message..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                className="w-full"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search by name, email, phone, or message..."
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange("search", e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
 
             <Select
               value={filters.status}
-              onValueChange={(value) => handleFilterChange("status", value)}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -605,103 +700,208 @@ export default function AdminInquiries() {
 
       {/* Inquiries List */}
       {loading ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                  <div className="flex-1 space-y-2">
+            <Card key={i} className="animate-pulse shadow-lg">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-4 space-y-4">
+                    <div className="h-40 bg-gray-200 rounded-xl"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-8 space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-14 h-14 bg-gray-200 rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                    <div className="h-20 bg-gray-200 rounded-xl"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/3"></div>
                   </div>
                 </div>
-                <div className="h-16 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : inquiries.length === 0 ? (
         <Card className="shadow-lg border-0">
-          <CardContent className="p-12 text-center">
-            <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <CardContent className="p-16 text-center">
+            <MessageSquare className="h-20 w-20 text-gray-400 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
               No Inquiries Found
             </h3>
-            <p className="text-gray-600">
-              No property inquiries match your current filters.
+            <p className="text-gray-600 text-lg">
+              {filters.search || filters.status
+                ? "No inquiries match your current filters."
+                : "No property inquiries have been received yet."}
             </p>
+            {(filters.search || filters.status) && (
+              <Button
+                onClick={() =>
+                  setFilters({ search: "", status: "", page: 1, limit: 20 })
+                }
+                variant="outline"
+                className="mt-4"
+              >
+                Clear Filters
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {inquiries.map((inquiry) => (
             <InquiryCard key={inquiry.id} inquiry={inquiry} />
           ))}
         </div>
       )}
 
+      {/* Pagination */}
+      {pagination.pages > 1 && (
+        <Card className="shadow-lg border-0">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing page {pagination.currentPage} of {pagination.pages} (
+                {pagination.total} total inquiries)
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={!pagination.hasPrev}
+                >
+                  Previous
+                </Button>
+                <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-lg text-sm font-medium">
+                  {pagination.currentPage}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={!pagination.hasNext}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Response Modal */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
             <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Reply className="h-5 w-5 mr-2 text-indigo-600" />
-                  Respond to {selectedInquiry.name}
+                  <Reply className="h-6 w-6 mr-3 text-indigo-600" />
+                  <div>
+                    <h3 className="text-xl font-bold">
+                      Respond to {selectedInquiry.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Property: {selectedInquiry.property?.title}
+                    </p>
+                  </div>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedInquiry(null)}
+                  className="hover:bg-gray-100"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="p-6 space-y-6">
+              {/* Customer Info */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  Customer Information:
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center">
+                    <User className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="font-medium">Name:</span>
+                    <span className="ml-2">{selectedInquiry.name}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="font-medium">Email:</span>
+                    <span className="ml-2">{selectedInquiry.email}</span>
+                  </div>
+                  {selectedInquiry.phone && (
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 mr-2 text-gray-500" />
+                      <span className="font-medium">Phone:</span>
+                      <span className="ml-2">{selectedInquiry.phone}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="font-medium">Date:</span>
+                    <span className="ml-2">
+                      {formatDate(selectedInquiry.createdAt).date}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Original Message */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-2">
+              <div className="bg-blue-50 rounded-xl p-4 border-l-4 border-blue-500">
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <MessageSquare className="h-4 w-4 mr-2 text-blue-600" />
                   Original Message:
                 </h4>
-                <p className="text-gray-700 text-sm">
+                <p className="text-gray-700 leading-relaxed">
                   {selectedInquiry.message}
                 </p>
               </div>
 
               {/* Response Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
                   Your Response:
                 </label>
                 <Textarea
                   value={responseText}
                   onChange={(e) => setResponseText(e.target.value)}
-                  placeholder="Type your response here..."
-                  rows={6}
-                  className="w-full"
+                  placeholder="Type your professional response here..."
+                  rows={8}
+                  className="w-full resize-none"
                 />
+                <p className="text-xs text-gray-500 mt-2">
+                  This response will be sent to the customer's email address.
+                </p>
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                 <Button
                   variant="outline"
                   onClick={() => setSelectedInquiry(null)}
+                  className="hover:bg-gray-50"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSendResponse}
-                  disabled={sending}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  disabled={sending || !responseText.trim()}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
                 >
                   {sending ? (
                     <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       Sending...
                     </div>
                   ) : (

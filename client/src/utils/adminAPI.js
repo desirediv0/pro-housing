@@ -18,12 +18,27 @@ class AdminAPI {
       adminTokenCookie ||
       refreshTokenCookie;
 
-    console.log("🔍 AdminAPI Token Debug:");
-    console.log("Selected token:", token ? "Found" : "Not found");
-
     return {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+    };
+  }
+
+  getAuthHeadersForFormData() {
+    const localStorageToken = localStorage.getItem("adminToken");
+    const accessTokenCookie = this.getCookie("accessToken");
+    const adminTokenCookie = this.getCookie("adminToken");
+    const refreshTokenCookie = this.getCookie("refreshToken");
+
+    const token =
+      localStorageToken ||
+      accessTokenCookie ||
+      adminTokenCookie ||
+      refreshTokenCookie;
+
+    return {
+      Authorization: `Bearer ${token}`,
+      // Don't set Content-Type for FormData, let browser set it
     };
   }
 
@@ -65,6 +80,130 @@ class AdminAPI {
       console.error("API Request failed:", error);
       throw error;
     }
+  }
+
+  async requestWithFormData(endpoint, formData, method = "POST") {
+    const url = `${this.baseURL}${endpoint}`;
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: this.getAuthHeadersForFormData(),
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("API Request failed:", error);
+      throw error;
+    }
+  }
+
+  // Property Management APIs
+  async getProperties(params = {}) {
+    const queryParams = new URLSearchParams(params).toString();
+    const endpoint = queryParams
+      ? `/properties/all?${queryParams}`
+      : "/properties/all";
+    return this.request(endpoint);
+  }
+
+  async getProperty(id) {
+    return this.request(`/properties/${id}`);
+  }
+
+  async getPropertyById(id) {
+    const response = await this.request(`/properties/${id}`);
+    return response.data || response;
+  }
+
+  async createProperty(formData) {
+    return this.requestWithFormData("/properties/create", formData);
+  }
+
+  async updateProperty(id, formData) {
+    return this.requestWithFormData(`/properties/${id}`, formData, "PUT");
+  }
+
+  async deleteProperty(id) {
+    return this.request(`/properties/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async togglePropertyStatus(id, isActive) {
+    return this.request(`/properties/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ isActive }),
+    });
+  }
+
+  async updatePropertyHighlight(id, highlight) {
+    return this.request(`/properties/${id}/highlight`, {
+      method: "PATCH",
+      body: JSON.stringify({ highlight }),
+    });
+  }
+
+  async bulkUpdateHighlights(propertyIds, highlight) {
+    return this.request("/properties/bulk/highlights", {
+      method: "PATCH",
+      body: JSON.stringify({ propertyIds, highlight }),
+    });
+  }
+
+  async getPropertyAnalytics(id) {
+    return this.request(`/properties/${id}/analytics`);
+  }
+
+  async getFeaturedProperties(limit = 12) {
+    return this.request(`/properties/featured?limit=${limit}`);
+  }
+
+  async getTrendingProperties(limit = 12) {
+    return this.request(`/properties/trending?limit=${limit}`);
+  }
+
+  async getPropertiesByHighlight(highlight, params = {}) {
+    const queryParams = new URLSearchParams(params).toString();
+    const endpoint = queryParams
+      ? `/properties/highlight/${highlight}?${queryParams}`
+      : `/properties/highlight/${highlight}`;
+    return this.request(endpoint);
+  }
+
+  // Property Images & Videos
+  async addPropertyImages(propertyId, formData) {
+    return this.requestWithFormData(
+      `/properties/${propertyId}/images`,
+      formData
+    );
+  }
+
+  async deletePropertyImage(imageId) {
+    return this.request(`/properties/images/${imageId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async addPropertyVideos(propertyId, formData) {
+    return this.requestWithFormData(
+      `/properties/${propertyId}/videos`,
+      formData
+    );
+  }
+
+  async deletePropertyVideo(videoId) {
+    return this.request(`/properties/videos/${videoId}`, {
+      method: "DELETE",
+    });
   }
 
   // Sidebar Content APIs
@@ -161,6 +300,44 @@ class AdminAPI {
     }
 
     return await response.json();
+  }
+
+  // Inquiry Management APIs
+  async getAllInquiries(params = {}) {
+    const queryParams = new URLSearchParams(params).toString();
+    const endpoint = queryParams ? `/inquiries?${queryParams}` : "/inquiries";
+    return this.request(endpoint);
+  }
+
+  async getInquiryById(id) {
+    return this.request(`/inquiries/${id}`);
+  }
+
+  async updateInquiryStatus(id, status) {
+    return this.request(`/inquiries/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async respondToInquiry(id, response) {
+    return this.request(`/inquiries/${id}/respond`, {
+      method: "POST",
+      body: JSON.stringify({ response }),
+    });
+  }
+
+  async deleteInquiry(id) {
+    return this.request(`/inquiries/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async markInquiryAsSpam(id) {
+    return this.request(`/inquiries/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "SPAM" }),
+    });
   }
 }
 

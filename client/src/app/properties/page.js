@@ -530,9 +530,7 @@ export default function PropertiesPage() {
 
                         {/* Quick View Button */}
                         <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                          <Link
-                            href={`/properties/${property.id || property._id}`}
-                          >
+                          <Link href={`/properties/${property.slug}`}>
                             <Button className="w-full bg-white/95 backdrop-blur-sm text-gray-900 hover:bg-white font-semibold rounded-xl shadow-lg hover:shadow-xl">
                               <Eye className="h-4 w-4 mr-2" />
                               View Details
@@ -543,9 +541,7 @@ export default function PropertiesPage() {
 
                       <CardContent className="p-6 flex-grow flex flex-col">
                         {/* Title */}
-                        <Link
-                          href={`/properties/${property.id || property._id}`}
-                        >
+                        <Link href={`/properties/${property.slug}`}>
                           <h3 className="font-bold text-xl text-gray-900 mb-3 line-clamp-2 group-hover:text-[#5E4CBB] transition-colors duration-300 cursor-pointer">
                             {property.title || "Property Title"}
                           </h3>
@@ -646,9 +642,7 @@ export default function PropertiesPage() {
                               Inquire
                             </Button>
                             <Link
-                              href={`/properties/${
-                                property.id || property._id
-                              }`}
+                              href={`/properties/${property.slug}`}
                               className="flex-1"
                             >
                               <Button

@@ -35,6 +35,7 @@ import {
   Home,
   Calendar,
   Ruler,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { AreaConverter } from "@/components/ui/area-converter";
@@ -597,6 +598,53 @@ export default function PropertyDetail() {
                         </div>
                       </div>
                     </div>
+
+                    {/* Property Videos */}
+                    {property.videos && property.videos.length > 0 && (
+                      <div>
+                        <h3 className="text-xl font-bold mb-6 text-gray-900 flex items-center">
+                          <Video className="h-6 w-6 mr-3 text-blue-600" />
+                          Property Videos
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {property.videos.map((video, index) => (
+                            <div
+                              key={video.id}
+                              className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
+                            >
+                              <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                                <video
+                                  src={video.url}
+                                  controls
+                                  className="w-full h-full object-cover"
+                                  poster={property.mainImage} // Use main image as poster
+                                >
+                                  <source src={video.url} type="video/mp4" />
+                                  Your browser does not support the video tag.
+                                </video>
+                              </div>
+                              <div className="p-4">
+                                <h4 className="font-semibold text-gray-900 mb-2">
+                                  {video.title || `Property Video ${index + 1}`}
+                                </h4>
+                                <div className="flex items-center justify-between text-sm text-gray-500">
+                                  <span>Property Tour</span>
+                                  <button
+                                    onClick={() =>
+                                      window.open(video.url, "_blank")
+                                    }
+                                    className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                                  >
+                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                    Full Screen
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Location & Map Section */}
                     <div>
