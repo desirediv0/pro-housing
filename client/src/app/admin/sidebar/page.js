@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input, Label, Switch } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Plus,
   Trash2,
@@ -18,7 +20,6 @@ import {
   Upload,
   X,
   Edit,
-  GripVertical,
   AlertCircle,
   CheckCircle,
   Camera,
@@ -28,9 +29,10 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Loader2,
 } from "lucide-react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
+import adminAPI from "@/utils/adminAPI";
 
 export default function SidebarContentManagement() {
   const [loading, setLoading] = useState(false);
@@ -39,7 +41,6 @@ export default function SidebarContentManagement() {
   const [editingContent, setEditingContent] = useState(null);
   const [uploading, setUploading] = useState({ image: false, video: false });
   const [copiedUrl, setCopiedUrl] = useState("");
-  const [previewUrls, setPreviewUrls] = useState({ image: "", video: "" });
 
   const [formData, setFormData] = useState({
     imageUrl: "",
@@ -53,112 +54,22 @@ export default function SidebarContentManagement() {
     loadSidebarContent();
   }, []);
 
-  const getAuthToken = () => {
-    // Try different token sources in order of preference
-    const localStorageToken = localStorage.getItem("adminToken");
-    const accessTokenCookie = getCookie("accessToken");
-    const adminTokenCookie = getCookie("adminToken");
-    const refreshTokenCookie = getCookie("refreshToken");
-
-    const token =
-      localStorageToken ||
-      accessTokenCookie ||
-      adminTokenCookie ||
-      refreshTokenCookie;
-
-    // Debug logging
-    console.log("🔍 Token Debug:");
-    console.log(
-      "localStorage adminToken:",
-      localStorageToken ? "Found" : "Not found"
-    );
-    console.log(
-      "Cookie accessToken:",
-      accessTokenCookie ? "Found" : "Not found"
-    );
-    console.log("Cookie adminToken:", adminTokenCookie ? "Found" : "Not found");
-    console.log(
-      "Cookie refreshToken:",
-      refreshTokenCookie ? "Found" : "Not found"
-    );
-    console.log("Selected token:", token ? "Found" : "Not found");
-
-    return token;
-  };
-
-  const getCookie = (name) => {
-    if (typeof document === "undefined") return null;
-    try {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) {
-        const cookieValue = parts.pop().split(";").shift();
-        return cookieValue && cookieValue !== "undefined" ? cookieValue : null;
-      }
-      return null;
-    } catch (error) {
-      console.error(`Error reading cookie ${name}:`, error);
-      return null;
-    }
-  };
-
   const loadSidebarContent = async () => {
     try {
       setLoading(true);
+      const response = await adminAPI.getSidebarContent();
 
-      // Debug: Show all cookies and localStorage
-      console.log("🍪 All cookies:", document.cookie);
-      console.log(
-        "💾 localStorage adminToken:",
-        localStorage.getItem("adminToken")
-      );
-
-      const token = getAuthToken();
-
-      if (!token) {
-        console.error("❌ No token found!");
-        toast.error("🔒 Please login to access admin features", {
-          style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
-        });
-        return;
+      if (response.success && response.data) {
+        setSidebarContent(response.data.content || []);
+      } else {
+        setSidebarContent([]);
       }
-
-      console.log(
-        "🚀 Making API call with token:",
-        token.substring(0, 20) + "..."
-      );
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/sidebar`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error("🔑 Authentication failed. Please login again.", {
-            style: {
-              borderRadius: "12px",
-              background: "#EF4444",
-              color: "#fff",
-            },
-          });
-          return;
-        }
-        throw new Error("Failed to fetch sidebar content");
-      }
-
-      const result = await response.json();
-      setSidebarContent(result.data.content || []);
     } catch (error) {
       console.error("Error loading sidebar content:", error);
-      toast.error("❌ Failed to load sidebar content", {
+      toast.error("Failed to load sidebar content", {
         style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
       });
+      setSidebarContent([]);
     } finally {
       setLoading(false);
     }
@@ -174,7 +85,7 @@ export default function SidebarContentManagement() {
       !formData.phoneNumber &&
       !formData.whatsappNumber
     ) {
-      toast.error("📝 Please fill at least one field", {
+      toast.error("Please fill at least one field", {
         style: { borderRadius: "12px", background: "#F59E0B", color: "#fff" },
       });
       return;
@@ -182,56 +93,27 @@ export default function SidebarContentManagement() {
 
     try {
       setLoading(true);
-      const token = getAuthToken();
 
-      if (!token) {
-        toast.error("🔒 Authentication required");
-        return;
+      if (editingContent) {
+        await adminAPI.updateSidebarContent(editingContent.id, formData);
+        toast.success("Content updated successfully!", {
+          icon: "✅",
+          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+        });
+      } else {
+        await adminAPI.createSidebarContent(formData);
+        toast.success("Content created successfully!", {
+          icon: "🎉",
+          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+        });
       }
-
-      const url = editingContent
-        ? `${process.env.NEXT_PUBLIC_API_URL}/sidebar/${editingContent.id}`
-        : `${process.env.NEXT_PUBLIC_API_URL}/sidebar`;
-      const method = editingContent ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to save sidebar content");
-      }
-
-      toast.success(
-        editingContent
-          ? "✅ Content updated successfully!"
-          : "✅ Content created successfully!",
-        {
-          style: {
-            borderRadius: "12px",
-            background: "#10B981",
-            color: "#fff",
-            fontWeight: "600",
-          },
-        }
-      );
 
       resetForm();
       loadSidebarContent();
     } catch (error) {
-      toast.error(error.message || "❌ Failed to save sidebar content", {
-        style: {
-          borderRadius: "12px",
-          background: "#EF4444",
-          color: "#fff",
-          fontWeight: "500",
-        },
+      console.error("Error saving content:", error);
+      toast.error(error.message || "Failed to save content", {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
       });
     } finally {
       setLoading(false);
@@ -239,31 +121,27 @@ export default function SidebarContentManagement() {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "⚠️ Are you sure you want to delete this content?\n\nThis action cannot be undone."
-    );
-    if (!confirmed) return;
+    if (
+      !confirm(
+        "Are you sure you want to delete this content? This will also delete associated files from storage."
+      )
+    ) {
+      return;
+    }
 
     try {
       setLoading(true);
-      const token = getAuthToken();
-      const response = await fetch(`http://localhost:4000/api/sidebar/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await adminAPI.deleteSidebarContent(id);
 
-      if (!response.ok) {
-        throw new Error("Failed to delete sidebar content");
-      }
-
-      toast.success("🗑️ Content deleted successfully", {
+      toast.success("Content deleted successfully!", {
+        icon: "🗑️",
         style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
       });
+
       loadSidebarContent();
     } catch (error) {
-      toast.error("❌ Failed to delete sidebar content", {
+      console.error("Error deleting content:", error);
+      toast.error("Failed to delete content", {
         style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
       });
     } finally {
@@ -280,43 +158,25 @@ export default function SidebarContentManagement() {
       whatsappNumber: content.whatsappNumber || "",
       isActive: content.isActive,
     });
-    setPreviewUrls({
-      image: content.imageUrl || "",
-      video: content.videoUrl || "",
-    });
     setShowAddForm(true);
   };
 
   const toggleStatus = async (id, currentStatus) => {
     try {
-      const token = getAuthToken();
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/sidebar/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ isActive: !currentStatus }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update status");
-      }
+      await adminAPI.updateSidebarContent(id, { isActive: !currentStatus });
 
       toast.success(
-        `📱 Content ${
-          !currentStatus ? "activated" : "deactivated"
-        } successfully`,
+        `Content ${!currentStatus ? "activated" : "deactivated"} successfully!`,
         {
+          icon: !currentStatus ? "👁️" : "👁️‍🗨️",
           style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
         }
       );
+
       loadSidebarContent();
     } catch (error) {
-      toast.error("❌ Failed to update status", {
+      console.error("Error toggling status:", error);
+      toast.error("Failed to update status", {
         style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
       });
     }
@@ -325,62 +185,59 @@ export default function SidebarContentManagement() {
   const handleFileUpload = async (file, type) => {
     if (!file) return;
 
-    // Enhanced file validation
-    const maxSize = type === "image" ? 5 * 1024 * 1024 : 50 * 1024 * 1024;
+    // Validate file type
+    if (type === "image" && !file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (type === "video" && !file.type.startsWith("video/")) {
+      toast.error("Please select a video file");
+      return;
+    }
+
+    // Validate file size
+    const maxSize = type === "image" ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB for images, 50MB for videos
     if (file.size > maxSize) {
       toast.error(
-        `📏 File size must be less than ${type === "image" ? "5MB" : "50MB"}`,
-        {
-          style: { borderRadius: "12px", background: "#F59E0B", color: "#fff" },
-        }
+        `File size must be less than ${type === "image" ? "10MB" : "50MB"}`
       );
       return;
     }
 
     try {
       setUploading((prev) => ({ ...prev, [type]: true }));
-      const token = getAuthToken();
-      const uploadData = new FormData();
-      uploadData.append(type, file);
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/sidebar/upload/${type}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: uploadData,
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to upload ${type}`);
+      let response;
+      if (type === "image") {
+        response = await adminAPI.uploadSidebarImage(file);
+      } else {
+        response = await adminAPI.uploadSidebarVideo(file);
       }
 
-      const result = await response.json();
+      if (response.success) {
+        setFormData((prev) => ({
+          ...prev,
+          [type === "image" ? "imageUrl" : "videoUrl"]: response.data.url,
+        }));
 
-      setFormData((prev) => ({
-        ...prev,
-        [`${type}Url`]: result.data.url,
-      }));
-
-      setPreviewUrls((prev) => ({
-        ...prev,
-        [type]: result.data.url,
-      }));
-
-      toast.success(
-        `📸 ${
-          type.charAt(0).toUpperCase() + type.slice(1)
-        } uploaded successfully`,
-        {
-          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
-        }
-      );
+        toast.success(
+          `${
+            type.charAt(0).toUpperCase() + type.slice(1)
+          } uploaded successfully!`,
+          {
+            icon: type === "image" ? "🖼️" : "🎥",
+            style: {
+              borderRadius: "12px",
+              background: "#10B981",
+              color: "#fff",
+            },
+          }
+        );
+      }
     } catch (error) {
-      toast.error(error.message || `❌ Failed to upload ${type}`, {
+      console.error(`Error uploading ${type}:`, error);
+      toast.error(`Failed to upload ${type}`, {
         style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
       });
     } finally {
@@ -388,31 +245,58 @@ export default function SidebarContentManagement() {
     }
   };
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
+  const handleRemoveFile = async (fileUrl, type) => {
+    if (!fileUrl) return;
 
-    const items = Array.from(sidebarContent);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    try {
+      // If we're editing existing content, update it in database
+      if (editingContent) {
+        const updateData = {
+          ...formData,
+          [type === "image" ? "imageUrl" : "videoUrl"]: "",
+        };
 
-    setSidebarContent(items);
-    toast.success("🔄 Order updated successfully", {
-      style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
-    });
+        await adminAPI.updateSidebarContent(editingContent.id, updateData);
+
+        // Reload content to reflect changes
+        await loadSidebarContent();
+      } else {
+        // If it's new content, just delete from S3
+        await adminAPI.deleteFile(fileUrl);
+      }
+
+      // Update form state
+      setFormData((prev) => ({
+        ...prev,
+        [type === "image" ? "imageUrl" : "videoUrl"]: "",
+      }));
+
+      toast.success(
+        `${type.charAt(0).toUpperCase() + type.slice(1)} removed successfully!`,
+        {
+          icon: "🗑️",
+          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+        }
+      );
+    } catch (error) {
+      console.error(`Error removing ${type}:`, error);
+      toast.error(`Failed to remove ${type}`, {
+        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+      });
+    }
   };
 
   const copyToClipboard = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedUrl(text);
-      toast.success("📋 URL copied to clipboard", {
+      toast.success("URL copied to clipboard!", {
+        icon: "📋",
         style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
       });
       setTimeout(() => setCopiedUrl(""), 2000);
     } catch (error) {
-      toast.error("❌ Failed to copy URL", {
-        style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
-      });
+      toast.error("Failed to copy URL");
     }
   };
 
@@ -424,22 +308,12 @@ export default function SidebarContentManagement() {
       whatsappNumber: "",
       isActive: true,
     });
-    setPreviewUrls({ image: "", video: "" });
     setEditingContent(null);
     setShowAddForm(false);
   };
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    if (field === "imageUrl") {
-      setPreviewUrls((prev) => ({ ...prev, image: value }));
-    } else if (field === "videoUrl") {
-      setPreviewUrls((prev) => ({ ...prev, video: value }));
-    }
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validatePhoneNumber = (phone) => {
@@ -448,324 +322,291 @@ export default function SidebarContentManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Enhanced Header */}
-        <div className="text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-2 bg-white rounded-full shadow-lg border border-indigo-100">
-            <Globe className="h-5 w-5 text-indigo-600 mr-2" />
-            <span className="text-sm font-medium text-gray-600">
-              Pro Housing Admin
-            </span>
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
+            <Globe className="h-8 w-8 text-white" />
           </div>
-
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Sidebar Content Manager
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Create and manage beautiful sidebar content with drag-and-drop
-            reordering, stunning image uploads, and seamless contact integration
-          </p>
-
-          <div className="flex justify-center gap-4">
-            <Button
-              onClick={loadSidebarContent}
-              variant="outline"
-              size="lg"
-              className="bg-white hover:bg-gray-50 border-gray-200 shadow-sm px-6"
-              disabled={loading}
-            >
-              <RefreshCw
-                className={`h-5 w-5 mr-2 ${loading ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </Button>
-            <Button
-              onClick={() => setShowAddForm(true)}
-              size="lg"
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-xl px-8"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Add New Content
-            </Button>
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+              Sidebar Content Management
+            </h1>
+            <p className="text-gray-600 mt-2 text-lg">
+              Manage images, videos, and contact information for your website
+              sidebar
+            </p>
           </div>
         </div>
 
-        {/* Enhanced Add/Edit Form */}
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Add New Content
+          </Button>
+
+          <Button
+            onClick={loadSidebarContent}
+            variant="outline"
+            className="border-2 border-blue-200 hover:border-blue-300 text-blue-700 hover:bg-blue-50 px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            disabled={loading}
+          >
+            <RefreshCw
+              className={`h-5 w-5 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </Button>
+        </div>
+
+        {/* Add/Edit Form */}
         {showAddForm && (
-          <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg">
-            <CardHeader className="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-b border-gray-100 rounded-t-xl">
-              <CardTitle className="flex items-center justify-between text-gray-900">
-                <div className="flex items-center">
-                  {editingContent ? (
-                    <Edit className="h-7 w-7 mr-3 text-emerald-600" />
-                  ) : (
-                    <Plus className="h-7 w-7 mr-3 text-emerald-600" />
-                  )}
-                  <span className="text-2xl font-bold">
-                    {editingContent ? "Edit Content" : "Create New Content"}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={resetForm}
-                  className="hover:bg-red-100 hover:text-red-600 transition-colors"
-                >
-                  <X className="h-6 w-6" />
-                </Button>
+          <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+              <CardTitle className="text-2xl font-bold flex items-center">
+                {editingContent ? (
+                  <Edit className="h-6 w-6 mr-3" />
+                ) : (
+                  <Plus className="h-6 w-6 mr-3" />
+                )}
+                {editingContent ? "Edit Content" : "Add New Content"}
               </CardTitle>
             </CardHeader>
-
-            <CardContent className="p-10">
-              <form onSubmit={handleSubmit} className="space-y-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                  {/* Enhanced Image Upload */}
-                  <div className="space-y-6">
-                    <Label className="text-xl font-bold text-gray-800 flex items-center">
-                      <Camera className="h-6 w-6 mr-3 text-indigo-600" />
-                      Sidebar Image
+            <CardContent className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Image Upload Section */}
+                  <div className="space-y-4">
+                    <Label className="text-lg font-semibold text-gray-700 flex items-center">
+                      <Camera className="h-5 w-5 mr-2 text-blue-500" />
+                      Image Upload
                     </Label>
 
-                    <div className="space-y-6">
-                      <Input
-                        value={formData.imageUrl}
-                        onChange={(e) =>
-                          handleInputChange("imageUrl", e.target.value)
-                        }
-                        placeholder="🔗 Enter image URL or upload file below"
-                        className="border-2 border-gray-300 focus:border-indigo-500 rounded-xl p-4 text-lg"
-                      />
-
-                      <div className="relative">
-                        <Input
+                    {formData.imageUrl ? (
+                      <div className="relative group">
+                        <img
+                          src={formData.imageUrl}
+                          alt="Uploaded"
+                          className="w-full h-48 object-cover rounded-xl shadow-lg"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center space-x-4">
+                          <Button
+                            type="button"
+                            onClick={() => copyToClipboard(formData.imageUrl)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                          >
+                            {copiedUrl === formData.imageUrl ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() =>
+                              handleRemoveFile(formData.imageUrl, "image")
+                            }
+                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-blue-300 rounded-xl p-8 text-center hover:border-blue-400 transition-colors">
+                        <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) handleFileUpload(file, "image");
-                          }}
+                          onChange={(e) =>
+                            handleFileUpload(e.target.files[0], "image")
+                          }
                           className="hidden"
                           id="image-upload"
+                          disabled={uploading.image}
                         />
                         <label
                           htmlFor="image-upload"
-                          className={`flex items-center justify-center w-full h-40 border-3 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-300 ${
-                            uploading.image
-                              ? "opacity-50 cursor-not-allowed bg-indigo-50"
-                              : ""
-                          }`}
+                          className="cursor-pointer flex flex-col items-center space-y-3"
                         >
                           {uploading.image ? (
-                            <div className="flex flex-col items-center text-indigo-600">
-                              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-indigo-600 mb-3"></div>
-                              <span className="text-lg font-semibold">
-                                Uploading image...
-                              </span>
-                            </div>
+                            <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
                           ) : (
-                            <div className="text-center">
-                              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                              <p className="text-lg font-semibold text-gray-700 mb-2">
-                                Click to upload image
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                Maximum file size: 5MB • Supported: JPG, PNG,
-                                GIF
-                              </p>
-                            </div>
+                            <Upload className="h-12 w-12 text-blue-500" />
                           )}
+                          <span className="text-lg font-medium text-gray-700">
+                            {uploading.image
+                              ? "Uploading..."
+                              : "Click to upload image"}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            Max size: 10MB
+                          </span>
                         </label>
                       </div>
+                    )}
 
-                      {previewUrls.image && (
-                        <div className="relative group">
-                          <img
-                            src={previewUrls.image}
-                            alt="Preview"
-                            className="w-full h-64 object-cover rounded-xl shadow-xl"
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 rounded-xl flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-x-3">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  copyToClipboard(previewUrls.image)
-                                }
-                                className="bg-white shadow-lg hover:shadow-xl"
-                              >
-                                {copiedUrl === previewUrls.image ? (
-                                  <Check className="h-4 w-4 mr-2 text-green-600" />
-                                ) : (
-                                  <Copy className="h-4 w-4 mr-2" />
-                                )}
-                                Copy URL
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  window.open(previewUrls.image, "_blank")
-                                }
-                                className="bg-white shadow-lg hover:shadow-xl"
-                              >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Open
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <Input
+                      type="url"
+                      placeholder="Or paste image URL"
+                      value={formData.imageUrl}
+                      onChange={(e) =>
+                        handleInputChange("imageUrl", e.target.value)
+                      }
+                      className="rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
                   </div>
 
-                  {/* Enhanced Video Upload */}
-                  <div className="space-y-6">
-                    <Label className="text-xl font-bold text-gray-800 flex items-center">
-                      <Film className="h-6 w-6 mr-3 text-purple-600" />
-                      Sidebar Video
+                  {/* Video Upload Section */}
+                  <div className="space-y-4">
+                    <Label className="text-lg font-semibold text-gray-700 flex items-center">
+                      <Film className="h-5 w-5 mr-2 text-purple-500" />
+                      Video Upload
                     </Label>
 
-                    <div className="space-y-6">
-                      <Input
-                        value={formData.videoUrl}
-                        onChange={(e) =>
-                          handleInputChange("videoUrl", e.target.value)
-                        }
-                        placeholder="🎥 Enter video URL or upload file below"
-                        className="border-2 border-gray-300 focus:border-purple-500 rounded-xl p-4 text-lg"
-                      />
-
-                      <div className="relative">
-                        <Input
+                    {formData.videoUrl ? (
+                      <div className="relative group">
+                        <video
+                          src={formData.videoUrl}
+                          className="w-full h-48 object-cover rounded-xl shadow-lg"
+                          controls
+                        />
+                        <div className="absolute top-2 right-2 flex space-x-2">
+                          <Button
+                            type="button"
+                            onClick={() => copyToClipboard(formData.videoUrl)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg"
+                          >
+                            {copiedUrl === formData.videoUrl ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() =>
+                              handleRemoveFile(formData.videoUrl, "video")
+                            }
+                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-dashed border-purple-300 rounded-xl p-8 text-center hover:border-purple-400 transition-colors">
+                        <input
                           type="file"
                           accept="video/*"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) handleFileUpload(file, "video");
-                          }}
+                          onChange={(e) =>
+                            handleFileUpload(e.target.files[0], "video")
+                          }
                           className="hidden"
                           id="video-upload"
+                          disabled={uploading.video}
                         />
                         <label
                           htmlFor="video-upload"
-                          className={`flex items-center justify-center w-full h-40 border-3 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-all duration-300 ${
-                            uploading.video
-                              ? "opacity-50 cursor-not-allowed bg-purple-50"
-                              : ""
-                          }`}
+                          className="cursor-pointer flex flex-col items-center space-y-3"
                         >
                           {uploading.video ? (
-                            <div className="flex flex-col items-center text-purple-600">
-                              <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-purple-600 mb-3"></div>
-                              <span className="text-lg font-semibold">
-                                Uploading video...
-                              </span>
-                            </div>
+                            <Loader2 className="h-12 w-12 text-purple-500 animate-spin" />
                           ) : (
-                            <div className="text-center">
-                              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                              <p className="text-lg font-semibold text-gray-700 mb-2">
-                                Click to upload video
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                Maximum file size: 50MB • Supported: MP4, AVI,
-                                MOV
-                              </p>
-                            </div>
+                            <Upload className="h-12 w-12 text-purple-500" />
                           )}
+                          <span className="text-lg font-medium text-gray-700">
+                            {uploading.video
+                              ? "Uploading..."
+                              : "Click to upload video"}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            Max size: 50MB
+                          </span>
                         </label>
                       </div>
+                    )}
 
-                      {previewUrls.video && (
-                        <div className="relative group">
-                          <video
-                            src={previewUrls.video}
-                            className="w-full h-64 object-cover rounded-xl shadow-xl"
-                            controls
-                          />
-                          <div className="absolute top-4 right-4 space-x-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => copyToClipboard(previewUrls.video)}
-                              className="bg-white shadow-lg hover:shadow-xl"
-                            >
-                              {copiedUrl === previewUrls.video ? (
-                                <Check className="h-4 w-4 mr-2 text-green-600" />
-                              ) : (
-                                <Copy className="h-4 w-4 mr-2" />
-                              )}
-                              Copy URL
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <Input
+                      type="url"
+                      placeholder="Or paste video URL"
+                      value={formData.videoUrl}
+                      onChange={(e) =>
+                        handleInputChange("videoUrl", e.target.value)
+                      }
+                      className="rounded-lg border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                    />
                   </div>
                 </div>
 
-                {/* Enhanced Contact Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <Label className="text-xl font-bold text-gray-800 flex items-center">
-                      <Phone className="h-6 w-6 mr-3 text-blue-600" />
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="text-lg font-semibold text-gray-700 flex items-center">
+                      <Phone className="h-5 w-5 mr-2 text-green-500" />
                       Phone Number
                     </Label>
                     <Input
+                      type="tel"
+                      placeholder="+1234567890"
                       value={formData.phoneNumber}
                       onChange={(e) =>
                         handleInputChange("phoneNumber", e.target.value)
                       }
-                      placeholder="📞 +91 98765 43210"
-                      className="border-2 border-gray-300 focus:border-blue-500 rounded-xl p-4 text-lg"
+                      className="rounded-lg border-gray-300 focus:border-green-500 focus:ring-green-500"
                     />
                     {formData.phoneNumber &&
                       !validatePhoneNumber(formData.phoneNumber) && (
-                        <p className="text-sm text-red-600 flex items-center bg-red-50 p-3 rounded-lg">
-                          <AlertCircle className="h-4 w-4 mr-2" />
-                          Please enter a valid phone number
+                        <p className="text-red-500 text-sm flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          Invalid phone number format
                         </p>
                       )}
                   </div>
 
-                  <div className="space-y-4">
-                    <Label className="text-xl font-bold text-gray-800 flex items-center">
-                      <Smartphone className="h-6 w-6 mr-3 text-green-600" />
+                  <div className="space-y-2">
+                    <Label className="text-lg font-semibold text-gray-700 flex items-center">
+                      <MessageCircle className="h-5 w-5 mr-2 text-green-500" />
                       WhatsApp Number
                     </Label>
                     <Input
+                      type="tel"
+                      placeholder="+1234567890"
                       value={formData.whatsappNumber}
                       onChange={(e) =>
                         handleInputChange("whatsappNumber", e.target.value)
                       }
-                      placeholder="💬 +91 98765 43210"
-                      className="border-2 border-gray-300 focus:border-green-500 rounded-xl p-4 text-lg"
+                      className="rounded-lg border-gray-300 focus:border-green-500 focus:ring-green-500"
                     />
                     {formData.whatsappNumber &&
                       !validatePhoneNumber(formData.whatsappNumber) && (
-                        <p className="text-sm text-red-600 flex items-center bg-red-50 p-3 rounded-lg">
-                          <AlertCircle className="h-4 w-4 mr-2" />
-                          Please enter a valid WhatsApp number
+                        <p className="text-red-500 text-sm flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          Invalid WhatsApp number format
                         </p>
                       )}
                   </div>
                 </div>
 
-                {/* Enhanced Active Status */}
-                <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-                  <div className="flex items-center space-x-4">
-                    <CheckCircle className="h-8 w-8 text-green-600" />
+                {/* Status Toggle */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    {formData.isActive ? (
+                      <Eye className="h-6 w-6 text-green-500" />
+                    ) : (
+                      <EyeOff className="h-6 w-6 text-gray-400" />
+                    )}
                     <div>
-                      <Label className="text-xl font-bold text-gray-800">
-                        Active Status
+                      <Label className="text-lg font-semibold text-gray-700">
+                        Content Status
                       </Label>
-                      <p className="text-gray-600 mt-1">
-                        Enable this content to display on the website
+                      <p className="text-sm text-gray-500">
+                        {formData.isActive
+                          ? "Content is active and visible"
+                          : "Content is inactive and hidden"}
                       </p>
                     </div>
                   </div>
@@ -774,36 +615,32 @@ export default function SidebarContentManagement() {
                     onCheckedChange={(checked) =>
                       handleInputChange("isActive", checked)
                     }
-                    className="scale-150"
+                    className="data-[state=checked]:bg-green-500"
                   />
                 </div>
 
-                {/* Enhanced Form Actions */}
-                <div className="flex flex-col sm:flex-row gap-6 pt-8 border-t-2 border-gray-200">
+                {/* Form Actions */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-6">
                   <Button
                     type="submit"
-                    disabled={loading || uploading.image || uploading.video}
-                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-14 text-xl font-bold shadow-xl rounded-xl"
+                    disabled={loading}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex-1"
                   >
                     {loading ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-                        Saving...
-                      </div>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                     ) : (
-                      <>
-                        <Save className="h-6 w-6 mr-3" />
-                        {editingContent ? "Update Content" : "Create Content"}
-                      </>
+                      <Save className="h-5 w-5 mr-2" />
                     )}
+                    {editingContent ? "Update Content" : "Save Content"}
                   </Button>
+
                   <Button
                     type="button"
-                    variant="outline"
                     onClick={resetForm}
-                    className="flex-1 h-14 text-xl font-bold border-2 border-gray-300 hover:border-gray-400 rounded-xl"
+                    variant="outline"
+                    className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-gray-50 px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex-1"
                   >
-                    <X className="h-6 w-6 mr-3" />
+                    <X className="h-5 w-5 mr-2" />
                     Cancel
                   </Button>
                 </div>
@@ -812,244 +649,164 @@ export default function SidebarContentManagement() {
           </Card>
         )}
 
-        {/* Enhanced Content List with Drag & Drop */}
-        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b border-gray-100 rounded-t-xl">
-            <CardTitle className="flex items-center text-gray-900">
-              <GripVertical className="h-7 w-7 mr-3 text-blue-600" />
-              <span className="text-2xl font-bold">
-                Sidebar Content ({sidebarContent.length})
-              </span>
-            </CardTitle>
-          </CardHeader>
+        {/* Content List */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-gray-800 text-center">
+            Existing Content ({sidebarContent.length})
+          </h2>
 
-          <CardContent className="p-10">
-            {loading && !sidebarContent.length ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mb-6"></div>
-                <p className="text-xl text-gray-600 font-semibold">
-                  Loading content...
-                </p>
-              </div>
-            ) : sidebarContent.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="w-32 h-32 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                  <Image className="h-16 w-16 text-indigo-400" />
-                </div>
-                <h3 className="text-3xl font-bold text-gray-800 mb-4">
-                  No content found
-                </h3>
-                <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto">
-                  Create your first sidebar content to get started with your
-                  amazing website
-                </p>
-                <Button
-                  onClick={() => setShowAddForm(true)}
-                  size="lg"
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-xl px-8"
-                >
-                  <Plus className="h-6 w-6 mr-3" />
-                  Add First Content
-                </Button>
-              </div>
-            ) : (
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="sidebar-content">
-                  {(provided) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="space-y-8"
-                    >
-                      {sidebarContent.map((content, index) => (
-                        <Draggable
-                          key={content.id}
-                          draggableId={content.id}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={`p-8 bg-white border-2 border-gray-200 rounded-2xl shadow-xl transition-all duration-300 ${
-                                snapshot.isDragging
-                                  ? "shadow-2xl scale-105 rotate-2 border-indigo-300"
-                                  : "hover:shadow-2xl hover:border-indigo-200"
-                              }`}
-                            >
-                              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-                                {/* Enhanced Drag Handle & Status */}
-                                <div className="flex flex-col items-center space-y-4">
-                                  <div
-                                    {...provided.dragHandleProps}
-                                    className="cursor-grab active:cursor-grabbing p-4 hover:bg-gray-100 rounded-xl transition-colors border-2 border-dashed border-gray-300 hover:border-indigo-400"
-                                  >
-                                    <GripVertical className="h-8 w-8 text-gray-400" />
-                                  </div>
-
-                                  <span
-                                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
-                                      content.isActive
-                                        ? "bg-green-100 text-green-800 border-2 border-green-200"
-                                        : "bg-gray-100 text-gray-600 border-2 border-gray-200"
-                                    }`}
-                                  >
-                                    {content.isActive ? (
-                                      <CheckCircle className="h-5 w-5 mr-2" />
-                                    ) : (
-                                      <AlertCircle className="h-5 w-5 mr-2" />
-                                    )}
-                                    {content.isActive ? "Active" : "Inactive"}
-                                  </span>
-                                </div>
-
-                                {/* Enhanced Image Preview */}
-                                <div className="text-center">
-                                  <p className="text-lg font-bold text-gray-700 mb-4 flex items-center justify-center">
-                                    <Camera className="h-5 w-5 mr-2 text-indigo-600" />
-                                    Image
-                                  </p>
-                                  {content.imageUrl ? (
-                                    <div className="relative group">
-                                      <img
-                                        src={content.imageUrl}
-                                        alt="Sidebar"
-                                        className="w-full h-32 object-cover rounded-xl shadow-lg"
-                                      />
-                                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-xl flex items-center justify-center">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() =>
-                                            window.open(
-                                              content.imageUrl,
-                                              "_blank"
-                                            )
-                                          }
-                                          className="opacity-0 group-hover:opacity-100 bg-white shadow-lg"
-                                        >
-                                          <ExternalLink className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-                                      <Image className="h-10 w-10 text-gray-400" />
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Enhanced Video Preview */}
-                                <div className="text-center">
-                                  <p className="text-lg font-bold text-gray-700 mb-4 flex items-center justify-center">
-                                    <Film className="h-5 w-5 mr-2 text-purple-600" />
-                                    Video
-                                  </p>
-                                  {content.videoUrl ? (
-                                    <div className="relative">
-                                      <video
-                                        src={content.videoUrl}
-                                        className="w-full h-32 object-cover rounded-xl shadow-lg"
-                                        muted
-                                      />
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                          window.open(
-                                            content.videoUrl,
-                                            "_blank"
-                                          )
-                                        }
-                                        className="absolute top-2 right-2 bg-white shadow-lg"
-                                      >
-                                        <ExternalLink className="h-3 w-3" />
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-                                      <Video className="h-10 w-10 text-gray-400" />
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Enhanced Contact Info */}
-                                <div className="space-y-4">
-                                  <div>
-                                    <p className="text-lg font-bold text-gray-700 flex items-center mb-2">
-                                      <Phone className="h-5 w-5 mr-2 text-blue-600" />
-                                      Phone
-                                    </p>
-                                    <p className="text-base text-gray-600 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
-                                      {content.phoneNumber || "Not set"}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-lg font-bold text-gray-700 flex items-center mb-2">
-                                      <MessageCircle className="h-5 w-5 mr-2 text-green-600" />
-                                      WhatsApp
-                                    </p>
-                                    <p className="text-base text-gray-600 bg-gray-50 px-4 py-2 rounded-lg border border-gray-200">
-                                      {content.whatsappNumber || "Not set"}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Enhanced Actions */}
-                                <div className="flex flex-col space-y-3">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() =>
-                                      toggleStatus(content.id, content.isActive)
-                                    }
-                                    className={`border-2 ${
-                                      content.isActive
-                                        ? "text-green-600 hover:text-green-700 border-green-200 hover:border-green-300 hover:bg-green-50"
-                                        : "text-gray-400 hover:text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                                    }`}
-                                  >
-                                    {content.isActive ? (
-                                      <Eye className="h-4 w-4 mr-2" />
-                                    ) : (
-                                      <EyeOff className="h-4 w-4 mr-2" />
-                                    )}
-                                    {content.isActive ? "Active" : "Inactive"}
-                                  </Button>
-
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => handleEdit(content)}
-                                    className="text-blue-600 hover:text-blue-700 border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50"
-                                  >
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Edit
-                                  </Button>
-
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => handleDelete(content.id)}
-                                    className="text-red-600 hover:text-red-700 border-2 border-red-200 hover:border-red-300 hover:bg-red-50"
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="border-0 shadow-lg animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="h-48 bg-gray-200 rounded-lg"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            )}
-          </CardContent>
-        </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : sidebarContent.length === 0 ? (
+            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-12 text-center">
+                <div className="space-y-4">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                    <Globe className="h-12 w-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-700">
+                    No Content Found
+                  </h3>
+                  <p className="text-gray-500">
+                    Start by adding your first sidebar content
+                  </p>
+                  <Button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-2 rounded-lg"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Content
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sidebarContent.map((content) => (
+                <Card
+                  key={content.id}
+                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-white/80 backdrop-blur-sm"
+                >
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      {/* Media Preview */}
+                      <div className="relative">
+                        {content.imageUrl ? (
+                          <img
+                            src={content.imageUrl}
+                            alt="Content"
+                            className="w-full h-48 object-cover rounded-lg shadow-md"
+                          />
+                        ) : content.videoUrl ? (
+                          <video
+                            src={content.videoUrl}
+                            className="w-full h-48 object-cover rounded-lg shadow-md"
+                            controls
+                          />
+                        ) : (
+                          <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                            <Globe className="h-16 w-16 text-gray-400" />
+                          </div>
+                        )}
+
+                        {/* Status Badge */}
+                        <div className="absolute top-2 right-2">
+                          <div
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              content.isActive
+                                ? "bg-green-100 text-green-800 border border-green-200"
+                                : "bg-red-100 text-red-800 border border-red-200"
+                            }`}
+                          >
+                            {content.isActive ? "Active" : "Inactive"}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Content Info */}
+                      <div className="space-y-3">
+                        {content.phoneNumber && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Phone className="h-4 w-4 text-green-500" />
+                            <span>{content.phoneNumber}</span>
+                          </div>
+                        )}
+
+                        {content.whatsappNumber && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <MessageCircle className="h-4 w-4 text-green-500" />
+                            <span>{content.whatsappNumber}</span>
+                          </div>
+                        )}
+
+                        {content.imageUrl && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Image className="h-4 w-4 text-blue-500" />
+                            <span className="truncate">Image attached</span>
+                          </div>
+                        )}
+
+                        {content.videoUrl && (
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Video className="h-4 w-4 text-purple-500" />
+                            <span className="truncate">Video attached</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex space-x-2 pt-4 border-t border-gray-100">
+                        <Button
+                          onClick={() => handleEdit(content)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex-1"
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+
+                        <Button
+                          onClick={() =>
+                            toggleStatus(content.id, content.isActive)
+                          }
+                          className={`px-4 py-2 rounded-lg ${
+                            content.isActive
+                              ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                              : "bg-green-500 hover:bg-green-600 text-white"
+                          }`}
+                        >
+                          {content.isActive ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+
+                        <Button
+                          onClick={() => handleDelete(content.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

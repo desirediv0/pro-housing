@@ -7,16 +7,26 @@ class AdminAPI {
   }
 
   getAuthHeaders() {
-    const localStorageToken = localStorage.getItem("adminToken");
     const accessTokenCookie = this.getCookie("accessToken");
     const adminTokenCookie = this.getCookie("adminToken");
     const refreshTokenCookie = this.getCookie("refreshToken");
 
-    const token =
-      localStorageToken ||
-      accessTokenCookie ||
-      adminTokenCookie ||
-      refreshTokenCookie;
+    const token = accessTokenCookie || adminTokenCookie || refreshTokenCookie;
+
+    // Debug logging (only in development)
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔍 Auth Debug:", {
+        accessTokenCookie: accessTokenCookie ? "Found" : "Not found",
+        adminTokenCookie: adminTokenCookie ? "Found" : "Not found",
+        refreshTokenCookie: refreshTokenCookie ? "Found" : "Not found",
+        selectedToken: token ? "Found" : "Not found",
+        tokenPreview: token ? token.substring(0, 20) + "..." : "None",
+      });
+
+      if (!token) {
+        console.error("❌ No authentication token found!");
+      }
+    }
 
     return {
       Authorization: `Bearer ${token}`,
@@ -25,16 +35,11 @@ class AdminAPI {
   }
 
   getAuthHeadersForFormData() {
-    const localStorageToken = localStorage.getItem("adminToken");
     const accessTokenCookie = this.getCookie("accessToken");
     const adminTokenCookie = this.getCookie("adminToken");
     const refreshTokenCookie = this.getCookie("refreshToken");
 
-    const token =
-      localStorageToken ||
-      accessTokenCookie ||
-      adminTokenCookie ||
-      refreshTokenCookie;
+    const token = accessTokenCookie || adminTokenCookie || refreshTokenCookie;
 
     return {
       Authorization: `Bearer ${token}`,
@@ -104,6 +109,33 @@ class AdminAPI {
       console.error("API Request failed:", error);
       throw error;
     }
+  }
+
+  // Authentication APIs
+  async login(credentials) {
+    const response = await fetch(`${this.baseURL}/admin/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Login failed");
+    }
+
+    const result = await response.json();
+    return result;
+  }
+
+  async getProfile() {
+    return this.request("/admin/profile");
+  }
+
+  async logout() {
+    return this.request("/admin/logout", { method: "POST" });
   }
 
   // Property Management APIs
@@ -239,42 +271,14 @@ class AdminAPI {
     const formData = new FormData();
     formData.append("image", file);
 
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${this.baseURL}/sidebar/upload/image`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Upload failed");
-    }
-
-    return await response.json();
+    return this.requestWithFormData("/sidebar/upload/image", formData);
   }
 
   async uploadSidebarVideo(file) {
     const formData = new FormData();
     formData.append("video", file);
 
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${this.baseURL}/sidebar/upload/video`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Upload failed");
-    }
-
-    return await response.json();
+    return this.requestWithFormData("/sidebar/upload/video", formData);
   }
 
   async deleteFile(fileUrl) {
