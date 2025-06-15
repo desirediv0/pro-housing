@@ -227,21 +227,21 @@ export default function HomePage() {
                 <form onSubmit={handleSearch} className="space-y-6">
                   {/* Main Search Row */}
                   <div className="flex gap-4">
-                    <div className="w-32">
+                    <div className="w-48">
                       <Select value={location} onValueChange={setLocation}>
-                        <SelectTrigger className="w-full h-12 bg-gray-50/50 border-0 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white">
-                          <SelectValue placeholder="Select City" />
+                        <SelectTrigger className="w-full h-12 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white font-medium text-gray-800">
+                          <SelectValue placeholder="Select City" className="placeholder:text-gray-500" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
                           <SelectGroup>
-                            <SelectLabel>Popular Cities</SelectLabel>
-                            <SelectItem value="Delhi">Delhi</SelectItem>
-                            <SelectItem value="Mumbai">Mumbai</SelectItem>
-                            <SelectItem value="Bangalore">Bangalore</SelectItem>
-                            <SelectItem value="Pune">Pune</SelectItem>
-                            <SelectItem value="Chennai">Chennai</SelectItem>
-                            <SelectItem value="Hyderabad">Hyderabad</SelectItem>
-                            <SelectItem value="Kolkata">Kolkata</SelectItem>
+                            <SelectLabel className="text-primary font-semibold">Popular Cities</SelectLabel>
+                            <SelectItem value="Delhi" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Delhi</SelectItem>
+                            <SelectItem value="Mumbai" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Mumbai</SelectItem>
+                            <SelectItem value="Bangalore" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Bangalore</SelectItem>
+                            <SelectItem value="Pune" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Pune</SelectItem>
+                            <SelectItem value="Chennai" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Chennai</SelectItem>
+                            <SelectItem value="Hyderabad" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Hyderabad</SelectItem>
+                            <SelectItem value="Kolkata" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Kolkata</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -270,17 +270,17 @@ export default function HomePage() {
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <Select value={propertyType} onValueChange={setPropertyType}>
-                        <SelectTrigger className="w-full h-10 bg-gray-50/50 border-0 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white">
-                          <SelectValue placeholder="Property Type" />
+                        <SelectTrigger className="w-full h-10 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white font-medium text-gray-800">
+                          <SelectValue placeholder="Property Type" className="placeholder:text-gray-500" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
                           <SelectGroup>
-                            <SelectLabel>Property Types</SelectLabel>
-                            <SelectItem value="apartment">Apartment</SelectItem>
-                            <SelectItem value="house">House</SelectItem>
-                            <SelectItem value="villa">Villa</SelectItem>
-                            <SelectItem value="commercial">Commercial</SelectItem>
-                            <SelectItem value="plot">Plot</SelectItem>
+                            <SelectLabel className="text-primary font-semibold">Property Types</SelectLabel>
+                            <SelectItem value="apartment" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Apartment</SelectItem>
+                            <SelectItem value="house" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">House</SelectItem>
+                            <SelectItem value="villa" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Villa</SelectItem>
+                            <SelectItem value="commercial" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Commercial</SelectItem>
+                            <SelectItem value="plot" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Plot</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -288,16 +288,16 @@ export default function HomePage() {
 
                     <div className="flex-1">
                       <Select value={priceRange} onValueChange={setPriceRange}>
-                        <SelectTrigger className="w-full h-10 bg-gray-50/50 border-0 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white">
-                          <SelectValue placeholder="Budget Range" />
+                        <SelectTrigger className="w-full h-10 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white font-medium text-gray-800">
+                          <SelectValue placeholder="Budget Range" className="placeholder:text-gray-500" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
                           <SelectGroup>
-                            <SelectLabel>Budget Range</SelectLabel>
-                            <SelectItem value="0-25">Under ₹25 Lakhs</SelectItem>
-                            <SelectItem value="25-50">₹25-50 Lakhs</SelectItem>
-                            <SelectItem value="50-100">₹50 Lakhs - ₹1 Crore</SelectItem>
-                            <SelectItem value="100+">Above ₹1 Crore</SelectItem>
+                            <SelectLabel className="text-primary font-semibold">Budget Range</SelectLabel>
+                            <SelectItem value="0-25" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Under ₹25 Lakhs</SelectItem>
+                            <SelectItem value="25-50" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">₹25-50 Lakhs</SelectItem>
+                            <SelectItem value="50-100" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">₹50 Lakhs - ₹1 Crore</SelectItem>
+                            <SelectItem value="100+" className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary">Above ₹1 Crore</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
