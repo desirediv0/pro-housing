@@ -82,9 +82,6 @@ export default function EditProperty() {
     contactName: "",
     contactPhone: "",
     contactEmail: "",
-
-    // Expiry
-    expiresAt: "",
   });
 
   const [existingImages, setExistingImages] = useState([]);
@@ -94,21 +91,66 @@ export default function EditProperty() {
   const [videosToDelete, setVideosToDelete] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [customAmenities, setCustomAmenities] = useState([]);
   const router = useRouter();
   const params = useParams();
   const propertyId = params.id;
 
+  // Get property category from selected type
+  const getPropertyCategory = () => {
+    const selectedType = propertyTypes.find(
+      (type) => type.value === formData.propertyType
+    );
+    return selectedType?.category || "residential";
+  };
+
+  // Determine which fields to show based on property type
+  const shouldShowField = (fieldName) => {
+    const category = getPropertyCategory();
+    const type = formData.propertyType;
+
+    switch (fieldName) {
+      case "bedrooms":
+      case "bathrooms":
+        return (
+          category === "residential" ||
+          type === "HOTEL" ||
+          type === "HOSTEL" ||
+          type === "PG"
+        );
+      case "floor":
+      case "totalFloors":
+        return category !== "land" && type !== "PLOT";
+      case "builtYear":
+        return type !== "PLOT";
+      case "area":
+        return true; // Always show area
+      default:
+        return true;
+    }
+  };
+
   const propertyTypes = [
-    { value: "APARTMENT", label: "Apartment" },
-    { value: "HOUSE", label: "House" },
-    { value: "VILLA", label: "Villa" },
-    { value: "PLOT", label: "Plot" },
-    { value: "COMMERCIAL", label: "Commercial" },
-    { value: "WAREHOUSE", label: "Warehouse" },
-    { value: "OFFICE", label: "Office" },
-    { value: "SHOP", label: "Shop" },
-    { value: "PG", label: "PG" },
-    { value: "HOSTEL", label: "Hostel" },
+    { value: "APARTMENT", label: "Apartment", category: "residential" },
+    { value: "HOUSE", label: "House", category: "residential" },
+    { value: "VILLA", label: "Villa", category: "residential" },
+    { value: "DUPLEX", label: "Duplex", category: "residential" },
+    { value: "PENTHOUSE", label: "Penthouse", category: "residential" },
+    { value: "STUDIO", label: "Studio", category: "residential" },
+    { value: "PLOT", label: "Plot", category: "land" },
+    { value: "FARMHOUSE", label: "Farmhouse", category: "residential" },
+    { value: "COMMERCIAL", label: "Commercial", category: "commercial" },
+    { value: "WAREHOUSE", label: "Warehouse", category: "commercial" },
+    { value: "OFFICE", label: "Office", category: "commercial" },
+    { value: "SHOP", label: "Shop", category: "commercial" },
+    { value: "SHOWROOM", label: "Showroom", category: "commercial" },
+    { value: "MALL", label: "Mall", category: "commercial" },
+    { value: "RESTAURANT", label: "Restaurant", category: "commercial" },
+    { value: "HOTEL", label: "Hotel", category: "commercial" },
+    { value: "HOSPITAL", label: "Hospital", category: "commercial" },
+    { value: "SCHOOL", label: "School", category: "commercial" },
+    { value: "PG", label: "PG", category: "residential" },
+    { value: "HOSTEL", label: "Hostel", category: "residential" },
   ];
 
   const listingTypes = [
@@ -189,8 +231,23 @@ export default function EditProperty() {
             contactName: property.contactName || "",
             contactPhone: property.contactPhone || "",
             contactEmail: property.contactEmail || "",
-            expiresAt: formatDate(property.expiresAt),
           });
+
+          // Load custom amenities if they exist
+          if (property.customAmenities) {
+            try {
+              const customAmenitiesList =
+                typeof property.customAmenities === "string"
+                  ? JSON.parse(property.customAmenities)
+                  : property.customAmenities;
+              setCustomAmenities(
+                Array.isArray(customAmenitiesList) ? customAmenitiesList : []
+              );
+            } catch (error) {
+              console.error("Error parsing custom amenities:", error);
+              setCustomAmenities([]);
+            }
+          }
 
           // Set existing media
           setExistingImages(property.images || []);
@@ -259,6 +316,11 @@ export default function EditProperty() {
           submitData.append(key, formData[key]);
         }
       });
+
+      // Add custom amenities
+      if (customAmenities.length > 0) {
+        submitData.append("customAmenities", JSON.stringify(customAmenities));
+      }
 
       // Add images/videos to delete
       if (imagesToDelete.length > 0) {
@@ -498,114 +560,131 @@ export default function EditProperty() {
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div>
-                <Label
-                  htmlFor="bedrooms"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Bedrooms
-                </Label>
-                <Input
-                  id="bedrooms"
-                  name="bedrooms"
-                  type="number"
-                  value={formData.bedrooms}
-                  onChange={handleChange}
-                  placeholder="3"
-                  className="mt-1"
-                />
-              </div>
+              {shouldShowField("bedrooms") && (
+                <div>
+                  <Label
+                    htmlFor="bedrooms"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Bedrooms
+                  </Label>
+                  <Input
+                    id="bedrooms"
+                    name="bedrooms"
+                    type="number"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    placeholder="3"
+                    className="mt-1"
+                  />
+                </div>
+              )}
 
-              <div>
-                <Label
-                  htmlFor="bathrooms"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Bathrooms
-                </Label>
-                <Input
-                  id="bathrooms"
-                  name="bathrooms"
-                  type="number"
-                  value={formData.bathrooms}
-                  onChange={handleChange}
-                  placeholder="2"
-                  className="mt-1"
-                />
-              </div>
+              {shouldShowField("bathrooms") && (
+                <div>
+                  <Label
+                    htmlFor="bathrooms"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Bathrooms
+                  </Label>
+                  <Input
+                    id="bathrooms"
+                    name="bathrooms"
+                    type="number"
+                    value={formData.bathrooms}
+                    onChange={handleChange}
+                    placeholder="2"
+                    className="mt-1"
+                  />
+                </div>
+              )}
 
-              <div>
-                <Label
-                  htmlFor="builtYear"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Built Year
-                </Label>
-                <Input
-                  id="builtYear"
-                  name="builtYear"
-                  type="number"
-                  value={formData.builtYear}
-                  onChange={handleChange}
-                  placeholder="2020"
-                  className="mt-1"
-                />
-              </div>
+              {shouldShowField("builtYear") && (
+                <div>
+                  <Label
+                    htmlFor="builtYear"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    {getPropertyCategory() === "land"
+                      ? "Survey Year"
+                      : "Built Year"}
+                  </Label>
+                  <Input
+                    id="builtYear"
+                    name="builtYear"
+                    type="number"
+                    value={formData.builtYear}
+                    onChange={handleChange}
+                    placeholder={
+                      getPropertyCategory() === "land" ? "2023" : "2020"
+                    }
+                    className="mt-1"
+                  />
+                </div>
+              )}
 
+              {shouldShowField("floor") && (
+                <div>
+                  <Label
+                    htmlFor="floor"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Floor
+                  </Label>
+                  <Input
+                    id="floor"
+                    name="floor"
+                    type="number"
+                    value={formData.floor}
+                    onChange={handleChange}
+                    placeholder="2"
+                    className="mt-1"
+                  />
+                </div>
+              )}
+
+              {/* Always show area */}
               <div>
                 <Label
-                  htmlFor="floor"
+                  htmlFor="area"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Floor
+                  Area (sq ft) *
                 </Label>
                 <Input
-                  id="floor"
-                  name="floor"
+                  id="area"
+                  name="area"
                   type="number"
-                  value={formData.floor}
+                  value={formData.area}
                   onChange={handleChange}
-                  placeholder="2"
+                  placeholder="1200"
                   className="mt-1"
+                  required
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label
-                  htmlFor="totalFloors"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Total Floors
-                </Label>
-                <Input
-                  id="totalFloors"
-                  name="totalFloors"
-                  type="number"
-                  value={formData.totalFloors}
-                  onChange={handleChange}
-                  placeholder="5"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label
-                  htmlFor="expiresAt"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Listing Expires At
-                </Label>
-                <Input
-                  id="expiresAt"
-                  name="expiresAt"
-                  type="date"
-                  value={formData.expiresAt}
-                  onChange={handleChange}
-                  className="mt-1"
-                />
-              </div>
+              {shouldShowField("totalFloors") && (
+                <div>
+                  <Label
+                    htmlFor="totalFloors"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Total Floors
+                  </Label>
+                  <Input
+                    id="totalFloors"
+                    name="totalFloors"
+                    type="number"
+                    value={formData.totalFloors}
+                    onChange={handleChange}
+                    placeholder="5"
+                    className="mt-1"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Amenities */}
@@ -613,7 +692,7 @@ export default function EditProperty() {
               <Label className="text-sm font-medium text-gray-700 mb-4 block">
                 Amenities & Features
               </Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {[
                   {
                     key: "furnished",
@@ -653,7 +732,7 @@ export default function EditProperty() {
                   },
                   {
                     key: "security",
-                    label: "Security",
+                    label: "24/7 Security",
                     icon: Shield,
                     color: "text-purple-600 bg-purple-50",
                   },
@@ -705,6 +784,56 @@ export default function EditProperty() {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Custom Amenities */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Additional Amenities
+                  </Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newAmenity = prompt("Enter custom amenity name:");
+                      if (newAmenity && newAmenity.trim()) {
+                        setCustomAmenities((prev) => [
+                          ...prev,
+                          newAmenity.trim(),
+                        ]);
+                      }
+                    }}
+                    className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                  >
+                    + Add Custom Amenity
+                  </Button>
+                </div>
+
+                {customAmenities.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {customAmenities.map((amenity, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm"
+                      >
+                        <span>{amenity}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomAmenities((prev) =>
+                              prev.filter((_, i) => i !== index)
+                            );
+                          }}
+                          className="text-gray-500 hover:text-red-500 text-lg leading-none"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

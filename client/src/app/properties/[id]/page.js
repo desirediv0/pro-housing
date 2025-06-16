@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { publicAPI } from "@/lib/api-functions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/form";
 import SidebarContent from "@/components/ui/sidebar-content";
 import { toast } from "react-hot-toast";
@@ -36,6 +36,7 @@ import {
   Calendar,
   Ruler,
   Video,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import { AreaConverter } from "@/components/ui/area-converter";
@@ -135,8 +136,8 @@ export default function PropertyDetail() {
       const content = Array.isArray(response.data.data)
         ? response.data.data
         : Array.isArray(response.data)
-          ? response.data
-          : [];
+        ? response.data
+        : [];
       setSidebarContent(content);
     } catch (error) {
       console.error("Error fetching sidebar content:", error);
@@ -183,15 +184,24 @@ export default function PropertyDetail() {
       try {
         await navigator.share({
           title: property.title,
-          text: property.description,
+          text: `${property.title}\n\n${
+            property.description
+          }\n\nPrice: ${formatPrice(property.price)}\nLocation: ${
+            property.address
+          }, ${property.city}`,
           url: window.location.href,
         });
       } catch (error) {
         console.log("Error sharing:", error);
       }
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard!");
+      const shareText = `${property.title}\n\nPrice: ${formatPrice(
+        property.price
+      )}\nLocation: ${property.address}, ${property.city}\n\n${
+        window.location.href
+      }`;
+      navigator.clipboard.writeText(shareText);
+      toast.success("Property details copied to clipboard!");
     }
   };
 
@@ -284,6 +294,18 @@ export default function PropertyDetail() {
     )
     .map(([key]) => key);
 
+  // Parse custom amenities
+  const customAmenities = (() => {
+    try {
+      return property.customAmenities
+        ? JSON.parse(property.customAmenities)
+        : [];
+    } catch (error) {
+      console.error("Error parsing custom amenities:", error);
+      return [];
+    }
+  })();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
@@ -346,10 +368,11 @@ export default function PropertyDetail() {
                         <div className="flex space-x-3 overflow-x-auto pb-2">
                           <button
                             onClick={() => setActiveImageIndex(-1)}
-                            className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${activeImageIndex === -1
+                            className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${
+                              activeImageIndex === -1
                                 ? "border-[#5E4CBB] shadow-lg scale-105"
                                 : "border-gray-200 hover:border-[#5E4CBB]/50"
-                              }`}
+                            }`}
                           >
                             <Image
                               src={property.mainImage}
@@ -363,10 +386,11 @@ export default function PropertyDetail() {
                             <button
                               key={image.id}
                               onClick={() => setActiveImageIndex(index)}
-                              className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${index === activeImageIndex
+                              className={`flex-shrink-0 aspect-square w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 ${
+                                index === activeImageIndex
                                   ? "border-[#5E4CBB] shadow-lg scale-105"
                                   : "border-gray-200 hover:border-[#5E4CBB]/50"
-                                }`}
+                              }`}
                             >
                               <Image
                                 src={image.url}
@@ -438,58 +462,62 @@ export default function PropertyDetail() {
 
                     {/* Property Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                      <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
-                        <div className="flex items-center justify-center mb-2">
-                          <Bed className="h-6 w-6 text-blue-600" />
+                      {property.bedrooms && property.bedrooms > 0 && (
+                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
+                          <div className="flex items-center justify-center mb-2">
+                            <Bed className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            {property.bedrooms}
+                          </div>
+                          <div className="text-sm text-gray-600 font-medium">
+                            Bedrooms
+                          </div>
                         </div>
-                        <div className="text-xl font-bold text-gray-900">
-                          {property.bedrooms && property.bedrooms > 0
-                            ? property.bedrooms
-                            : "N/A"}
+                      )}
+                      {property.bathrooms && property.bathrooms > 0 && (
+                        <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
+                          <div className="flex items-center justify-center mb-2">
+                            <Bath className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            {property.bathrooms}
+                          </div>
+                          <div className="text-sm text-gray-600 font-medium">
+                            Bathrooms
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-600 font-medium">
-                          Bedrooms
+                      )}
+                      {property.area && property.area > 0 && (
+                        <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
+                          <div className="flex items-center justify-center mb-2">
+                            <Square className="h-6 w-6 text-purple-600" />
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            <AreaConverter
+                              value={property.area}
+                              originalUnit="sq_feet"
+                              className="inline-block"
+                            />
+                          </div>
+                          <div className="text-sm text-gray-600 font-medium">
+                            Area (Click to convert)
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl">
-                        <div className="flex items-center justify-center mb-2">
-                          <Bath className="h-6 w-6 text-green-600" />
+                      )}
+                      {property.propertyType && (
+                        <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl">
+                          <div className="flex items-center justify-center mb-2">
+                            <Building2 className="h-6 w-6 text-orange-600" />
+                          </div>
+                          <div className="text-xl font-bold text-gray-900">
+                            {property.propertyType}
+                          </div>
+                          <div className="text-sm text-gray-600 font-medium">
+                            Type
+                          </div>
                         </div>
-                        <div className="text-xl font-bold text-gray-900">
-                          {property.bathrooms && property.bathrooms > 0
-                            ? property.bathrooms
-                            : "N/A"}
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">
-                          Bathrooms
-                        </div>
-                      </div>
-                      <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
-                        <div className="flex items-center justify-center mb-2">
-                          <Square className="h-6 w-6 text-purple-600" />
-                        </div>
-                        <div className="text-xl font-bold text-gray-900">
-                          <AreaConverter
-                            value={property.area}
-                            originalUnit="sq_feet"
-                            className="inline-block"
-                          />
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">
-                          Area (Click to convert)
-                        </div>
-                      </div>
-                      <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl">
-                        <div className="flex items-center justify-center mb-2">
-                          <Building2 className="h-6 w-6 text-orange-600" />
-                        </div>
-                        <div className="text-xl font-bold text-gray-900">
-                          {property.propertyType || "N/A"}
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">
-                          Type
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     {/* Description */}
@@ -503,27 +531,62 @@ export default function PropertyDetail() {
                     </div>
 
                     {/* Amenities */}
-                    {activeAmenities.length > 0 && (
+                    {(activeAmenities.length > 0 ||
+                      customAmenities.length > 0) && (
                       <div>
                         <h3 className="text-xl font-bold mb-6 text-gray-900">
                           Amenities & Features
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                          {activeAmenities.map((amenity) => (
-                            <div
-                              key={amenity}
-                              className={`flex items-center gap-3 p-4 ${amenityIcons[amenity]?.bg} border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105`}
-                            >
-                              <div
-                                className={`p-2 bg-white rounded-lg ${amenityIcons[amenity]?.color}`}
-                              >
-                                {amenityIcons[amenity]?.icon}
+                        <div className="space-y-6">
+                          {/* Standard Amenities */}
+                          {activeAmenities.length > 0 && (
+                            <div>
+                              <h4 className="text-lg font-semibold mb-4 text-gray-800">
+                                Standard Features
+                              </h4>
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {activeAmenities.map((amenity) => (
+                                  <div
+                                    key={amenity}
+                                    className={`flex items-center gap-3 p-4 ${amenityIcons[amenity]?.bg} border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105`}
+                                  >
+                                    <div
+                                      className={`p-2 bg-white rounded-lg ${amenityIcons[amenity]?.color}`}
+                                    >
+                                      {amenityIcons[amenity]?.icon}
+                                    </div>
+                                    <span className="font-medium text-gray-800">
+                                      {amenityIcons[amenity]?.label}
+                                    </span>
+                                  </div>
+                                ))}
                               </div>
-                              <span className="font-medium text-gray-800">
-                                {amenityIcons[amenity]?.label}
-                              </span>
                             </div>
-                          ))}
+                          )}
+
+                          {/* Custom Amenities */}
+                          {customAmenities.length > 0 && (
+                            <div>
+                              <h4 className="text-lg font-semibold mb-4 text-gray-800">
+                                Additional Features
+                              </h4>
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {customAmenities.map((amenity, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#5E4CBB]/5 to-[#7B68D9]/5 border border-[#5E4CBB]/20 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+                                  >
+                                    <div className="p-2 bg-white rounded-lg text-[#5E4CBB]">
+                                      <Check className="h-4 w-4" />
+                                    </div>
+                                    <span className="font-medium text-gray-800">
+                                      {amenity}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -534,74 +597,84 @@ export default function PropertyDetail() {
                         Property Details
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex items-center mb-2">
-                            <Building2 className="h-4 w-4 text-blue-600 mr-2" />
-                            <p className="text-gray-500 text-sm font-medium">
-                              Property Type
+                        {property.propertyType && (
+                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                            <div className="flex items-center mb-2">
+                              <Building2 className="h-4 w-4 text-blue-600 mr-2" />
+                              <p className="text-gray-500 text-sm font-medium">
+                                Property Type
+                              </p>
+                            </div>
+                            <p className="font-bold text-gray-900 text-lg">
+                              {property.propertyType}
                             </p>
                           </div>
-                          <p className="font-bold text-gray-900 text-lg">
-                            {property.propertyType}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex items-center mb-2">
-                            <Home className="h-4 w-4 text-green-600 mr-2" />
-                            <p className="text-gray-500 text-sm font-medium">
-                              Listing Type
+                        )}
+                        {property.listingType && (
+                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                            <div className="flex items-center mb-2">
+                              <Home className="h-4 w-4 text-green-600 mr-2" />
+                              <p className="text-gray-500 text-sm font-medium">
+                                Listing Type
+                              </p>
+                            </div>
+                            <p className="font-bold text-gray-900 text-lg">
+                              {property.listingType}
                             </p>
                           </div>
-                          <p className="font-bold text-gray-900 text-lg">
-                            {property.listingType}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex items-center mb-2">
-                            <Calendar className="h-4 w-4 text-purple-600 mr-2" />
-                            <p className="text-gray-500 text-sm font-medium">
-                              Built Year
+                        )}
+                        {property.builtYear && (
+                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                            <div className="flex items-center mb-2">
+                              <Calendar className="h-4 w-4 text-purple-600 mr-2" />
+                              <p className="text-gray-500 text-sm font-medium">
+                                Built Year
+                              </p>
+                            </div>
+                            <p className="font-bold text-gray-900 text-lg">
+                              {property.builtYear}
                             </p>
                           </div>
-                          <p className="font-bold text-gray-900 text-lg">
-                            {property.builtYear || "N/A"}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex items-center mb-2">
-                            <ArrowUpDown className="h-4 w-4 text-orange-600 mr-2" />
-                            <p className="text-gray-500 text-sm font-medium">
-                              Floor
+                        )}
+                        {property.floor && property.totalFloors && (
+                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                            <div className="flex items-center mb-2">
+                              <ArrowUpDown className="h-4 w-4 text-orange-600 mr-2" />
+                              <p className="text-gray-500 text-sm font-medium">
+                                Floor
+                              </p>
+                            </div>
+                            <p className="font-bold text-gray-900 text-lg">
+                              {property.floor} of {property.totalFloors}
                             </p>
                           </div>
-                          <p className="font-bold text-gray-900 text-lg">
-                            {property.floor && property.totalFloors
-                              ? `${property.floor} of ${property.totalFloors}`
-                              : "N/A"}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex items-center mb-2">
-                            <Shield className="h-4 w-4 text-red-600 mr-2" />
-                            <p className="text-gray-500 text-sm font-medium">
-                              Status
+                        )}
+                        {property.status && (
+                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                            <div className="flex items-center mb-2">
+                              <Shield className="h-4 w-4 text-red-600 mr-2" />
+                              <p className="text-gray-500 text-sm font-medium">
+                                Status
+                              </p>
+                            </div>
+                            <p className="font-bold text-gray-900 text-lg">
+                              {property.status.replace("_", " ")}
                             </p>
                           </div>
-                          <p className="font-bold text-gray-900 text-lg">
-                            {property.status.replace("_", " ")}
-                          </p>
-                        </div>
-                        <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex items-center mb-2">
-                            <Calendar className="h-4 w-4 text-indigo-600 mr-2" />
-                            <p className="text-gray-500 text-sm font-medium">
-                              Listed On
+                        )}
+                        {property.createdAt && (
+                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                            <div className="flex items-center mb-2">
+                              <Calendar className="h-4 w-4 text-indigo-600 mr-2" />
+                              <p className="text-gray-500 text-sm font-medium">
+                                Listed On
+                              </p>
+                            </div>
+                            <p className="font-bold text-gray-900 text-lg">
+                              {formatDate(property.createdAt)}
                             </p>
                           </div>
-                          <p className="font-bold text-gray-900 text-lg">
-                            {formatDate(property.createdAt)}
-                          </p>
-                        </div>
+                        )}
                       </div>
                     </div>
 
@@ -751,15 +824,19 @@ export default function PropertyDetail() {
                             <div className="bg-white p-4 rounded-xl shadow-inner">
                               <div className="aspect-video rounded-lg overflow-hidden">
                                 <iframe
-                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${property.longitude
-                                    }!3d${property.latitude
-                                    }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
-                                      property.latitude
-                                    ).toFixed(6)}°${property.latitude >= 0 ? "N" : "S"
-                                    }%20${Math.abs(property.longitude).toFixed(
-                                      6
-                                    )}°${property.longitude >= 0 ? "E" : "W"
-                                    }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
+                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${
+                                    property.longitude
+                                  }!3d${
+                                    property.latitude
+                                  }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
+                                    property.latitude
+                                  ).toFixed(6)}°${
+                                    property.latitude >= 0 ? "N" : "S"
+                                  }%20${Math.abs(property.longitude).toFixed(
+                                    6
+                                  )}°${
+                                    property.longitude >= 0 ? "E" : "W"
+                                  }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
                                   width="100%"
                                   height="100%"
                                   style={{ border: 0 }}
@@ -784,44 +861,44 @@ export default function PropertyDetail() {
                     {(property.contactName ||
                       property.contactPhone ||
                       property.contactEmail) && (
-                        <div className="bg-gradient-to-r from-[#5E4CBB]/5 to-[#7B68D9]/5 p-6 rounded-2xl border border-[#5E4CBB]/10">
-                          <h3 className="text-xl font-bold mb-4 text-gray-900">
-                            Contact Information
-                          </h3>
-                          <div className="space-y-4">
-                            {property.contactName && (
-                              <div className="flex items-center gap-3 p-3 bg-white rounded-xl">
-                                <User className="h-5 w-5 text-[#5E4CBB]" />
-                                <span className="font-medium text-gray-800">
-                                  {property.contactName}
-                                </span>
-                              </div>
-                            )}
-                            {property.contactPhone && (
-                              <a
-                                href={`tel:${property.contactPhone}`}
-                                className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-blue-50 transition-colors group"
-                              >
-                                <Phone className="h-5 w-5 text-blue-600" />
-                                <span className="font-medium text-blue-600 group-hover:text-blue-700">
-                                  {property.contactPhone}
-                                </span>
-                              </a>
-                            )}
-                            {property.contactEmail && (
-                              <a
-                                href={`mailto:${property.contactEmail}`}
-                                className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-green-50 transition-colors group"
-                              >
-                                <Mail className="h-5 w-5 text-green-600" />
-                                <span className="font-medium text-green-600 group-hover:text-green-700">
-                                  {property.contactEmail}
-                                </span>
-                              </a>
-                            )}
-                          </div>
+                      <div className="bg-gradient-to-r from-[#5E4CBB]/5 to-[#7B68D9]/5 p-6 rounded-2xl border border-[#5E4CBB]/10">
+                        <h3 className="text-xl font-bold mb-4 text-gray-900">
+                          Contact Information
+                        </h3>
+                        <div className="space-y-4">
+                          {property.contactName && (
+                            <div className="flex items-center gap-3 p-4 bg-white rounded-xl">
+                              <User className="h-6 w-6 text-[#5E4CBB]" />
+                              <span className="font-semibold text-gray-800 text-lg">
+                                {property.contactName}
+                              </span>
+                            </div>
+                          )}
+                          {property.contactPhone && (
+                            <a
+                              href={`tel:${property.contactPhone}`}
+                              className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-blue-50 transition-colors group"
+                            >
+                              <Phone className="h-6 w-6 text-blue-600" />
+                              <span className="font-semibold text-blue-600 group-hover:text-blue-700 text-lg">
+                                {property.contactPhone}
+                              </span>
+                            </a>
+                          )}
+                          {property.contactEmail && (
+                            <a
+                              href={`mailto:${property.contactEmail}`}
+                              className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-green-50 transition-colors group"
+                            >
+                              <Mail className="h-6 w-6 text-green-600" />
+                              <span className="font-semibold text-green-600 group-hover:text-green-700 text-lg">
+                                {property.contactEmail}
+                              </span>
+                            </a>
+                          )}
                         </div>
-                      )}
+                      </div>
+                    )}
 
                     {/* CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -833,16 +910,46 @@ export default function PropertyDetail() {
                         Send Inquiry
                       </Button>
                       {property.contactPhone && (
-                        <Button
-                          onClick={() =>
-                            window.open(`tel:${property.contactPhone}`)
-                          }
-                          variant="outline"
-                          className="flex-1 border-[#5E4CBB] text-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white py-3 px-6 rounded-xl text-lg font-semibold transition-all"
-                        >
-                          <Phone className="h-5 w-5 mr-2" />
-                          Call Now
-                        </Button>
+                        <div className="flex-1 flex gap-2">
+                          <Button
+                            onClick={() =>
+                              window.open(`tel:${property.contactPhone}`)
+                            }
+                            variant="outline"
+                            className="flex-1 border-[#5E4CBB] text-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white py-3 px-6 rounded-xl text-lg font-semibold transition-all"
+                          >
+                            <Phone className="h-5 w-5 mr-2" />
+                            Call Now
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              const whatsappMessage = `Hi! I'm interested in this property:
+
+*${property.title}*
+
+📍 *Location:* ${property.address}, ${property.city}
+💰 *Price:* ${formatPrice(property.price)}
+🏠 *Type:* ${property.propertyType} for ${property.listingType}
+${property.bedrooms ? `🛏️ *Bedrooms:* ${property.bedrooms}` : ""}
+${property.area ? `📐 *Area:* ${property.area} sq ft` : ""}
+
+🔗 *View Details:* ${window.location.href}
+
+Please share more details about this property.`;
+
+                              window.open(
+                                `https://wa.me/${property.contactPhone.replace(
+                                  /[^\d]/g,
+                                  ""
+                                )}?text=${encodeURIComponent(whatsappMessage)}`,
+                                "_blank"
+                              );
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                          >
+                            <MessageCircle className="h-5 w-5" />
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -853,7 +960,7 @@ export default function PropertyDetail() {
 
           {/* Regular Sidebar for Large Screens */}
           <div className="hidden lg:block w-96 shrink-0">
-            <div className="sticky top-8">
+            <div className="sticky top-24">
               <SidebarContent content={sidebarContent} />
             </div>
           </div>
@@ -866,15 +973,17 @@ export default function PropertyDetail() {
         className="lg:hidden fixed right-0 top-1/2 -translate-y-1/2 bg-[#5E4CBB] text-white p-3 rounded-l-xl shadow-lg hover:bg-[#4A3A9B] transition-all z-40"
       >
         <ChevronLeft
-          className={`h-6 w-6 transition-transform ${sidebarOpen ? "rotate-180" : ""
-            }`}
+          className={`h-6 w-6 transition-transform ${
+            sidebarOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
 
       {/* Mobile Sliding Sidebar */}
       <div
-        className={`lg:hidden fixed top-0 right-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-30 ${sidebarOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`lg:hidden fixed top-0 right-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-30 ${
+          sidebarOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="h-full overflow-y-auto p-6">
           <SidebarContent content={sidebarContent} />

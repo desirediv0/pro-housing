@@ -26,6 +26,39 @@ export function LocationPicker({
   const markerRef = useRef(null);
   const mapContainerRef = useRef(null);
 
+  // Function to update selected location (for map interaction)
+  const updateSelectedLocation = useCallback(async (lat, lng) => {
+    try {
+      setLoading(true);
+      // Reverse geocoding to get address from coordinates
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      );
+      const data = await response.json();
+
+      const newLocation = {
+        address: data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        lat: lat,
+        lng: lng,
+      };
+
+      setSelectedLocation(newLocation);
+      setSearchQuery(newLocation.address);
+    } catch (error) {
+      console.error("Error getting address:", error);
+      // Still update location even if reverse geocoding fails
+      const newLocation = {
+        address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        lat: lat,
+        lng: lng,
+      };
+      setSelectedLocation(newLocation);
+      setSearchQuery(newLocation.address);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // Initialize map function with useCallback
   const initializeMap = useCallback(() => {
     if (!window.L || !mapContainerRef.current || mapRef.current) return;
@@ -61,18 +94,18 @@ export function LocationPicker({
       // Handle marker drag events
       marker.on("dragend", () => {
         const position = marker.getLatLng();
-        reverseGeocode(position.lat, position.lng);
+        updateSelectedLocation(position.lat, position.lng);
       });
 
       // Handle map click events
       map.on("click", (e) => {
         marker.setLatLng(e.latlng);
-        reverseGeocode(e.latlng.lat, e.latlng.lng);
+        updateSelectedLocation(e.latlng.lat, e.latlng.lng);
       });
     } catch (error) {
       console.error("Error initializing map:", error);
     }
-  }, [selectedLocation]);
+  }, [selectedLocation, updateSelectedLocation]);
 
   // Load Leaflet function with useCallback
   const loadLeaflet = useCallback(() => {
@@ -122,7 +155,8 @@ export function LocationPicker({
     }
   }, [isOpen, mapLoaded, loadLeaflet, initializeMap]);
 
-  const updateLocation = async (lat, lng) => {
+  // Function to update location for getCurrentLocation (auto-confirm)
+  const updateLocation = useCallback(async (lat, lng) => {
     try {
       setLoading(true);
       // Reverse geocoding to get address from coordinates
@@ -139,21 +173,20 @@ export function LocationPicker({
 
       setSelectedLocation(newLocation);
       setSearchQuery(newLocation.address);
-
-      if (onLocationChange) {
-        onLocationChange({
-          address: newLocation.address,
-          latitude: lat.toString(),
-          longitude: lng.toString(),
-          mapLink: `https://www.google.com/maps?q=${lat},${lng}`,
-        });
-      }
     } catch (error) {
       console.error("Error getting address:", error);
+      // Still update location even if reverse geocoding fails
+      const newLocation = {
+        address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        lat: lat,
+        lng: lng,
+      };
+      setSelectedLocation(newLocation);
+      setSearchQuery(newLocation.address);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const searchLocations = async (query) => {
     if (!query.trim() || query.length < 3) {

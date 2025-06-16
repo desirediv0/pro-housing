@@ -250,7 +250,7 @@ export default function AdminProperties() {
   };
 
   const PropertyCard = ({ property }) => (
-    <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white overflow-hidden">
+    <Card className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white overflow-hidden rounded-2xl">
       <div className="relative aspect-video">
         <Image
           src={property.mainImage || "/placeholder-property.jpg"}
@@ -258,14 +258,14 @@ export default function AdminProperties() {
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
         {/* Highlight Badge */}
         {property.highlight && (
           <div
             className={`absolute top-3 left-3 px-3 py-1 text-xs font-bold text-white rounded-full ${getHighlightColor(
               property.highlight
-            )}`}
+            )} shadow-lg backdrop-blur-sm`}
           >
             <Star className="h-3 w-3 inline mr-1" />
             {property.highlight}
@@ -274,27 +274,49 @@ export default function AdminProperties() {
 
         {/* Status Badge */}
         <div
-          className={`absolute top-3 right-3 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
+          className={`absolute top-3 right-3 px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
             property.status
-          )}`}
+          )} shadow-lg backdrop-blur-sm`}
         >
           {property.status.replace("_", " ")}
         </div>
 
         {/* Stats Overlay */}
-        <div className="absolute bottom-3 left-3 flex items-center space-x-3 text-white text-sm">
+        <div className="absolute bottom-3 left-3 flex items-center space-x-2 text-white text-sm">
           {property.images && property.images.length > 0 && (
-            <div className="flex items-center bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+            <div className="flex items-center bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
               <ImageIcon className="h-3 w-3 mr-1" />
-              <span>{property.images.length + 1}</span>
+              <span className="font-medium">{property.images.length + 1}</span>
             </div>
           )}
           {property.videos && property.videos.length > 0 && (
-            <div className="flex items-center bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full">
+            <div className="flex items-center bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
               <Video className="h-3 w-3 mr-1" />
-              <span>{property.videos.length}</span>
+              <span className="font-medium">{property.videos.length}</span>
             </div>
           )}
+        </div>
+
+        {/* Quick Actions Overlay */}
+        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="flex items-center space-x-2">
+            <Link href={`/properties/${property.slug}`} target="_blank">
+              <Button
+                size="sm"
+                className="bg-white/90 hover:bg-white text-gray-900 backdrop-blur-sm shadow-lg border-0 rounded-full h-8 w-8 p-0"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href={`/admin/properties/${property.id}/edit`}>
+              <Button
+                size="sm"
+                className="bg-blue-500/90 hover:bg-blue-600 text-white backdrop-blur-sm shadow-lg border-0 rounded-full h-8 w-8 p-0"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -302,70 +324,103 @@ export default function AdminProperties() {
         <div className="space-y-4">
           {/* Title and Price */}
           <div>
-            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 mb-2">
+            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 mb-3 group-hover:text-blue-600 transition-colors">
               {property.title}
             </h3>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-2">
               <div className="text-2xl font-bold text-blue-600">
                 {formatPrice(property.price)}
               </div>
-              <div className="text-sm text-gray-500">
-                {property.listingType}
-              </div>
+              {property.listingType && (
+                <div className="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
+                  {property.listingType}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Location */}
-          <div className="flex items-center text-gray-600">
-            <MapPin className="h-4 w-4 mr-2 flex-shrink-0 text-gray-400" />
-            <span className="text-sm truncate">
-              {property.locality && `${property.locality}, `}
-              {property.city}, {property.state}
-            </span>
-          </div>
+          {(property.locality || property.city || property.state) && (
+            <div className="flex items-center text-gray-600 bg-gray-50 p-3 rounded-lg">
+              <MapPin className="h-4 w-4 mr-2 flex-shrink-0 text-blue-500" />
+              <span className="text-sm truncate font-medium">
+                {property.locality && `${property.locality}, `}
+                {property.city && `${property.city}`}
+                {property.state && `, ${property.state}`}
+              </span>
+            </div>
+          )}
 
           {/* Property Details */}
-          <div className="grid grid-cols-3 gap-4 py-3 border-t border-gray-100">
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-1">
-                <Bed className="h-4 w-4 text-blue-500" />
-              </div>
-              <div className="text-lg font-semibold text-gray-900">
-                {property.bedrooms || "N/A"}
-              </div>
-              <div className="text-xs text-gray-500">Bedrooms</div>
+          {(property.bedrooms > 0 ||
+            property.bathrooms > 0 ||
+            property.area > 0) && (
+            <div className="grid grid-cols-3 gap-4 py-3 border-t border-gray-100">
+              {property.bedrooms && property.bedrooms > 0 && (
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <Bed className="h-4 w-4 text-blue-500" />
+                  </div>
+                  <div className="text-lg font-semibold text-gray-900">
+                    {property.bedrooms}
+                  </div>
+                  <div className="text-xs text-gray-500">Bedrooms</div>
+                </div>
+              )}
+              {property.bathrooms && property.bathrooms > 0 && (
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <Bath className="h-4 w-4 text-green-500" />
+                  </div>
+                  <div className="text-lg font-semibold text-gray-900">
+                    {property.bathrooms}
+                  </div>
+                  <div className="text-xs text-gray-500">Bathrooms</div>
+                </div>
+              )}
+              {property.area && property.area > 0 && (
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-1">
+                    <Square className="h-4 w-4 text-purple-500" />
+                  </div>
+                  <div className="text-lg font-semibold text-gray-900">
+                    {property.area}
+                  </div>
+                  <div className="text-xs text-gray-500">Sq Ft</div>
+                </div>
+              )}
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-1">
-                <Bath className="h-4 w-4 text-green-500" />
-              </div>
-              <div className="text-lg font-semibold text-gray-900">
-                {property.bathrooms || "N/A"}
-              </div>
-              <div className="text-xs text-gray-500">Bathrooms</div>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-1">
-                <Square className="h-4 w-4 text-purple-500" />
-              </div>
-              <div className="text-lg font-semibold text-gray-900">
-                {property.area ? `${property.area}` : "N/A"}
-              </div>
-              <div className="text-xs text-gray-500">Sq Ft</div>
-            </div>
-          </div>
+          )}
 
-          {/* Property Type and Views */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center">
-              <Home className="h-4 w-4 mr-1 text-gray-400" />
-              <span className="text-gray-600">{property.propertyType}</span>
+          {/* Additional Info */}
+          {(property.propertyType ||
+            (property.views && property.views > 0) ||
+            property.createdAt) && (
+            <div className="flex items-center justify-between text-sm bg-gray-50 p-3 rounded-lg">
+              <div className="flex items-center space-x-4">
+                {property.propertyType && (
+                  <div className="flex items-center text-gray-600">
+                    <Home className="h-4 w-4 mr-1 text-blue-500" />
+                    <span className="font-medium">{property.propertyType}</span>
+                  </div>
+                )}
+                {property.views && property.views > 0 && (
+                  <div className="flex items-center text-gray-600">
+                    <Eye className="h-4 w-4 mr-1 text-green-500" />
+                    <span className="font-medium">{property.views} views</span>
+                  </div>
+                )}
+              </div>
+              {property.createdAt && (
+                <div className="flex items-center text-gray-500">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span className="text-xs">
+                    {new Date(property.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
             </div>
-            <div className="flex items-center">
-              <Eye className="h-4 w-4 mr-1 text-gray-400" />
-              <span className="text-gray-600">{property.views || 0} views</span>
-            </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
@@ -374,7 +429,7 @@ export default function AdminProperties() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50 rounded-lg"
                 >
                   <Eye className="h-4 w-4 mr-1" />
                   View
@@ -384,7 +439,7 @@ export default function AdminProperties() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-green-600 border-green-200 hover:bg-green-50"
+                  className="text-green-600 border-green-200 hover:bg-green-50 rounded-lg"
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Edit
@@ -395,7 +450,7 @@ export default function AdminProperties() {
               size="sm"
               variant="outline"
               onClick={() => handleDelete(property.id)}
-              className="text-red-600 border-red-200 hover:bg-red-50"
+              className="text-red-600 border-red-200 hover:bg-red-50 rounded-lg"
             >
               <Trash2 className="h-4 w-4 mr-1" />
               Delete

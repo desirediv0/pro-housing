@@ -53,15 +53,16 @@ model Property {
   mapLink   String? // Google Maps link for the property
 
   // Features & Amenities
-  furnished   Boolean @default(false)
-  parking     Boolean @default(false)
-  balcony     Boolean @default(false)
-  garden      Boolean @default(false)
-  swimming    Boolean @default(false)
-  gym         Boolean @default(false)
-  security    Boolean @default(false)
-  elevator    Boolean @default(false)
-  powerBackup Boolean @default(false)
+  furnished       Boolean @default(false)
+  parking         Boolean @default(false)
+  balcony         Boolean @default(false)
+  garden          Boolean @default(false)
+  swimming        Boolean @default(false)
+  gym             Boolean @default(false)
+  security        Boolean @default(false)
+  elevator        Boolean @default(false)
+  powerBackup     Boolean @default(false)
+  customAmenities String? // JSON string for additional amenities
 
   // Property status
   isActive   Boolean        @default(true)
@@ -212,11 +213,21 @@ enum PropertyType {
   APARTMENT
   HOUSE
   VILLA
+  DUPLEX
+  PENTHOUSE
+  STUDIO
   PLOT
+  FARMHOUSE
   COMMERCIAL
   WAREHOUSE
   OFFICE
   SHOP
+  SHOWROOM
+  MALL
+  RESTAURANT
+  HOTEL
+  HOSPITAL
+  SCHOOL
   PG
   HOSTEL
 }

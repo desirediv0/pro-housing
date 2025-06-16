@@ -57,14 +57,14 @@ export function LocationPicker({
       // Handle marker drag
       marker.on("dragend", function (e) {
         const position = e.target.getLatLng();
-        updateLocation(position.lat, position.lng);
+        updateSelectedLocation(position.lat, position.lng);
       });
 
       // Handle map click
       map.on("click", function (e) {
         const { lat, lng } = e.latlng;
         marker.setLatLng([lat, lng]);
-        updateLocation(lat, lng);
+        updateSelectedLocation(lat, lng);
       });
 
       mapRef.current = map;
@@ -72,6 +72,37 @@ export function LocationPicker({
     }
   };
 
+  // Function to update selected location (for map interaction)
+  const updateSelectedLocation = async (lat, lng) => {
+    try {
+      // Reverse geocoding to get address from coordinates
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      );
+      const data = await response.json();
+
+      const newLocation = {
+        address: data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        lat: lat,
+        lng: lng,
+      };
+
+      setSelectedLocation(newLocation);
+      setSearchQuery(newLocation.address);
+    } catch (error) {
+      console.error("Error getting address:", error);
+      // Still update location even if reverse geocoding fails
+      const newLocation = {
+        address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        lat: lat,
+        lng: lng,
+      };
+      setSelectedLocation(newLocation);
+      setSearchQuery(newLocation.address);
+    }
+  };
+
+  // Function to update location for getCurrentLocation (auto-confirm)
   const updateLocation = async (lat, lng) => {
     try {
       // Reverse geocoding to get address from coordinates
@@ -81,24 +112,23 @@ export function LocationPicker({
       const data = await response.json();
 
       const newLocation = {
-        address: data.display_name || `${lat}, ${lng}`,
+        address: data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
         lat: lat,
         lng: lng,
       };
 
       setSelectedLocation(newLocation);
       setSearchQuery(newLocation.address);
-
-      if (onLocationChange) {
-        onLocationChange({
-          address: newLocation.address,
-          latitude: lat.toString(),
-          longitude: lng.toString(),
-          mapLink: `https://www.google.com/maps?q=${lat},${lng}`,
-        });
-      }
     } catch (error) {
       console.error("Error getting address:", error);
+      // Still update location even if reverse geocoding fails
+      const newLocation = {
+        address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        lat: lat,
+        lng: lng,
+      };
+      setSelectedLocation(newLocation);
+      setSearchQuery(newLocation.address);
     }
   };
 

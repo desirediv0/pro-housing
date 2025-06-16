@@ -47,6 +47,7 @@ export const createProperty = asyncHandler(async (req, res) => {
     contactName,
     contactPhone,
     contactEmail,
+    customAmenities,
   } = req.body;
 
   // Validate required fields
@@ -134,6 +135,7 @@ export const createProperty = asyncHandler(async (req, res) => {
     powerBackup: powerBackup === "true",
     ...(highlight && { highlight }),
     ...(expiresAt && { expiresAt: new Date(expiresAt) }),
+    ...(customAmenities && { customAmenities }),
   };
 
   const property = await prisma.property.create({
@@ -379,6 +381,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
     contactName,
     contactPhone,
     contactEmail,
+    customAmenities,
   } = req.body;
 
   // Build update data object with only valid fields
@@ -431,6 +434,10 @@ export const updateProperty = asyncHandler(async (req, res) => {
 
   // Handle date fields
   if (expiresAt) updateData.expiresAt = new Date(expiresAt);
+
+  // Handle custom amenities
+  if (customAmenities !== undefined)
+    updateData.customAmenities = customAmenities;
 
   // Check if property exists - try by ID first, then by slug
   let existingProperty = await prisma.property.findUnique({

@@ -61,7 +61,7 @@ const SidebarContent = ({ content = [] }) => {
                     </div>
                     <div>
                       <p className="font-semibold text-blue-700">Call Now</p>
-                      <p className="text-sm text-blue-600">
+                      <p className="text-lg text-blue-600">
                         {item.phoneNumber}
                       </p>
                     </div>
@@ -87,7 +87,7 @@ const SidebarContent = ({ content = [] }) => {
                     <p className="font-semibold text-green-700">
                       WhatsApp Chat
                     </p>
-                    <p className="text-sm text-green-600">
+                    <p className="text-lg text-green-600">
                       Quick response guaranteed
                     </p>
                   </div>
