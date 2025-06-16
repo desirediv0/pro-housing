@@ -11,11 +11,14 @@ import {
   Bed,
   Bath,
   Square,
-  Eye,
   Phone,
   Clock,
   CheckCircle,
   Calendar,
+  CreditCard,
+  Crown,
+  Shield,
+  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,6 +42,7 @@ export default function HomePage() {
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [priceRange, setPriceRange] = useState("");
+  const [listingType, setListingType] = useState("");
   const [featuredProperties, setFeaturedProperties] = useState([]);
   const [sidebarContent, setSidebarContent] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,6 +96,7 @@ export default function HomePage() {
     if (location.trim()) params.set("location", location.trim());
     if (propertyType) params.set("type", propertyType);
     if (priceRange) params.set("price", priceRange);
+    if (listingType) params.set("listingType", listingType);
 
     const searchUrl = `/properties?${params.toString()}`;
 
@@ -307,6 +312,39 @@ export default function HomePage() {
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <Select
+                        value={listingType}
+                        onValueChange={setListingType}
+                      >
+                        <SelectTrigger className="w-full h-10 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white font-medium text-gray-800">
+                          <SelectValue
+                            placeholder="Buy / Rent"
+                            className="placeholder:text-gray-500"
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
+                          <SelectGroup>
+                            <SelectLabel className="text-primary font-semibold">
+                              Listing Type
+                            </SelectLabel>
+                            <SelectItem
+                              value="SALE"
+                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary"
+                            >
+                              Buy
+                            </SelectItem>
+                            <SelectItem
+                              value="RENT"
+                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary"
+                            >
+                              Rent
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex-1">
+                      <Select
                         value={propertyType}
                         onValueChange={setPropertyType}
                       >
@@ -427,15 +465,6 @@ export default function HomePage() {
                   </button>
                 </div>
               </div>
-
-              {/* Property Owner CTA */}
-              <div className="flex items-center gap-3 text-white/90">
-                <Star className="h-5 w-5 text-yellow-300" />
-                <span>Are you a Property Owner?</span>
-                <button className="text-yellow-300 hover:text-yellow-400 font-semibold underline">
-                  Sell / Rent for FREE
-                </button>
-              </div>
             </motion.div>
 
             {/* Right Content - Hero Image */}
@@ -502,32 +531,24 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                icon: "💳",
+                icon: CreditCard,
                 title: "Pay on Credit",
                 description: "Pay your rent using Credit Card",
-                bgColor: "bg-blue-100",
-                iconBg: "bg-blue-500",
               },
               {
-                icon: "💎",
+                icon: Crown,
                 title: "Housing Premium",
                 description: "Instant access to zero brokerage properties",
-                bgColor: "bg-purple-100",
-                iconBg: "bg-purple-500",
               },
               {
-                icon: "🏠",
+                icon: Calculator,
                 title: "Home Loans",
                 description: "Lowest interest rate offers",
-                bgColor: "bg-green-100",
-                iconBg: "bg-green-500",
               },
               {
-                icon: "🛡️",
+                icon: Shield,
                 title: "Housing Protect",
                 description: "Protection against cyber frauds",
-                bgColor: "bg-orange-100",
-                iconBg: "bg-orange-500",
               },
             ].map((service, index) => (
               <motion.div
@@ -539,14 +560,10 @@ export default function HomePage() {
                 whileHover={{ y: -5 }}
                 className="group"
               >
-                <Card
-                  className={`${service.bgColor} border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full`}
-                >
+                <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
                   <CardContent className="p-6">
-                    <div
-                      className={`w-16 h-16 ${service.iconBg} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <span className="text-2xl">{service.icon}</span>
+                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <service.icon className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">
                       {service.title}
@@ -702,25 +719,21 @@ export default function HomePage() {
                 number: "10K+",
                 label: "Properties",
                 icon: Building,
-                color: "bg-blue-500",
               },
               {
                 number: "50+",
                 label: "Cities",
                 icon: MapPin,
-                color: "bg-green-500",
               },
               {
                 number: "98%",
                 label: "Satisfaction",
                 icon: Star,
-                color: "bg-yellow-500",
               },
               {
                 number: "24/7",
                 label: "Support",
                 icon: Clock,
-                color: "bg-purple-500",
               },
             ].map((stat, index) => (
               <motion.div
@@ -732,12 +745,10 @@ export default function HomePage() {
                 whileHover={{ y: -5 }}
                 className="group"
               >
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
+                <Card className="border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
                   <CardContent className="p-6 text-center">
-                    <div
-                      className={`w-16 h-16 ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <stat.icon className="h-8 w-8 text-white" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <stat.icon className="h-8 w-8 text-primary" />
                     </div>
                     <div className="text-3xl font-bold text-gray-800 mb-1">
                       {stat.number}

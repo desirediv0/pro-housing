@@ -123,7 +123,6 @@ export default function ContactPage() {
       description: "Speak with our experts",
       value: "+91 98765 43210",
       action: "tel:+919876543210",
-      color: "from-green-500 to-emerald-500",
     },
     {
       icon: Mail,
@@ -131,7 +130,6 @@ export default function ContactPage() {
       description: "Send us a message",
       value: "info@prohousing.com",
       action: "mailto:info@prohousing.com",
-      color: "from-blue-500 to-indigo-500",
     },
     {
       icon: MapPin,
@@ -139,7 +137,6 @@ export default function ContactPage() {
       description: "Our office location",
       value: "Bandra West, Mumbai, Maharashtra 400050",
       action: "#",
-      color: "from-purple-500 to-pink-500",
     },
     {
       icon: Clock,
@@ -147,7 +144,6 @@ export default function ContactPage() {
       description: "We're here to help",
       value: "Mon - Sat: 9:00 AM - 7:00 PM",
       action: "#",
-      color: "from-orange-500 to-red-500",
     },
   ];
 
@@ -246,10 +242,8 @@ export default function ContactPage() {
                 className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white overflow-hidden"
               >
                 <CardContent className="p-6 text-center">
-                  <div
-                    className={`w-16 h-16 bg-gradient-to-r ${info.color} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <Icon className="h-8 w-8 text-white" />
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {info.title}
@@ -474,10 +468,10 @@ export default function ContactPage() {
           {/* Map and Additional Info */}
           <div className="space-y-8">
             {/* Map */}
-            <Card className="shadow-2xl border-0 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
+            <Card className="shadow-2xl border border-gray-200 overflow-hidden">
+              <CardHeader className="bg-gray-50 border-b border-gray-200">
                 <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
-                  <MapPin className="h-6 w-6 mr-3 text-green-600" />
+                  <MapPin className="h-6 w-6 mr-3 text-primary" />
                   Our Location
                 </CardTitle>
               </CardHeader>
@@ -510,7 +504,7 @@ export default function ContactPage() {
                       );
                     }}
                     variant="outline"
-                    className="w-full border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
+                    className="w-full border-primary text-primary hover:bg-primary hover:text-white"
                   >
                     Get Directions
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -520,8 +514,8 @@ export default function ContactPage() {
             </Card>
 
             {/* Features */}
-            <Card className="shadow-2xl border-0">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+            <Card className="shadow-2xl border border-gray-200">
+              <CardHeader className="bg-gray-50 border-b border-gray-200">
                 <CardTitle className="text-xl font-bold text-gray-900">
                   Why Choose Pro Housing?
                 </CardTitle>
@@ -535,8 +529,8 @@ export default function ContactPage() {
                         key={index}
                         className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                       >
-                        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Icon className="h-5 w-5 text-indigo-600" />
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Icon className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-1">
@@ -554,8 +548,8 @@ export default function ContactPage() {
             </Card>
 
             {/* Social Media */}
-            <Card className="shadow-2xl border-0">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+            <Card className="shadow-2xl border border-gray-200">
+              <CardHeader className="bg-gray-50 border-b border-gray-200">
                 <CardTitle className="text-xl font-bold text-gray-900">
                   Connect With Us
                 </CardTitle>
@@ -569,22 +563,18 @@ export default function ContactPage() {
                   {[
                     {
                       icon: Facebook,
-                      color: "hover:bg-blue-600",
                       name: "Facebook",
                     },
                     {
                       icon: Twitter,
-                      color: "hover:bg-blue-400",
                       name: "Twitter",
                     },
                     {
                       icon: Instagram,
-                      color: "hover:bg-pink-600",
                       name: "Instagram",
                     },
                     {
                       icon: Linkedin,
-                      color: "hover:bg-blue-700",
                       name: "LinkedIn",
                     },
                   ].map((social, index) => {
@@ -592,7 +582,7 @@ export default function ContactPage() {
                     return (
                       <button
                         key={index}
-                        className={`w-12 h-12 bg-gray-100 ${social.color} hover:text-white rounded-lg flex items-center justify-center transition-all duration-200 transform hover:scale-110`}
+                        className="w-12 h-12 bg-gray-100 hover:bg-primary hover:text-white rounded-lg flex items-center justify-center transition-all duration-200 transform hover:scale-110"
                         title={social.name}
                       >
                         <Icon className="h-5 w-5" />

@@ -36,25 +36,21 @@ export default function AboutPage() {
       icon: Home,
       number: "2500+",
       label: "Properties Sold",
-      color: "from-blue-500 to-blue-600",
     },
     {
       icon: Users,
       number: "5000+",
       label: "Happy Clients",
-      color: "from-green-500 to-green-600",
     },
     {
       icon: Building,
       number: "50+",
       label: "Cities Covered",
-      color: "from-purple-500 to-purple-600",
     },
     {
       icon: Award,
       number: "15+",
       label: "Years Experience",
-      color: "from-orange-500 to-orange-600",
     },
   ];
 
@@ -214,12 +210,10 @@ export default function AboutPage() {
               const Icon = stat.icon;
               return (
                 <motion.div key={index} variants={itemVariants}>
-                  <Card className="text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                  <Card className="text-center border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <CardContent className="p-8">
-                      <div
-                        className={`w-16 h-16 bg-gradient-to-r ${stat.color} rounded-full flex items-center justify-center mx-auto mb-4`}
-                      >
-                        <Icon className="h-8 w-8 text-white" />
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Icon className="h-8 w-8 text-primary" />
                       </div>
                       <motion.h3
                         className="text-3xl font-bold text-gray-900 mb-2"
