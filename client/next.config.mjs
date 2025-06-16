@@ -4,9 +4,6 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
-  experimental: {
-    forceSwcTransforms: true,
-  },
   images: {
     remotePatterns: [
       {
