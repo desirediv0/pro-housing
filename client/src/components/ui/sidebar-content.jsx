@@ -27,14 +27,14 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
       {activeContent.map((item) => (
         <Card
           key={item.id}
-          className="overflow-hidden shadow-xl border-0 bg-white"
+          className="overflow-hidden shadow-xl border-0 bg-white hover:shadow-2xl transition-all duration-300"
         >
           {/* Image Section */}
           {item.imageUrl && (
             <div className="aspect-video relative group">
               <Image
                 src={item.imageUrl}
-                alt="Property content"
+                alt="Property contact"
                 className="w-full h-full object-cover"
                 width={400}
                 height={400}
@@ -49,8 +49,11 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
               {/* Phone Number */}
               {item.phoneNumber && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-600">
-                    📞 Contact Agent
+                  <p className="text-sm font-medium text-gray-600 flex items-center">
+                    <span className="inline-flex items-center justify-center w-5 h-5 bg-blue-100 text-blue-600 rounded-full mr-2">
+                      📞
+                    </span>
+                    Contact Agent
                   </p>
                   <a
                     href={`tel:${item.phoneNumber}`}
@@ -77,8 +80,11 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
               {/* WhatsApp */}
               {item.whatsappNumber && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-600">
-                    💬 WhatsApp Chat
+                  <p className="text-sm font-medium text-gray-600 flex items-center">
+                    <span className="inline-flex items-center justify-center w-5 h-5 bg-green-100 text-green-600 rounded-full mr-2">
+                      💬
+                    </span>
+                    WhatsApp Chat
                   </p>
                   <a
                     href={`https://wa.me/${item.whatsappNumber.replace(
@@ -86,13 +92,15 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
                       ""
                     )}${
                       currentProperty
-                        ? `?text=Hi! I'm interested in the property: ${
-                            currentProperty.title
-                          } (${currentProperty.propertyType} in ${
-                            currentProperty.city
-                          }). Price: ₹${new Intl.NumberFormat("en-IN").format(
-                            currentProperty.price
-                          )}. Can you provide more details?`
+                        ? `?text=${encodeURIComponent(
+                            `Hi! I'm interested in the property: ${
+                              currentProperty.title
+                            } (${currentProperty.propertyType || ""} in ${
+                              currentProperty.city || ""
+                            }). Price: ₹${new Intl.NumberFormat("en-IN").format(
+                              currentProperty.price || 0
+                            )}. Can you provide more details?`
+                          )}`
                         : ""
                     }`}
                     target="_blank"
@@ -120,10 +128,13 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
               {/* Video Section */}
               {item.videoUrl && (
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-gray-600 flex items-center">
+                    <span className="inline-flex items-center justify-center w-5 h-5 bg-purple-100 text-purple-600 rounded-full mr-2">
+                      🎥
+                    </span>
                     Property Video
                   </p>
-                  <div className="aspect-video relative rounded-xl overflow-hidden bg-gray-100">
+                  <div className="aspect-video relative rounded-xl overflow-hidden bg-gray-100 shadow-md hover:shadow-lg transition-all duration-300">
                     <video
                       src={item.videoUrl}
                       controls
@@ -159,7 +170,7 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
       ))}
 
       {/* Additional Sidebar Card - Property Tips */}
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB]/5 to-[#7B68D9]/5">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB]/5 to-[#7B68D9]/5 hover:shadow-2xl transition-all duration-300">
         <CardHeader className="pb-3">
           <h3 className="font-bold text-gray-900">💡 Property Tips</h3>
         </CardHeader>
@@ -182,13 +193,13 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
       </Card>
 
       {/* CTA Card */}
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB] to-[#7B68D9] text-white hidden md:block">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB] to-[#7B68D9] text-white hidden md:block hover:shadow-2xl transition-all duration-300">
         <CardContent className="p-6 text-center">
           <h3 className="font-bold text-lg mb-2">Need Help?</h3>
           <p className="text-white/80 text-sm mb-4">
             Our property experts are here to assist you with any questions.
           </p>
-          <Button className="w-full bg-white text-[#5E4CBB] hover:bg-gray-100 rounded-xl font-semibold">
+          <Button className="w-full bg-white text-[#5E4CBB] hover:bg-gray-100 rounded-xl font-semibold transform hover:scale-105 transition-all duration-300">
             Get Expert Advice
           </Button>
         </CardContent>

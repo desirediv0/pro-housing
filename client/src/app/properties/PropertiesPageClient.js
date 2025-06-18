@@ -237,55 +237,108 @@ export default function PropertiesPageClient({ searchParams }) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-white shadow-lg border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+    <div className="min-h-screen bg-white">
+      {/* Header with Enhanced Search */}
+      <div className="bg-gradient-to-br from-[#5E4CBB] via-[#6B5FC7] to-[#7B68D9] relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+          <div className="absolute top-40 right-20 w-72 h-72 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
               Find Your Dream Property
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover premium properties for sale and rent. Browse through our
-              curated collection of homes, apartments, and commercial spaces.
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+              Discover premium properties in prime locations with advanced
+              search and filtering
             </p>
-          </div>
+          </motion.div>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <Input
-                  type="text"
-                  placeholder="Search by title, location, or property type..."
-                  value={filters.search}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      search: e.target.value,
-                    }))
-                  }
-                  className="h-14 text-lg rounded-xl border-gray-300 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
-                />
+          {/* Enhanced Search Bar */}
+          <motion.form
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            onSubmit={handleSearch}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-white/95 backdrop-blur-lg rounded-3xl p-6 shadow-2xl border border-white/20">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search by title, location, or property type..."
+                    value={filters.search}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        search: e.target.value,
+                      }))
+                    }
+                    className="h-14 pl-12 pr-6 text-lg rounded-2xl border-gray-200 focus:border-[#5E4CBB] focus:ring-[#5E4CBB] bg-white shadow-sm"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="h-14 px-8 bg-gradient-to-r from-[#5E4CBB] to-[#7B68D9] hover:from-[#4A3A9B] hover:to-[#6B5FC7] text-white rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <Search className="h-5 w-5 mr-2" />
+                  Search
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setShowFilters(!showFilters)}
+                  variant="outline"
+                  className="h-14 px-6 bg-gray-100 border-white/30 text-black hover:bg-white/30 hover:text-black/90 rounded-2xl text-lg font-semibold transition-all duration-300 backdrop-blur-sm"
+                >
+                  <SlidersHorizontal className="h-5 w-5 mr-2" />
+                  Filters
+                </Button>
               </div>
-              <Button
-                type="submit"
-                className="h-14 px-8 bg-[#5E4CBB] hover:bg-[#4A3A9B] text-white rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-              >
-                <Search className="h-5 w-5 mr-2" />
-                Search
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setShowFilters(!showFilters)}
-                variant="outline"
-                className="h-14 px-6 border-[#5E4CBB] text-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white rounded-xl text-lg font-semibold transition-all"
-              >
-                <SlidersHorizontal className="h-5 w-5 mr-2" />
-                Filters
-              </Button>
+
+              {/* Quick Filter Chips */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {[
+                  "For Sale",
+                  "For Rent",
+                  "1 BHK",
+                  "2 BHK",
+                  "3 BHK",
+                  "Furnished",
+                ].map((chip) => (
+                  <motion.button
+                    key={chip}
+                    type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      if (chip === "For Sale")
+                        handleFilterChange("listingType", "SALE");
+                      else if (chip === "For Rent")
+                        handleFilterChange("listingType", "RENT");
+                      else if (chip.includes("BHK"))
+                        handleFilterChange("bedrooms", chip.charAt(0));
+                      else if (chip === "Furnished")
+                        handleFilterChange("furnished", "true");
+                    }}
+                    className="px-4 py-2 bg-white/70 hover:bg-white text-gray-700 hover:text-[#5E4CBB] rounded-full text-sm font-medium transition-all duration-200 border border-gray-200 hover:border-[#5E4CBB] hover:shadow-md"
+                  >
+                    {chip}
+                  </motion.button>
+                ))}
+              </div>
             </div>
-          </form>
+          </motion.form>
 
           {/* Advanced Filters */}
           {showFilters && (
@@ -522,20 +575,40 @@ export default function PropertiesPageClient({ searchParams }) {
 
         {/* Loading State */}
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
             {[...Array(6)].map((_, index) => (
-              <Card key={index} className="overflow-hidden animate-pulse">
-                <div className="aspect-video bg-gray-300"></div>
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <Card className="overflow-hidden animate-pulse shadow-lg h-full">
+                  <div className="aspect-video bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-size-200 animate-pulse"></div>
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div className="h-8 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-2/3 animate-pulse"></div>
+                        <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-full w-16 animate-pulse"></div>
+                      </div>
+                      <div className="h-6 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-3/4 animate-pulse"></div>
+                      <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-1/2 animate-pulse"></div>
+                      <div className="flex space-x-4">
+                        <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-16 animate-pulse"></div>
+                        <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-16 animate-pulse"></div>
+                        <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-20 animate-pulse"></div>
+                      </div>
+                      <div className="h-10 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-xl w-full animate-pulse mt-6"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
 
         {/* Properties Grid/List */}
@@ -554,17 +627,23 @@ export default function PropertiesPageClient({ searchParams }) {
                 key={property.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="h-full"
               >
                 <Card
-                  className={`overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-white border-0 ${
-                    viewMode === "list" ? "flex flex-row" : ""
+                  className={`overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-0 h-full ${
+                    viewMode === "list" ? "flex flex-row" : "flex flex-col"
                   }`}
                 >
                   <div
                     className={`relative group ${
-                      viewMode === "list" ? "w-1/3" : "aspect-video"
+                      viewMode === "list" ? "w-1/3" : ""
                     }`}
+                    style={{
+                      height: viewMode === "list" ? "auto" : "240px",
+                      overflow: "hidden",
+                    }}
                   >
                     <Image
                       src={property.mainImage}
@@ -572,6 +651,7 @@ export default function PropertiesPageClient({ searchParams }) {
                       className="w-full h-full object-cover"
                       width={400}
                       height={300}
+                      style={{ objectFit: "cover", height: "100%" }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-4 left-4 flex space-x-2">
@@ -604,90 +684,105 @@ export default function PropertiesPageClient({ searchParams }) {
                   </div>
 
                   <CardContent
-                    className={`${viewMode === "list" ? "flex-1" : ""} p-6`}
+                    className={`${
+                      viewMode === "list" ? "flex-1" : "flex-1"
+                    } p-6`}
                   >
-                    <div className="space-y-4">
-                      {/* Price and Status */}
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="text-2xl font-bold text-[#5E4CBB] mb-1">
-                            {formatPrice(property.price)}
+                    <div className="h-full flex flex-col">
+                      {/* Top Section */}
+                      <div className="flex-1 space-y-4">
+                        {/* Price and Status */}
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="text-2xl font-bold text-[#5E4CBB] mb-1">
+                              {formatPrice(property.price)}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {property.listingType === "RENT"
+                                ? "per month"
+                                : ""}
+                            </div>
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {property.listingType === "RENT" ? "per month" : ""}
-                          </div>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              property.status === "AVAILABLE"
+                                ? "bg-green-100 text-green-800"
+                                : property.status === "SOLD"
+                                ? "bg-blue-100 text-blue-800"
+                                : property.status === "RENTED"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {property.status}
+                          </span>
                         </div>
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            property.status === "AVAILABLE"
-                              ? "bg-green-100 text-green-800"
-                              : property.status === "SOLD"
-                              ? "bg-blue-100 text-blue-800"
-                              : property.status === "RENTED"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {property.status}
-                        </span>
+
+                        {/* Title */}
+                        <h3 className="text-xl font-bold text-gray-900 leading-tight line-clamp-2">
+                          {property.title}
+                        </h3>
+
+                        {/* Location */}
+                        <div className="flex items-center text-gray-600">
+                          <MapPin className="h-4 w-4 mr-2 text-[#5E4CBB]" />
+                          <span className="text-sm line-clamp-1">
+                            {property.address}, {property.city}
+                          </span>
+                        </div>
+
+                        {/* Property Details */}
+                        <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600">
+                          {property.bedrooms && property.bedrooms > 0 && (
+                            <div className="flex items-center">
+                              <Bed className="h-4 w-4 mr-1 text-[#5E4CBB]" />
+                              <span>
+                                {property.bedrooms} Bed
+                                {property.bedrooms > 1 ? "s" : ""}
+                              </span>
+                            </div>
+                          )}
+                          {property.bathrooms && property.bathrooms > 0 && (
+                            <div className="flex items-center">
+                              <Bath className="h-4 w-4 mr-1 text-[#5E4CBB]" />
+                              <span>
+                                {property.bathrooms} Bath
+                                {property.bathrooms > 1 ? "s" : ""}
+                              </span>
+                            </div>
+                          )}
+                          {property.area && property.area > 0 && (
+                            <div className="flex items-center">
+                              <Square className="h-4 w-4 mr-1 text-[#5E4CBB]" />
+                              <SimpleAreaDisplay
+                                value={property.area}
+                                unit="sq_feet"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Description */}
+                        {property.description && (
+                          <p className="text-gray-700 text-sm leading-relaxed line-clamp-2">
+                            {property.description}
+                          </p>
+                        )}
                       </div>
 
-                      {/* Title */}
-                      <h3 className="text-xl font-bold text-gray-900 leading-tight">
-                        {property.title}
-                      </h3>
-
-                      {/* Location */}
-                      <div className="flex items-center text-gray-600">
-                        <MapPin className="h-4 w-4 mr-2 text-[#5E4CBB]" />
-                        <span className="text-sm">
-                          {property.address}, {property.city}
-                        </span>
-                      </div>
-
-                      {/* Property Details */}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        {property.bedrooms && (
-                          <div className="flex items-center">
-                            <Bed className="h-4 w-4 mr-1" />
-                            <span>{property.bedrooms} Bed</span>
-                          </div>
-                        )}
-                        {property.bathrooms && (
-                          <div className="flex items-center">
-                            <Bath className="h-4 w-4 mr-1" />
-                            <span>{property.bathrooms} Bath</span>
-                          </div>
-                        )}
-                        {property.area && (
-                          <div className="flex items-center">
-                            <Square className="h-4 w-4 mr-1" />
-                            <SimpleAreaDisplay
-                              value={property.area}
-                              unit="sq_feet"
-                            />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Description */}
-                      <p className="text-gray-700 text-sm leading-relaxed line-clamp-2">
-                        {property.description}
-                      </p>
-
-                      {/* Action Buttons */}
+                      {/* Action Buttons - Always at bottom */}
                       <div
                         className={`flex ${
                           viewMode === "list"
                             ? "flex-col space-y-2"
                             : "space-x-2"
-                        } pt-2`}
+                        } pt-4 mt-auto`}
                       >
                         <Link
-                          href={`/properties/${property.slug}`}
+                          href={`/properties/${property.slug || property.id}`}
                           className="flex-1"
                         >
-                          <Button className="w-full bg-[#5E4CBB] hover:bg-[#4A3A9B] text-white rounded-xl">
+                          <Button className="w-full bg-gradient-to-r from-[#5E4CBB] to-[#7B68D9] hover:from-[#4A3A9B] hover:to-[#6B5FC7] text-white rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg">
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </Button>
@@ -695,7 +790,7 @@ export default function PropertiesPageClient({ searchParams }) {
                         <Button
                           onClick={() => handleInquiry(property)}
                           variant="outline"
-                          className="flex-1 border-[#5E4CBB] text-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white rounded-xl"
+                          className="flex-1 border-[#5E4CBB] text-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white rounded-xl font-semibold transition-all duration-300"
                         >
                           <MessageCircle className="h-4 w-4 mr-2" />
                           Inquire

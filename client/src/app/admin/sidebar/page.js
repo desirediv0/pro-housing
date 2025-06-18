@@ -358,9 +358,11 @@ export default function SidebarContentManagement() {
   };
 
   const validatePhoneNumber = (phone) => {
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ""));
+    return phone.replace(/[^0-9+]/g, "");
   };
+
+  // Check if there's already an active content
+  const hasActiveContent = sidebarContent.some((content) => content.isActive);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-6">
@@ -383,13 +385,15 @@ export default function SidebarContentManagement() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            onClick={() => setShowAddForm(true)}
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            Add New Content
-          </Button>
+          {!hasActiveContent && (
+            <Button
+              onClick={() => setShowAddForm(true)}
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add New Content
+            </Button>
+          )}
 
           <Button
             onClick={loadSidebarContent}
@@ -725,13 +729,15 @@ export default function SidebarContentManagement() {
                   <p className="text-gray-500">
                     Start by adding your first sidebar content
                   </p>
-                  <Button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-2 rounded-lg"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Content
-                  </Button>
+                  {!hasActiveContent && (
+                    <Button
+                      onClick={() => setShowAddForm(true)}
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-2 rounded-lg"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Content
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

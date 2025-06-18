@@ -99,6 +99,43 @@ module.exports = {
         glow: "glow 2s ease-in-out infinite alternate",
         "bounce-slow": "bounce 3s infinite",
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        blob: "blob 7s infinite",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        slideUp: {
+          "0%": { opacity: "0", transform: "translateY(30px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        glow: {
+          "0%": { boxShadow: "0 0 20px rgba(73, 58, 177, 0.3)" },
+          "100%": { boxShadow: "0 0 30px rgba(73, 58, 177, 0.6)" },
+        },
+        blob: {
+          "0%": { transform: "translate(0px, 0px) scale(1)" },
+          "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+          "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+          "100%": { transform: "translate(0px, 0px) scale(1)" },
+        },
+      },
+      animationDelay: {
+        0: "0s",
+        100: "0.1s",
+        200: "0.2s",
+        300: "0.3s",
+        500: "0.5s",
+        700: "0.7s",
+        1000: "1s",
+        2000: "2s",
+        3000: "3s",
+        4000: "4s",
       },
       boxShadow: {
         premium:
