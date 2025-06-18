@@ -76,17 +76,39 @@ export default function SidebarContentManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Enhanced validation
     if (
       !formData.imageUrl &&
       !formData.videoUrl &&
       !formData.phoneNumber &&
       !formData.whatsappNumber
     ) {
-      toast.error("Please fill at least one field", {
-        style: { borderRadius: "12px", background: "#F59E0B", color: "#fff" },
-      });
+      toast.error(
+        "Please provide at least one content field (image, video, phone, or WhatsApp)",
+        {
+          style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
+        }
+      );
       return;
+    }
+
+    // Check if trying to create active content when active content already exists
+    if (formData.isActive && !editingContent) {
+      const hasActiveContent = sidebarContent.some(
+        (content) => content.isActive
+      );
+      if (hasActiveContent) {
+        toast.error(
+          "An active sidebar content already exists. Please deactivate it first or set this as inactive.",
+          {
+            style: {
+              borderRadius: "12px",
+              background: "#EF4444",
+              color: "#fff",
+            },
+          }
+        );
+        return;
+      }
     }
 
     try {
@@ -95,22 +117,43 @@ export default function SidebarContentManagement() {
       if (editingContent) {
         await adminAPI.updateSidebarContent(editingContent.id, formData);
         toast.success("Content updated successfully!", {
-          icon: "✅",
-          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+          icon: "✨",
+          style: {
+            borderRadius: "12px",
+            background: "#10B981",
+            color: "#fff",
+          },
         });
       } else {
         await adminAPI.createSidebarContent(formData);
         toast.success("Content created successfully!", {
           icon: "🎉",
-          style: { borderRadius: "12px", background: "#10B981", color: "#fff" },
+          style: {
+            borderRadius: "12px",
+            background: "#10B981",
+            color: "#fff",
+          },
         });
       }
 
-      resetForm();
+      // Reset form and state
+      setFormData({
+        imageUrl: "",
+        videoUrl: "",
+        phoneNumber: "",
+        whatsappNumber: "",
+        isActive: true,
+      });
+      setShowAddForm(false);
+      setEditingContent(null);
       loadSidebarContent();
     } catch (error) {
       console.error("Error saving content:", error);
-      toast.error(error.message || "Failed to save content", {
+
+      // Handle specific error messages from server
+      const errorMessage =
+        error.response?.data?.message || "Failed to save content";
+      toast.error(errorMessage, {
         style: { borderRadius: "12px", background: "#EF4444", color: "#fff" },
       });
     } finally {

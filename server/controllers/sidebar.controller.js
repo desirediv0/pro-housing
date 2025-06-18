@@ -105,6 +105,30 @@ const createSidebarContent = async (req, res) => {
       whatsappNumber,
     } = req.body;
 
+    // Check if an active sidebar content already exists
+    if (isActive) {
+      const existingActiveSidebar = await prisma.sidebarContent.findFirst({
+        where: { isActive: true },
+      });
+
+      if (existingActiveSidebar) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "An active sidebar content already exists. Please deactivate the existing one first or set this as inactive.",
+        });
+      }
+    }
+
+    // Validate that at least one content is provided
+    if (!imageUrl && !videoUrl && !phoneNumber && !whatsappNumber) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "At least one content field (image, video, phone, or WhatsApp) is required",
+      });
+    }
+
     // Validate URL formats if provided
     if (imageUrl && !isValidUrl(imageUrl)) {
       return res.status(400).json({

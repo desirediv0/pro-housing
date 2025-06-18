@@ -17,6 +17,7 @@ import {
   bulkUpdateHighlights,
   getPropertiesByHighlight,
   getPublicProperties,
+  getPublicPropertyBySlug,
 } from "../controllers/property.controller.js";
 import { verifyAdminToken } from "../middlewares/admin.middleware.js";
 import {
@@ -35,6 +36,7 @@ router.get("/search", getPublicProperties); // Public search with better filteri
 router.get("/featured", getFeaturedProperties); // Dedicated featured properties endpoint
 router.get("/trending", getTrendingProperties);
 router.get("/highlight/:highlight", getPropertiesByHighlight);
+router.get("/public/slug/:slug", getPublicPropertyBySlug); // Public property details by slug
 router.get("/public/:propertyId", getPropertyById); // Public property details
 
 // Admin routes (require authentication)

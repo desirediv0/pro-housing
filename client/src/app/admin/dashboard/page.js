@@ -19,6 +19,12 @@ import {
   Calendar,
   ArrowUpRight,
   Download,
+  ShoppingCart,
+  Home,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Clock,
 } from "lucide-react";
 import { adminAPI } from "@/lib/api-functions";
 import Link from "next/link";
@@ -35,6 +41,12 @@ export default function AdminDashboard() {
       pendingInquiries: 0,
       todayViews: 0,
       todayInquiries: 0,
+      saleProperties: 0,
+      rentProperties: 0,
+      leaseProperties: 0,
+      availableProperties: 0,
+      soldProperties: 0,
+      rentedProperties: 0,
     },
     trends: {
       viewsChange: 0,
@@ -45,6 +57,8 @@ export default function AdminDashboard() {
       monthlyInquiriesChange: 0,
     },
     propertyBreakdown: [],
+    listingTypeBreakdown: [],
+    statusBreakdown: [],
   });
   const [loading, setLoading] = useState(true);
   const [recentActivities, setRecentActivities] = useState([]);
@@ -109,9 +123,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {" "}
         {/* Total Properties */}
         <Card>
           <CardContent className="p-6">
@@ -134,6 +147,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+
         {/* Total Inquiries */}
         <Card>
           <CardContent className="p-6">
@@ -144,7 +158,7 @@ export default function AdminDashboard() {
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
                   {stats.overview?.totalInquiries || 0}
-                </p>{" "}
+                </p>
                 <div className="flex items-center mt-2 text-sm">
                   <span className="text-orange-600 flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
@@ -156,7 +170,8 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-        {/* Total Views */}
+
+        {/* Monthly Views */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
@@ -177,7 +192,8 @@ export default function AdminDashboard() {
               <TrendingUp className="h-12 w-12 text-purple-600" />
             </div>
           </CardContent>
-        </Card>{" "}
+        </Card>
+
         {/* Monthly Inquiries */}
         <Card>
           <CardContent className="p-6">
@@ -202,32 +218,88 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
+      {/* Listing Type Stats (Buy/Sell/Rent) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-0 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-600 text-sm font-medium">For Sale</p>
+                <p className="text-3xl font-bold text-blue-900">
+                  {stats.overview?.saleProperties || 0}
+                </p>
+                <p className="text-sm text-blue-600 mt-1">Buy Properties</p>
+              </div>
+              <ShoppingCart className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-0 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-600 text-sm font-medium">For Rent</p>
+                <p className="text-3xl font-bold text-green-900">
+                  {stats.overview?.rentProperties || 0}
+                </p>
+                <p className="text-sm text-green-600 mt-1">Rental Properties</p>
+              </div>
+              <Home className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-0 shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-600 text-sm font-medium">For Lease</p>
+                <p className="text-3xl font-bold text-purple-900">
+                  {stats.overview?.leaseProperties || 0}
+                </p>
+                <p className="text-sm text-purple-600 mt-1">Lease Properties</p>
+              </div>
+              <FileText className="h-8 w-8 text-purple-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Property Status Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {" "}
         <Card>
           <CardHeader>
-            <CardTitle>Property Status</CardTitle>
+            <CardTitle>Property Status Overview</CardTitle>
             <CardDescription>Current status of all properties</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Total</span>
-                <span className="text-blue-600 font-semibold">
-                  {stats.overview?.totalProperties || 0}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Active</span>
+              <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                  <span className="text-sm font-medium">Available</span>
+                </div>
                 <span className="text-green-600 font-semibold">
-                  {stats.overview?.activeProperties || 0}
+                  {stats.overview?.availableProperties || 0}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Views This Month</span>
+              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-center">
+                  <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
+                  <span className="text-sm font-medium">Sold</span>
+                </div>
+                <span className="text-blue-600 font-semibold">
+                  {stats.overview?.soldProperties || 0}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                <div className="flex items-center">
+                  <Home className="h-5 w-5 text-purple-600 mr-2" />
+                  <span className="text-sm font-medium">Rented</span>
+                </div>
                 <span className="text-purple-600 font-semibold">
-                  {stats.trends?.monthlyViews || 0}
+                  {stats.overview?.rentedProperties || 0}
                 </span>
               </div>
               <div className="pt-2">
@@ -240,6 +312,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Inquiry Status</CardTitle>
@@ -258,7 +331,7 @@ export default function AdminDashboard() {
                 <span className="text-orange-600 font-semibold">
                   {stats.overview?.pendingInquiries || 0}
                 </span>
-              </div>{" "}
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">This Month</span>
                 <span className="text-green-600 font-semibold">

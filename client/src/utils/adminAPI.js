@@ -65,7 +65,7 @@ class AdminAPI {
 
     const config = {
       headers,
-      credentials: 'include', // Add this to include cookies
+      credentials: "include", // Add this to include cookies
       ...options,
     };
 
@@ -79,7 +79,9 @@ class AdminAPI {
       console.log("Response Data:", responseData);
 
       if (!response.ok) {
-        throw new Error(responseData.message || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          responseData.message || `HTTP error! status: ${response.status}`
+        );
       }
 
       return responseData;
@@ -287,7 +289,7 @@ class AdminAPI {
     return this.requestWithFormData("/sidebar/upload/video", formData);
   }
 
-  async deleteFile(fileUrl) {
+  async deleteSidebarFile(fileUrl) {
     return this.request("/sidebar/upload/delete", {
       method: "DELETE",
       body: JSON.stringify({ fileUrl }),
@@ -319,11 +321,11 @@ class AdminAPI {
     try {
       const response = await this.request(endpoint);
       if (!response.success || !response.data) {
-        throw new Error('Failed to fetch inquiries');
+        throw new Error("Failed to fetch inquiries");
       }
       return response;
     } catch (error) {
-      console.error('Error in getAllInquiries:', error);
+      console.error("Error in getAllInquiries:", error);
       throw error;
     }
   }
@@ -362,14 +364,15 @@ class AdminAPI {
   // Admin Profile Management
   async updateProfile(profileData) {
     return this.request("/admin/profile", {
-      method: "PUT",  // Changed from PATCH to PUT to match server
+      method: "PUT", // Changed from PATCH to PUT to match server
       body: JSON.stringify(profileData),
     });
   }
 
   async updatePassword(passwordData) {
-    return this.request("/admin/change-password", {  // Updated endpoint to match server
-      method: "PUT",  // Changed from PATCH to PUT to match server
+    return this.request("/admin/change-password", {
+      // Updated endpoint to match server
+      method: "PUT", // Changed from PATCH to PUT to match server
       body: JSON.stringify(passwordData),
     });
   }

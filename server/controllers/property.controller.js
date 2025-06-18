@@ -80,7 +80,7 @@ export const createProperty = asyncHandler(async (req, res) => {
   const mainImageFile = req.files.mainImage[0];
   const mainImageResult = await uploadImageToS3(
     mainImageFile,
-    `${process.env.UPLOAD_FOLDER}/properties/main`,
+    `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/main`,
     85,
     1920
   );
@@ -150,7 +150,7 @@ export const createProperty = asyncHandler(async (req, res) => {
   if (req.files && req.files.images && req.files.images.length > 0) {
     const imageResults = await uploadMultipleImagesToS3(
       req.files.images,
-      `${process.env.UPLOAD_FOLDER}/properties/gallery`,
+      `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/gallery`,
       80,
       1920
     );
@@ -170,7 +170,10 @@ export const createProperty = asyncHandler(async (req, res) => {
   if (req.files && req.files.videos && req.files.videos.length > 0) {
     const videoResults = await Promise.all(
       req.files.videos.map((video) =>
-        uploadToS3(video, `${process.env.UPLOAD_FOLDER}/properties/videos`)
+        uploadToS3(
+          video,
+          `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/videos`
+        )
       )
     );
 
@@ -467,7 +470,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
     const mainImageFile = req.files.mainImage[0];
     const mainImageResult = await uploadImageToS3(
       mainImageFile,
-      `${process.env.UPLOAD_FOLDER}/properties/main`,
+      `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/main`,
       85,
       1920
     );
@@ -514,7 +517,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
   if (req.files && req.files.images && req.files.images.length > 0) {
     const imageResults = await uploadMultipleImagesToS3(
       req.files.images,
-      `${process.env.UPLOAD_FOLDER}/properties/gallery`,
+      `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/gallery`,
       80,
       1920
     );
@@ -542,7 +545,10 @@ export const updateProperty = asyncHandler(async (req, res) => {
   if (req.files && req.files.videos && req.files.videos.length > 0) {
     const videoResults = await Promise.all(
       req.files.videos.map((video) =>
-        uploadToS3(video, `${process.env.UPLOAD_FOLDER}/properties/videos`)
+        uploadToS3(
+          video,
+          `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/videos`
+        )
       )
     );
 
@@ -670,7 +676,7 @@ export const addPropertyImages = asyncHandler(async (req, res) => {
   // Upload images
   const imageResults = await uploadMultipleImagesToS3(
     req.files.images,
-    `${process.env.UPLOAD_FOLDER}/properties/gallery`,
+    `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/gallery`,
     80,
     1920
   );
@@ -748,7 +754,10 @@ export const addPropertyVideos = asyncHandler(async (req, res) => {
   // Upload videos
   const videoResults = await Promise.all(
     req.files.videos.map((video) =>
-      uploadToS3(video, `${process.env.UPLOAD_FOLDER}/properties/videos`)
+      uploadToS3(
+        video,
+        `${process.env.UPLOAD_FOLDER || "prohousing"}/properties/videos`
+      )
     )
   );
 
@@ -1268,4 +1277,55 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
       "Properties retrieved successfully"
     )
   );
+});
+
+// Get Public Property by Slug
+export const getPublicPropertyBySlug = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+
+  const property = await prisma.property.findUnique({
+    where: {
+      slug,
+      isActive: true,
+    },
+    include: {
+      images: {
+        orderBy: { order: "asc" },
+      },
+      videos: true,
+    },
+  });
+
+  if (!property) {
+    throw new ApiError(404, "Property not found");
+  }
+
+  // Update views count
+  await prisma.property.update({
+    where: { id: property.id },
+    data: { views: { increment: 1 } },
+  });
+
+  // Format the response
+  const formattedProperty = {
+    ...property,
+    formattedPrice: new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(property.price),
+    location: `${property.locality ? property.locality + ", " : ""}${
+      property.city
+    }, ${property.state}`,
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponsive(
+        200,
+        formattedProperty,
+        "Property retrieved successfully"
+      )
+    );
 });

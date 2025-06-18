@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, Play, User, Mail } from "lucide-react";
 import Image from "next/image";
 
-const SidebarContent = ({ content = [] }) => {
+const SidebarContent = ({ content = [], currentProperty = null }) => {
   // If content is null or undefined, use an empty array
   const safeContent = Array.isArray(content) ? content : [];
 
@@ -50,19 +50,24 @@ const SidebarContent = ({ content = [] }) => {
               {item.phoneNumber && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-600">
-                    Contact Agent
+                    📞 Contact Agent
                   </p>
                   <a
                     href={`tel:${item.phoneNumber}`}
-                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-200 group"
+                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group shadow-md hover:shadow-lg transform hover:scale-105"
                   >
-                    <div className="p-2 bg-blue-500 rounded-lg group-hover:bg-blue-600 transition-colors">
-                      <Phone className="h-4 w-4 text-white" />
+                    <div className="p-3 bg-blue-500 rounded-full group-hover:bg-blue-600 transition-all duration-300 shadow-lg">
+                      <Phone className="h-5 w-5 text-white" />
                     </div>
-                    <div>
-                      <p className="font-semibold text-blue-700">Call Now</p>
-                      <p className="text-lg text-blue-600">
+                    <div className="flex-1">
+                      <p className="font-bold text-blue-700 text-lg">
+                        Call Now
+                      </p>
+                      <p className="text-xl font-semibold text-blue-600 tracking-wide">
                         {item.phoneNumber}
+                      </p>
+                      <p className="text-xs text-blue-500 mt-1">
+                        ⚡ Instant Response
                       </p>
                     </div>
                   </a>
@@ -71,27 +76,45 @@ const SidebarContent = ({ content = [] }) => {
 
               {/* WhatsApp */}
               {item.whatsappNumber && (
-                <a
-                  href={`https://wa.me/${item.whatsappNumber.replace(
-                    /[^0-9]/g,
-                    ""
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-200 group"
-                >
-                  <div className="p-2 bg-green-500 rounded-lg group-hover:bg-green-600 transition-colors">
-                    <MessageCircle className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-green-700">
-                      WhatsApp Chat
-                    </p>
-                    <p className="text-lg text-green-600">
-                      Quick response guaranteed
-                    </p>
-                  </div>
-                </a>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-600">
+                    💬 WhatsApp Chat
+                  </p>
+                  <a
+                    href={`https://wa.me/${item.whatsappNumber.replace(
+                      /[^0-9]/g,
+                      ""
+                    )}${
+                      currentProperty
+                        ? `?text=Hi! I'm interested in the property: ${
+                            currentProperty.title
+                          } (${currentProperty.propertyType} in ${
+                            currentProperty.city
+                          }). Price: ₹${new Intl.NumberFormat("en-IN").format(
+                            currentProperty.price
+                          )}. Can you provide more details?`
+                        : ""
+                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-300 group shadow-md hover:shadow-lg transform hover:scale-105"
+                  >
+                    <div className="p-3 bg-green-500 rounded-full group-hover:bg-green-600 transition-all duration-300 shadow-lg">
+                      <MessageCircle className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-green-700 text-lg">
+                        WhatsApp Chat
+                      </p>
+                      <p className="text-xl font-semibold text-green-600 tracking-wide">
+                        {item.whatsappNumber}
+                      </p>
+                      <p className="text-xs text-green-500 mt-1">
+                        💚 Quick Response Guaranteed
+                      </p>
+                    </div>
+                  </a>
+                </div>
               )}
 
               {/* Video Section */}
@@ -159,7 +182,7 @@ const SidebarContent = ({ content = [] }) => {
       </Card>
 
       {/* CTA Card */}
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB] to-[#7B68D9] text-white">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB] to-[#7B68D9] text-white hidden md:block">
         <CardContent className="p-6 text-center">
           <h3 className="font-bold text-lg mb-2">Need Help?</h3>
           <p className="text-white/80 text-sm mb-4">

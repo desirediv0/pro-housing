@@ -189,24 +189,6 @@ export default function AdminLogin() {
             </CardContent>
           </Card>
 
-          {/* Demo credentials for development */}
-          <div className="mt-6 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl">
-            <div className="flex items-center mb-3">
-              <div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>
-              <p className="text-sm text-amber-800 font-semibold">
-                Demo Credentials
-              </p>
-            </div>
-            <div className="space-y-1 text-sm text-amber-700">
-              <p>
-                <span className="font-medium">Email:</span> admin@prohousing.com
-              </p>
-              <p>
-                <span className="font-medium">Password:</span> AdminPass123!
-              </p>
-            </div>
-          </div>
-
           {/* Additional Info */}
           <div className="mt-8 text-center">
             <p className="text-xs text-gray-400">

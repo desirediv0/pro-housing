@@ -59,11 +59,19 @@ router.post("/upload/image", uploadFiles.single("image"), async (req, res) => {
       });
     }
 
+    // Validate file size (limit to 10MB)
+    if (req.file.size > 10 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: "Image file size must be less than 10MB",
+      });
+    }
+
     const result = await uploadImageToS3(
       req.file,
-      `${process.env.UPLOAD_FOLDER}/sidebar/images`,
-      80,
-      1200
+      `${process.env.UPLOAD_FOLDER || "prohousing"}/sidebar/images`,
+      85,
+      1920
     );
 
     res.json({
@@ -112,7 +120,7 @@ router.post("/upload/video", uploadFiles.single("video"), async (req, res) => {
 
     const result = await uploadToS3(
       req.file,
-      `${process.env.UPLOAD_FOLDER}/sidebar/videos`
+      `${process.env.UPLOAD_FOLDER || "prohousing"}/sidebar/videos`
     );
 
     res.json({

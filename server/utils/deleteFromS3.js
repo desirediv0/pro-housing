@@ -89,7 +89,7 @@ export const getFileUrl = (filename) => {
     return filename;
   }
 
-  // Otherwise, construct the full URL
+  // Otherwise, construct the full URL using custom CDN
   const cleanFilename = filename.startsWith("/") ? filename.slice(1) : filename;
-  return `https://${process.env.SPACES_BUCKET}.${process.env.SPACES_REGION}.digitaloceanspaces.com/${cleanFilename}`;
+  return `https://desirediv-storage.blr1.cdn.digitaloceanspaces.com/${cleanFilename}`;
 };

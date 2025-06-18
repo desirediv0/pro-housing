@@ -11,7 +11,6 @@ import {
   Bed,
   Bath,
   Square,
-  Phone,
   Clock,
   CheckCircle,
   Calendar,
@@ -226,11 +225,14 @@ export default function HomePage() {
               </div>
 
               {/* Search Bar */}
-              <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
-                <form onSubmit={handleSearch} className="space-y-6">
+              <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-4 sm:p-6 shadow-2xl border border-white/20">
+                <form
+                  onSubmit={handleSearch}
+                  className="space-y-4 sm:space-y-6"
+                >
                   {/* Main Search Row */}
-                  <div className="flex gap-4">
-                    <div className="w-48">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <div className="w-full sm:w-48">
                       <Select value={location} onValueChange={setLocation}>
                         <SelectTrigger className="w-full h-12 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-primary ring-offset-2 ring-offset-white font-medium text-gray-800">
                           <SelectValue
@@ -302,14 +304,14 @@ export default function HomePage() {
 
                     <Button
                       type="submit"
-                      className="h-12 px-8 bg-gradient-to-r from-primary to-primary/90 hover:to-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="h-12 px-6 sm:px-8 bg-gradient-to-r from-primary to-primary/90 hover:to-primary text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
                     >
                       Search
                     </Button>
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <div className="flex-1">
                       <Select
                         value={listingType}
@@ -587,7 +589,7 @@ export default function HomePage() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
           <div className="mb-12">
             <h2 className="text-4xl font-bold text-gray-800 mb-2">
               Housing&apos;s top picks
@@ -930,20 +932,8 @@ export default function HomePage() {
                         </div>
 
                         <div className="flex space-x-2">
-                          <Button
-                            onClick={() => {
-                              window.open(
-                                `tel:${property.phoneNumber}`,
-                                "_blank"
-                              );
-                            }}
-                            size="sm"
-                            className="flex-1 bg-primary/10 hover:bg-primary/20 text-primary border-0"
-                            variant="outline"
-                          >
-                            <Phone className="h-4 w-4 mr-1" />
-                            Call
-                          </Button>
+                          {/* Call Button - Show number from sidebar content if available */}
+
                           <Link
                             href={`/properties/${property.slug || property.id}`}
                             className="flex-1"

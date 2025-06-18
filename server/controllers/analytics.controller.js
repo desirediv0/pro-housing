@@ -63,6 +63,20 @@ const getDashboardStats = async (req, res) => {
       _count: { id: true },
     });
 
+    // Property counts by listing type (Buy/Sell/Rent)
+    const listingTypeStats = await prisma.property.groupBy({
+      by: ["listingType"],
+      _count: { id: true },
+      where: { isActive: true },
+    });
+
+    // Property counts by status
+    const statusStats = await prisma.property.groupBy({
+      by: ["status"],
+      _count: { id: true },
+      where: { isActive: true },
+    });
+
     // Total properties count
     const totalProperties = await prisma.property.count();
     const activeProperties = await prisma.property.count({
@@ -87,6 +101,18 @@ const getDashboardStats = async (req, res) => {
     const todayInquiries = todayStats?.totalInquiries || 0;
     const yesterdayInquiries = yesterdayStats?.totalInquiries || 0;
 
+    // Process listing type statistics
+    const listingTypeCounts = listingTypeStats.reduce((acc, item) => {
+      acc[item.listingType] = item._count.id;
+      return acc;
+    }, {});
+
+    // Process status statistics
+    const statusCounts = statusStats.reduce((acc, item) => {
+      acc[item.status] = item._count.id;
+      return acc;
+    }, {});
+
     res.json({
       success: true,
       data: {
@@ -97,6 +123,16 @@ const getDashboardStats = async (req, res) => {
           pendingInquiries,
           todayViews,
           todayInquiries,
+          // Add listing type counts
+          saleProperties: listingTypeCounts.SALE || 0,
+          rentProperties: listingTypeCounts.RENT || 0,
+          leaseProperties: listingTypeCounts.LEASE || 0,
+          // Add status counts
+          availableProperties: statusCounts.AVAILABLE || 0,
+          soldProperties: statusCounts.SOLD || 0,
+          rentedProperties: statusCounts.RENTED || 0,
+          underNegotiationProperties: statusCounts.UNDER_NEGOTIATION || 0,
+          withdrawnProperties: statusCounts.WITHDRAWN || 0,
         },
         trends: {
           viewsChange: calculateChange(todayViews, yesterdayViews),
@@ -113,6 +149,8 @@ const getDashboardStats = async (req, res) => {
           ),
         },
         propertyBreakdown: propertyStats,
+        listingTypeBreakdown: listingTypeStats,
+        statusBreakdown: statusStats,
       },
     });
   } catch (error) {
