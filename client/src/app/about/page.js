@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -8,21 +6,14 @@ import {
   Home,
   Star,
   Shield,
-  Clock,
   Heart,
   TrendingUp,
   Building,
   CheckCircle,
   Target,
-  Globe,
   Phone,
-  Mail,
-  MapPin,
   Linkedin,
   Twitter,
-  Facebook,
-  Instagram,
-  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -143,7 +134,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <motion.section
-        className="relative bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD] py-20 overflow-hidden"
+        className="relative bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C] py-20 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -153,12 +144,20 @@ export default function AboutPage() {
           <motion.div
             className="absolute -top-4 -right-4 w-72 h-72 bg-white/10 rounded-full blur-3xl"
             animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            transition={{
+              duration: 20,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
           />
           <motion.div
             className="absolute -bottom-8 -left-8 w-96 h-96 bg-white/5 rounded-full blur-3xl"
             animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            transition={{
+              duration: 25,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
           />
         </div>
 
@@ -187,7 +186,7 @@ export default function AboutPage() {
           >
             <Button
               size="lg"
-              className="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="bg-white text-[#1A3B4C] hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <Phone className="h-5 w-5 mr-2" />
               Get In Touch
@@ -213,7 +212,7 @@ export default function AboutPage() {
                   <Card className="text-center border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <CardContent className="p-8">
                       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Icon className="h-8 w-8 text-primary" />
+                        <Icon className="h-8 w-8 text-[#1A3B4C]" />
                       </div>
                       <motion.h3
                         className="text-3xl font-bold text-gray-900 mb-2"
@@ -268,7 +267,7 @@ export default function AboutPage() {
               </div>
               <div className="mt-8">
                 <Link href="/contact">
-                  <Button className="gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0">
+                  <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0">
                     Learn More
                     <TrendingUp className="h-5 w-5 ml-2" />
                   </Button>
@@ -323,7 +322,7 @@ export default function AboutPage() {
                 <motion.div key={index} variants={itemVariants}>
                   <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <CardContent className="p-8 text-center">
-                      <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <div className="w-16 h-16 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] rounded-full flex items-center justify-center mx-auto mb-6">
                         <Icon className="h-8 w-8 text-white" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 mb-4">
@@ -366,7 +365,7 @@ export default function AboutPage() {
                 <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
                   <div className="relative h-64">
                     <Image
-                      src={member.image}
+                      src={member.image || "/placeholder.svg"}
                       alt={member.name}
                       fill
                       className="object-cover"
@@ -377,7 +376,7 @@ export default function AboutPage() {
                     <h3 className="text-xl font-bold text-gray-900 mb-2">
                       {member.name}
                     </h3>
-                    <p className="text-indigo-600 font-semibold mb-3">
+                    <p className="text-[#1A3B4C] font-semibold mb-3">
                       {member.position}
                     </p>
                     <p className="text-gray-600 mb-4">{member.description}</p>

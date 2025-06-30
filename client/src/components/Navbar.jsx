@@ -13,8 +13,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import Image from "next/image";
 
 const Navbar = () => {
   const { admin, isAuthenticated } = useAuth();
@@ -27,6 +28,7 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -42,8 +44,8 @@ const Navbar = () => {
     <nav
       className={`sticky top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "glass-navbar-scrolled shadow-premium-lg border-b border-gray-200/50"
-          : "glass-navbar shadow-premium border-b border-gray-100/50"
+          ? "bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-200/50"
+          : "bg-white/90 backdrop-blur-md shadow-md border-b border-gray-100/50"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,22 +53,8 @@ const Navbar = () => {
           {/* Premium Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center group">
-              <div className="relative">
-                <div className="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-premium group-hover:shadow-glow transition-all duration-300 group-hover:scale-105 animate-glow">
-                  <Home className="h-6 w-6 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-warning to-orange-500 rounded-full border-2 border-white animate-pulse">
-                  <Sparkles className="h-2 w-2 text-white absolute top-0.5 left-0.5" />
-                </div>
-              </div>
-              <div className="ml-4">
-                <h1 className="text-2xl font-black font-display text-primary">
-                  Pro Housing
-                </h1>
-                <p className="text-xs text-text-secondary font-medium">
-                  Premium Real Estate
-                </p>
-              </div>
+             <Image src="/logo.png" alt="Pro Housing Logo" width={40} height={40} className="h-16 w-full transition-transform duration-300 group-hover:scale-110" />
+
             </Link>
           </div>
 
@@ -75,61 +63,57 @@ const Navbar = () => {
             {/* Home */}
             <Link
               href="/"
-              className="text-text-primary hover:text-primary font-semibold transition-all duration-300 flex items-center space-x-2 group relative"
+              className="text-gray-800 hover:text-[#1A3B4C] font-semibold transition-all duration-300 flex items-center space-x-2 group relative"
             >
               <Home className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
               <span>Home</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 gradient-primary group-hover:w-full transition-all duration-300"></div>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] group-hover:w-full transition-all duration-300"></div>
             </Link>
 
             {/* Properties Dropdown */}
             <div className="relative group">
-              <button className="text-text-primary hover:text-primary font-semibold transition-all duration-300 flex items-center space-x-2 relative">
+              <button className="text-gray-800 hover:text-[#1A3B4C] font-semibold transition-all duration-300 flex items-center space-x-2 relative">
                 <Building className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 <span>Properties</span>
                 <ChevronDown className="h-4 w-4 group-hover:rotate-180 transition-transform duration-300" />
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 gradient-primary group-hover:w-full transition-all duration-300"></div>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] group-hover:w-full transition-all duration-300"></div>
               </button>
 
               {/* Premium Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-3 w-72 bg-white rounded-2xl shadow-premium-lg border border-gray-200/30 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+              <div className="absolute top-full left-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-200/30 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
                 <div className="p-4">
                   <Link
                     href="/properties"
-                    className="flex items-center px-4 py-3 text-text-primary hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-200 font-semibold group"
+                    className="flex items-center px-4 py-3 text-gray-800 hover:bg-[#1A3B4C]/10 hover:text-[#1A3B4C] rounded-xl transition-all duration-200 font-semibold group"
                   >
                     <Building className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
                     <div>
                       <div>All Properties</div>
-                      <div className="text-xs text-text-secondary">
+                      <div className="text-xs text-gray-600">
                         Browse complete catalog
                       </div>
                     </div>
                   </Link>
-
                   <div className="border-t border-gray-200/40 my-3"></div>
-
                   {propertyTypes.map((type) => (
                     <Link
                       key={type.name}
                       href={type.href}
-                      className="flex items-center px-4 py-3 text-text-primary hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-200 group"
+                      className="flex items-center px-4 py-3 text-gray-800 hover:bg-[#1A3B4C]/10 hover:text-[#1A3B4C] rounded-xl transition-all duration-200 group"
                     >
                       <type.icon className="h-4 w-4 mr-3 group-hover:scale-110 transition-transform" />
                       <span>{type.name}</span>
                     </Link>
                   ))}
-
                   <div className="border-t border-gray-200/40 my-3"></div>
-
                   <Link
                     href="/properties?featured=true"
-                    className="flex items-center px-4 py-3 text-warning hover:bg-warning/10 rounded-xl transition-all duration-200 font-semibold group"
+                    className="flex items-center px-4 py-3 text-yellow-600 hover:bg-yellow-50 rounded-xl transition-all duration-200 font-semibold group"
                   >
                     <Star className="h-4 w-4 mr-3 group-hover:scale-110 transition-transform" />
                     <div>
                       <div>Featured Properties</div>
-                      <div className="text-xs text-warning/70">
+                      <div className="text-xs text-yellow-600/70">
                         Premium selections
                       </div>
                     </div>
@@ -141,26 +125,26 @@ const Navbar = () => {
             {/* About */}
             <Link
               href="/about"
-              className="text-text-primary hover:text-primary font-semibold transition-all duration-300 relative group"
+              className="text-gray-800 hover:text-[#1A3B4C] font-semibold transition-all duration-300 relative group"
             >
               <span>About</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 gradient-primary group-hover:w-full transition-all duration-300"></div>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] group-hover:w-full transition-all duration-300"></div>
             </Link>
 
             {/* Contact */}
             <Link
               href="/contact"
-              className="text-text-primary hover:text-primary font-semibold transition-all duration-300 flex items-center space-x-2 group relative"
+              className="text-gray-800 hover:text-[#1A3B4C] font-semibold transition-all duration-300 flex items-center space-x-2 group relative"
             >
               <Phone className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
               <span>Contact</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 gradient-primary group-hover:w-full transition-all duration-300"></div>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] group-hover:w-full transition-all duration-300"></div>
             </Link>
 
             {/* Search Button */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="text-text-primary hover:text-primary transition-all duration-300 p-3 hover:bg-primary/10 rounded-xl group"
+              className="text-gray-800 hover:text-[#1A3B4C] transition-all duration-300 p-3 hover:bg-[#1A3B4C]/10 rounded-xl group"
             >
               <Search className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
             </button>
@@ -169,7 +153,7 @@ const Navbar = () => {
             {isAuthenticated && admin && (
               <Link
                 href="/admin/dashboard"
-                className="text-primary hover:text-primary-dark font-semibold transition-all duration-300 flex items-center space-x-2 px-4 py-2 bg-primary/10 rounded-xl hover:bg-primary/20 border border-primary/20 hover:border-primary/30"
+                className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold transition-all duration-300 flex items-center space-x-2 px-4 py-2 bg-[#1A3B4C]/10 rounded-xl hover:bg-[#1A3B4C]/20 border border-[#1A3B4C]/20 hover:border-[#1A3B4C]/30"
               >
                 <User className="h-4 w-4" />
                 <span>Admin Panel</span>
@@ -182,7 +166,7 @@ const Navbar = () => {
             {/* Mobile Search */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="text-text-primary hover:text-primary transition-all duration-300 p-2 hover:bg-primary/10 rounded-lg"
+              className="text-gray-800 hover:text-[#1A3B4C] transition-all duration-300 p-2 hover:bg-[#1A3B4C]/10 rounded-lg"
             >
               <Search className="h-5 w-5" />
             </button>
@@ -190,7 +174,7 @@ const Navbar = () => {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-text-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary p-2 rounded-lg transition-all duration-300"
+              className="text-gray-800 hover:text-[#1A3B4C] focus:outline-none focus:ring-[#1A3B4C] p-2 rounded-lg transition-all duration-300"
               aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? (
@@ -204,11 +188,11 @@ const Navbar = () => {
 
         {/* Premium Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200/30 glass-navbar rounded-b-2xl animate-fade-in">
+          <div className="lg:hidden border-t border-gray-200/30 bg-white/95 backdrop-blur-lg rounded-b-2xl">
             <div className="px-4 py-6 space-y-3">
               <Link
                 href="/"
-                className="flex items-center space-x-3 px-4 py-3 text-text-primary hover:text-primary hover:bg-primary/10 rounded-xl transition-all duration-300 font-semibold"
+                className="flex items-center space-x-3 px-4 py-3 text-gray-800 hover:text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Home className="h-5 w-5" />
@@ -217,7 +201,7 @@ const Navbar = () => {
 
               <Link
                 href="/properties"
-                className="flex items-center space-x-3 px-4 py-3 text-text-primary hover:text-primary hover:bg-primary/10 rounded-xl transition-all duration-300 font-semibold"
+                className="flex items-center space-x-3 px-4 py-3 text-gray-800 hover:text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Building className="h-5 w-5" />
@@ -228,7 +212,7 @@ const Navbar = () => {
                 <Link
                   key={type.name}
                   href={type.href}
-                  className="flex items-center space-x-3 px-4 py-3 text-text-secondary hover:text-primary hover:bg-primary/10 rounded-xl transition-all duration-300 ml-4"
+                  className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 ml-4"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <type.icon className="h-4 w-4" />
@@ -238,7 +222,7 @@ const Navbar = () => {
 
               <Link
                 href="/about"
-                className="flex items-center space-x-3 px-4 py-3 text-text-primary hover:text-primary hover:bg-primary/10 rounded-xl transition-all duration-300 font-semibold"
+                className="flex items-center space-x-3 px-4 py-3 text-gray-800 hover:text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span>About</span>
@@ -246,7 +230,7 @@ const Navbar = () => {
 
               <Link
                 href="/contact"
-                className="flex items-center space-x-3 px-4 py-3 text-text-primary hover:text-primary hover:bg-primary/10 rounded-xl transition-all duration-300 font-semibold"
+                className="flex items-center space-x-3 px-4 py-3 text-gray-800 hover:text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 font-semibold"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Phone className="h-5 w-5" />
@@ -257,7 +241,7 @@ const Navbar = () => {
               {isAuthenticated && admin && (
                 <Link
                   href="/admin/dashboard"
-                  className="flex items-center space-x-3 px-4 py-3 text-primary bg-primary/10 rounded-xl transition-all duration-300 font-semibold border border-primary/20"
+                  className="flex items-center space-x-3 px-4 py-3 text-[#1A3B4C] bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 font-semibold border border-[#1A3B4C]/20"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <User className="h-5 w-5" />
@@ -270,14 +254,14 @@ const Navbar = () => {
 
         {/* Premium Search Overlay */}
         {searchOpen && (
-          <div className="absolute top-full left-0 right-0 glass-navbar border-t border-gray-200/30 shadow-premium-lg animate-fade-in">
+          <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200/30 shadow-xl">
             <div className="max-w-4xl mx-auto p-6">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-600" />
                 <input
                   type="text"
                   placeholder="Search properties, locations, or keywords..."
-                  className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white/80 backdrop-blur-sm shadow-premium transition-all duration-300 text-text-primary placeholder-text-secondary"
+                  className="w-full pl-12 pr-4 py-4 text-lg border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-[#1A3B4C] focus:border-[#1A3B4C] bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-300 text-gray-800 placeholder-gray-600"
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       const query = e.target.value;
@@ -291,7 +275,7 @@ const Navbar = () => {
                 />
                 <button
                   onClick={() => setSearchOpen(false)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -299,7 +283,7 @@ const Navbar = () => {
 
               {/* Quick search suggestions */}
               <div className="mt-4 flex flex-wrap gap-2">
-                <span className="text-sm text-text-secondary font-medium">
+                <span className="text-sm text-gray-600 font-medium">
                   Popular searches:
                 </span>
                 {[
@@ -310,7 +294,7 @@ const Navbar = () => {
                 ].map((term) => (
                   <button
                     key={term}
-                    className="px-4 py-2 bg-white/70 hover:bg-primary/20 text-text-primary hover:text-primary rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm border border-gray-200/40 hover:border-primary/40 shadow-sm hover:shadow-md"
+                    className="px-4 py-2 bg-white/70 hover:bg-[#1A3B4C]/20 text-gray-800 hover:text-[#1A3B4C] rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm border border-gray-200/40 hover:border-[#1A3B4C]/40 shadow-sm hover:shadow-md"
                     onClick={() => {
                       window.location.href = `/properties?search=${encodeURIComponent(
                         term

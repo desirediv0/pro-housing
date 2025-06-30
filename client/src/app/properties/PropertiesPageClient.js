@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -71,14 +71,12 @@ export default function PropertiesPageClient({ searchParams }) {
         limit: 12,
         ...filters,
       };
-
       // Remove empty filters
       Object.keys(params).forEach((key) => {
         if (!params[key]) delete params[key];
       });
 
       const response = await publicAPI.getAllProperties(params);
-
       // Handle API response
       const data = response.data.data || response.data || {};
       setProperties(data.data || data || []);
@@ -106,10 +104,9 @@ export default function PropertiesPageClient({ searchParams }) {
       bathrooms: searchParams?.bathrooms || "",
       furnished: searchParams?.furnished || "",
       parking: searchParams?.parking || "",
-      page: parseInt(searchParams?.page) || 1,
+      page: Number.parseInt(searchParams?.page) || 1,
       limit: 12,
     };
-
     setFilters(newFilters);
     setCurrentPage(newFilters.page);
   }, [searchParams]);
@@ -120,13 +117,11 @@ export default function PropertiesPageClient({ searchParams }) {
 
   const updateURL = (newFilters) => {
     const params = new URLSearchParams();
-
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value && key !== "limit") {
         params.set(key, value);
       }
     });
-
     const queryString = params.toString();
     const newURL = queryString ? `/properties?${queryString}` : "/properties";
     router.push(newURL, { scroll: false });
@@ -138,7 +133,6 @@ export default function PropertiesPageClient({ searchParams }) {
       [filterName]: value,
       page: filterName === "page" ? value : 1, // Reset to page 1 for new searches
     };
-
     setFilters(newFilters);
     setCurrentPage(newFilters.page);
     updateURL(newFilters);
@@ -165,7 +159,6 @@ export default function PropertiesPageClient({ searchParams }) {
 
   const handleInquirySubmit = async (e) => {
     e.preventDefault();
-
     if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.message) {
       toast.error("Please fill in all required fields");
       return;
@@ -178,7 +171,6 @@ export default function PropertiesPageClient({ searchParams }) {
         propertyId: selectedProperty.id,
         propertyTitle: selectedProperty.title,
       });
-
       toast.success("Inquiry sent successfully! We will contact you soon.");
       setShowInquiryModal(false);
       setInquiryForm({ name: "", email: "", phone: "", message: "" });
@@ -206,7 +198,6 @@ export default function PropertiesPageClient({ searchParams }) {
       page: 1,
       limit: 12,
     };
-
     setFilters(clearedFilters);
     setCurrentPage(1);
     updateURL(clearedFilters);
@@ -226,7 +217,7 @@ export default function PropertiesPageClient({ searchParams }) {
     <select
       value={value}
       onChange={(e) => onValueChange(e.target.value)}
-      className={`px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5E4CBB] focus:border-transparent bg-white text-gray-900 ${className}`}
+      className={`px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A3B4C] focus:border-transparent bg-white text-gray-900 ${className}`}
     >
       {children}
     </select>
@@ -239,12 +230,12 @@ export default function PropertiesPageClient({ searchParams }) {
   return (
     <div className="min-h-screen bg-white">
       {/* Header with Enhanced Search */}
-      <div className="bg-gradient-to-br from-[#5E4CBB] via-[#6B5FC7] to-[#7B68D9] relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C] relative overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-          <div className="absolute top-40 right-20 w-72 h-72 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+          <div className="absolute top-40 right-20 w-72 h-72 bg-white/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-white/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -285,12 +276,12 @@ export default function PropertiesPageClient({ searchParams }) {
                         search: e.target.value,
                       }))
                     }
-                    className="h-14 pl-12 pr-6 text-lg rounded-2xl border-gray-200 focus:border-[#5E4CBB] focus:ring-[#5E4CBB] bg-white shadow-sm"
+                    className="h-14 pl-12 pr-6 text-lg rounded-2xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C] bg-white shadow-sm"
                   />
                 </div>
                 <Button
                   type="submit"
-                  className="h-14 px-8 bg-gradient-to-r from-[#5E4CBB] to-[#7B68D9] hover:from-[#4A3A9B] hover:to-[#6B5FC7] text-white rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="h-14 px-8 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] hover:from-[#0A2B3C] hover:to-[#1A3B4C] text-white rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Search className="h-5 w-5 mr-2" />
                   Search
@@ -331,7 +322,7 @@ export default function PropertiesPageClient({ searchParams }) {
                       else if (chip === "Furnished")
                         handleFilterChange("furnished", "true");
                     }}
-                    className="px-4 py-2 bg-white/70 hover:bg-white text-gray-700 hover:text-[#5E4CBB] rounded-full text-sm font-medium transition-all duration-200 border border-gray-200 hover:border-[#5E4CBB] hover:shadow-md"
+                    className="px-4 py-2 bg-white/70 hover:bg-white text-gray-700 hover:text-[#1A3B4C] rounded-full text-sm font-medium transition-all duration-200 border border-gray-200 hover:border-[#1A3B4C] hover:shadow-md"
                   >
                     {chip}
                   </motion.button>
@@ -363,10 +354,9 @@ export default function PropertiesPageClient({ searchParams }) {
                     onChange={(e) =>
                       handleFilterChange("location", e.target.value)
                     }
-                    className="mt-2 rounded-xl border-gray-300 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                   />
                 </div>
-
                 <div>
                   <Label htmlFor="type" className="text-gray-700 font-medium">
                     Property Type
@@ -376,7 +366,7 @@ export default function PropertiesPageClient({ searchParams }) {
                     onValueChange={(value) => handleFilterChange("type", value)}
                     className="mt-2"
                   >
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="Apartment">Apartment</SelectItem>
                     <SelectItem value="House">House</SelectItem>
                     <SelectItem value="Villa">Villa</SelectItem>
@@ -386,7 +376,6 @@ export default function PropertiesPageClient({ searchParams }) {
                     <SelectItem value="Plot">Plot</SelectItem>
                   </Select>
                 </div>
-
                 <div>
                   <Label
                     htmlFor="listingType"
@@ -401,12 +390,11 @@ export default function PropertiesPageClient({ searchParams }) {
                     }
                     className="mt-2"
                   >
-                    <SelectItem value="">All Listings</SelectItem>
+                    <SelectItem value="all">All Listings</SelectItem>
                     <SelectItem value="SALE">For Sale</SelectItem>
                     <SelectItem value="RENT">For Rent</SelectItem>
                   </Select>
                 </div>
-
                 <div>
                   <Label
                     htmlFor="bedrooms"
@@ -421,7 +409,7 @@ export default function PropertiesPageClient({ searchParams }) {
                     }
                     className="mt-2"
                   >
-                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="any">Any</SelectItem>
                     <SelectItem value="1">1 BHK</SelectItem>
                     <SelectItem value="2">2 BHK</SelectItem>
                     <SelectItem value="3">3 BHK</SelectItem>
@@ -429,7 +417,6 @@ export default function PropertiesPageClient({ searchParams }) {
                     <SelectItem value="5">5+ BHK</SelectItem>
                   </Select>
                 </div>
-
                 <div>
                   <Label
                     htmlFor="minPrice"
@@ -445,10 +432,9 @@ export default function PropertiesPageClient({ searchParams }) {
                     onChange={(e) =>
                       handleFilterChange("minPrice", e.target.value)
                     }
-                    className="mt-2 rounded-xl border-gray-300 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                   />
                 </div>
-
                 <div>
                   <Label
                     htmlFor="maxPrice"
@@ -464,10 +450,9 @@ export default function PropertiesPageClient({ searchParams }) {
                     onChange={(e) =>
                       handleFilterChange("maxPrice", e.target.value)
                     }
-                    className="mt-2 rounded-xl border-gray-300 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                   />
                 </div>
-
                 <div>
                   <Label
                     htmlFor="furnished"
@@ -482,12 +467,11 @@ export default function PropertiesPageClient({ searchParams }) {
                     }
                     className="mt-2"
                   >
-                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="any">Any</SelectItem>
                     <SelectItem value="true">Furnished</SelectItem>
                     <SelectItem value="false">Unfurnished</SelectItem>
                   </Select>
                 </div>
-
                 <div>
                   <Label
                     htmlFor="parking"
@@ -502,18 +486,17 @@ export default function PropertiesPageClient({ searchParams }) {
                     }
                     className="mt-2"
                   >
-                    <SelectItem value="">Any</SelectItem>
+                    <SelectItem value="any">Any</SelectItem>
                     <SelectItem value="true">With Parking</SelectItem>
                     <SelectItem value="false">No Parking</SelectItem>
                   </Select>
                 </div>
               </div>
-
               <div className="flex justify-between items-center mt-6">
                 <Button
                   onClick={clearAllFilters}
                   variant="outline"
-                  className="text-gray-600 hover:text-gray-800 border-gray-300 hover:border-gray-400"
+                  className="text-gray-600 hover:text-gray-800 border-gray-300 hover:border-gray-400 bg-transparent"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Clear All Filters
@@ -543,7 +526,6 @@ export default function PropertiesPageClient({ searchParams }) {
                 ` • For ${filters.listingType.toLowerCase()}`}
             </p>
           </div>
-
           <div className="flex items-center space-x-2 mt-4 sm:mt-0">
             <span className="text-sm text-gray-600">View:</span>
             <Button
@@ -552,8 +534,8 @@ export default function PropertiesPageClient({ searchParams }) {
               size="sm"
               className={
                 viewMode === "grid"
-                  ? "bg-[#5E4CBB] text-white"
-                  : "text-gray-600 hover:text-[#5E4CBB]"
+                  ? "bg-[#1A3B4C] text-white"
+                  : "text-gray-600 hover:text-[#1A3B4C]"
               }
             >
               <Grid className="h-4 w-4" />
@@ -564,8 +546,8 @@ export default function PropertiesPageClient({ searchParams }) {
               size="sm"
               className={
                 viewMode === "list"
-                  ? "bg-[#5E4CBB] text-white"
-                  : "text-gray-600 hover:text-[#5E4CBB]"
+                  ? "bg-[#1A3B4C] text-white"
+                  : "text-gray-600 hover:text-[#1A3B4C]"
               }
             >
               <List className="h-4 w-4" />
@@ -646,7 +628,7 @@ export default function PropertiesPageClient({ searchParams }) {
                     }}
                   >
                     <Image
-                      src={property.mainImage}
+                      src={property.mainImage || "/placeholder.svg"}
                       alt={property.title}
                       className="w-full h-full object-cover"
                       width={400}
@@ -655,7 +637,7 @@ export default function PropertiesPageClient({ searchParams }) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute top-4 left-4 flex space-x-2">
-                      <span className="bg-[#5E4CBB] text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      <span className="bg-[#1A3B4C] text-white px-3 py-1 rounded-full text-sm font-semibold">
                         {property.listingType}
                       </span>
                       {property.propertyType && (
@@ -694,7 +676,7 @@ export default function PropertiesPageClient({ searchParams }) {
                         {/* Price and Status */}
                         <div className="flex items-start justify-between">
                           <div>
-                            <div className="text-2xl font-bold text-[#5E4CBB] mb-1">
+                            <div className="text-2xl font-bold text-[#1A3B4C] mb-1">
                               {formatPrice(property.price)}
                             </div>
                             <div className="text-sm text-gray-500">
@@ -717,25 +699,22 @@ export default function PropertiesPageClient({ searchParams }) {
                             {property.status}
                           </span>
                         </div>
-
                         {/* Title */}
                         <h3 className="text-xl font-bold text-gray-900 leading-tight line-clamp-2">
                           {property.title}
                         </h3>
-
                         {/* Location */}
                         <div className="flex items-center text-gray-600">
-                          <MapPin className="h-4 w-4 mr-2 text-[#5E4CBB]" />
+                          <MapPin className="h-4 w-4 mr-2 text-[#1A3B4C]" />
                           <span className="text-sm line-clamp-1">
                             {property.address}, {property.city}
                           </span>
                         </div>
-
                         {/* Property Details */}
                         <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600">
                           {property.bedrooms && property.bedrooms > 0 && (
                             <div className="flex items-center">
-                              <Bed className="h-4 w-4 mr-1 text-[#5E4CBB]" />
+                              <Bed className="h-4 w-4 mr-1 text-[#1A3B4C]" />
                               <span>
                                 {property.bedrooms} Bed
                                 {property.bedrooms > 1 ? "s" : ""}
@@ -744,7 +723,7 @@ export default function PropertiesPageClient({ searchParams }) {
                           )}
                           {property.bathrooms && property.bathrooms > 0 && (
                             <div className="flex items-center">
-                              <Bath className="h-4 w-4 mr-1 text-[#5E4CBB]" />
+                              <Bath className="h-4 w-4 mr-1 text-[#1A3B4C]" />
                               <span>
                                 {property.bathrooms} Bath
                                 {property.bathrooms > 1 ? "s" : ""}
@@ -753,7 +732,7 @@ export default function PropertiesPageClient({ searchParams }) {
                           )}
                           {property.area && property.area > 0 && (
                             <div className="flex items-center">
-                              <Square className="h-4 w-4 mr-1 text-[#5E4CBB]" />
+                              <Square className="h-4 w-4 mr-1 text-[#1A3B4C]" />
                               <SimpleAreaDisplay
                                 value={property.area}
                                 unit="sq_feet"
@@ -761,7 +740,6 @@ export default function PropertiesPageClient({ searchParams }) {
                             </div>
                           )}
                         </div>
-
                         {/* Description */}
                         {property.description && (
                           <p className="text-gray-700 text-sm leading-relaxed line-clamp-2">
@@ -769,7 +747,6 @@ export default function PropertiesPageClient({ searchParams }) {
                           </p>
                         )}
                       </div>
-
                       {/* Action Buttons - Always at bottom */}
                       <div
                         className={`flex ${
@@ -782,7 +759,7 @@ export default function PropertiesPageClient({ searchParams }) {
                           href={`/properties/${property.slug || property.id}`}
                           className="flex-1"
                         >
-                          <Button className="w-full bg-gradient-to-r from-[#5E4CBB] to-[#7B68D9] hover:from-[#4A3A9B] hover:to-[#6B5FC7] text-white rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg">
+                          <Button className="w-full bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] hover:from-[#0A2B3C] hover:to-[#1A3B4C] text-white rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg">
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </Button>
@@ -790,7 +767,7 @@ export default function PropertiesPageClient({ searchParams }) {
                         <Button
                           onClick={() => handleInquiry(property)}
                           variant="outline"
-                          className="flex-1 border-[#5E4CBB] text-[#5E4CBB] hover:bg-[#5E4CBB] hover:text-white rounded-xl font-semibold transition-all duration-300"
+                          className="flex-1 border-[#1A3B4C] text-[#1A3B4C] hover:bg-[#1A3B4C] hover:text-white rounded-xl font-semibold transition-all duration-300"
                         >
                           <MessageCircle className="h-4 w-4 mr-2" />
                           Inquire
@@ -817,7 +794,7 @@ export default function PropertiesPageClient({ searchParams }) {
             </p>
             <Button
               onClick={clearAllFilters}
-              className="bg-[#5E4CBB] hover:bg-[#4A3A9B] text-white px-8 py-3 rounded-xl"
+              className="bg-[#1A3B4C] hover:bg-[#0A2B3C] text-white px-8 py-3 rounded-xl"
             >
               Clear All Filters
             </Button>
@@ -831,11 +808,10 @@ export default function PropertiesPageClient({ searchParams }) {
               onClick={() => handleFilterChange("page", currentPage - 1)}
               disabled={currentPage === 1}
               variant="outline"
-              className="border-gray-300 text-gray-600 hover:border-[#5E4CBB] hover:text-[#5E4CBB]"
+              className="border-gray-300 text-gray-600 hover:border-[#1A3B4C] hover:text-[#1A3B4C]"
             >
               Previous
             </Button>
-
             {/* Page Numbers */}
             <div className="flex space-x-1">
               {[...Array(Math.min(5, totalPages))].map((_, index) => {
@@ -843,7 +819,6 @@ export default function PropertiesPageClient({ searchParams }) {
                   1,
                   Math.min(currentPage - 2 + index, totalPages - 4 + index)
                 );
-
                 if (pageNumber > totalPages) return null;
 
                 return (
@@ -853,8 +828,8 @@ export default function PropertiesPageClient({ searchParams }) {
                     variant={currentPage === pageNumber ? "default" : "outline"}
                     className={
                       currentPage === pageNumber
-                        ? "bg-[#5E4CBB] text-white"
-                        : "border-gray-300 text-gray-600 hover:border-[#5E4CBB] hover:text-[#5E4CBB]"
+                        ? "bg-[#1A3B4C] text-white"
+                        : "border-gray-300 text-gray-600 hover:border-[#1A3B4C] hover:text-[#1A3B4C]"
                     }
                   >
                     {pageNumber}
@@ -867,7 +842,7 @@ export default function PropertiesPageClient({ searchParams }) {
               onClick={() => handleFilterChange("page", currentPage + 1)}
               disabled={currentPage === totalPages}
               variant="outline"
-              className="border-gray-300 text-gray-600 hover:border-[#5E4CBB] hover:text-[#5E4CBB]"
+              className="border-gray-300 text-gray-600 hover:border-[#1A3B4C] hover:text-[#1A3B4C]"
             >
               Next
             </Button>
@@ -904,11 +879,10 @@ export default function PropertiesPageClient({ searchParams }) {
                       }))
                     }
                     placeholder="Your full name"
-                    className="mt-2 rounded-xl border-gray-200 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                     required
                   />
                 </div>
-
                 <div>
                   <Label htmlFor="email" className="text-gray-700 font-medium">
                     Email *
@@ -924,11 +898,10 @@ export default function PropertiesPageClient({ searchParams }) {
                       }))
                     }
                     placeholder="your.email@example.com"
-                    className="mt-2 rounded-xl border-gray-200 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                     required
                   />
                 </div>
-
                 <div>
                   <Label htmlFor="phone" className="text-gray-700 font-medium">
                     Phone
@@ -944,10 +917,9 @@ export default function PropertiesPageClient({ searchParams }) {
                       }))
                     }
                     placeholder="+91 98765 43210"
-                    className="mt-2 rounded-xl border-gray-200 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                   />
                 </div>
-
                 <div>
                   <Label
                     htmlFor="message"
@@ -966,7 +938,7 @@ export default function PropertiesPageClient({ searchParams }) {
                     }
                     placeholder="I'm interested in this property..."
                     rows="4"
-                    className="mt-2 rounded-xl border-gray-200 focus:border-[#5E4CBB] focus:ring-[#5E4CBB]"
+                    className="mt-2 rounded-xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                     required
                   />
                 </div>
@@ -983,7 +955,7 @@ export default function PropertiesPageClient({ searchParams }) {
                   <Button
                     type="submit"
                     disabled={submittingInquiry}
-                    className="flex-1 bg-[#5E4CBB] hover:bg-[#4A3A9B] text-white rounded-xl"
+                    className="flex-1 bg-[#1A3B4C] hover:bg-[#0A2B3C] text-white rounded-xl"
                   >
                     {submittingInquiry ? "Sending..." : "Send Inquiry"}
                   </Button>

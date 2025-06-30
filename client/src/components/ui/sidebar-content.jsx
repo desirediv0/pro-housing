@@ -193,13 +193,13 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
       </Card>
 
       {/* CTA Card */}
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#5E4CBB] to-[#7B68D9] text-white hidden md:block hover:shadow-2xl transition-all duration-300">
+      <Card className="shadow-xl border-0 bg-gradient-to-br from-[#1a3b4c] to-[#1a3b4c] text-white hidden md:block hover:shadow-2xl transition-all duration-300">
         <CardContent className="p-6 text-center">
           <h3 className="font-bold text-lg mb-2">Need Help?</h3>
           <p className="text-white/80 text-sm mb-4">
             Our property experts are here to assist you with any questions.
           </p>
-          <Button className="w-full bg-white text-[#5E4CBB] hover:bg-gray-100 rounded-xl font-semibold transform hover:scale-105 transition-all duration-300">
+          <Button className="w-full bg-white text-[#1a3b4c] hover:bg-gray-100 rounded-xl font-semibold transform hover:scale-105 transition-all duration-300">
             Get Expert Advice
           </Button>
         </CardContent>

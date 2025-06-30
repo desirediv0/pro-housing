@@ -26,7 +26,7 @@ export default function NotFound() {
           <p className="text-gray-600 mb-8 leading-relaxed">
             Sorry, the property you&apos;re looking for doesn&apos;t exist or
             has been removed. It might have been sold, rented, or withdrawn from
-            the market.
+            the market. 
           </p>
 
           <div className="space-y-4">

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Facebook,
   Home,
@@ -14,7 +16,6 @@ import {
   ArrowUp,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -22,13 +23,13 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD] text-white relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C] text-white relative overflow-hidden">
       {/* Premium background decoration */}
       <div className="absolute inset-0 opacity-20">
         <div
           className="w-full h-full bg-repeat animate-float"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23ffffff' fillOpacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         ></div>
       </div>
@@ -43,10 +44,10 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="flex items-center mb-8">
               <div className="relative">
-                <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-premium animate-glow">
+                <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg animate-pulse">
                   <Home className="h-8 w-8 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-warning to-orange-500 rounded-full border-2 border-primary animate-pulse">
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full border-2 border-[#1A3B4C] animate-pulse">
                   <Sparkles className="h-2 w-2 text-white absolute top-0.5 left-0.5" />
                 </div>
               </div>
@@ -59,32 +60,34 @@ const Footer = () => {
                 </p>
               </div>
             </div>
+
             <p className="text-white/80 mb-8 leading-relaxed text-lg">
               Your trusted partner in finding the perfect property. We make real
               estate simple, transparent, and accessible for everyone.
             </p>
+
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Facebook className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
                 href="#"
-                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Twitter className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
                 href="#"
-                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Instagram className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
                 href="#"
-                className="w-12 h-12  backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
+                className="w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40 group"
               >
                 <Linkedin className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
@@ -212,7 +215,7 @@ const Footer = () => {
             </h4>
             <ul className="space-y-6">
               <li className="flex items-start group">
-                <div className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 mt-1 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className="w-10 h-10 backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 mt-1 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
                   <MapPin className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -226,7 +229,7 @@ const Footer = () => {
                 </div>
               </li>
               <li className="flex items-center group">
-                <div className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className="w-10 h-10 backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
                   <Phone className="h-5 w-5 text-white" />
                 </div>
                 <a
@@ -237,7 +240,7 @@ const Footer = () => {
                 </a>
               </li>
               <li className="flex items-center group">
-                <div className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className="w-10 h-10 backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
                   <Mail className="h-5 w-5 text-white" />
                 </div>
                 <a
@@ -259,9 +262,17 @@ const Footer = () => {
                 © {new Date().getFullYear()} Pro Housing. All rights reserved.
               </p>
               <div className="text-white/50 text-xs mt-1">
-                Made with  <a href="https://desirediv.com" target="_blank"
-                  className="text-red-500 hover:text-white transition-colors duration-300 font-semibold" aria-label="Desire Div"
-                >Desire Div</a>❤️ for your dream home
+                Made with{" "}
+                <a
+                  href="https://desirediv.com"
+                  target="_blank"
+                  className="text-red-500 hover:text-white transition-colors duration-300 font-semibold"
+                  aria-label="Desire Div"
+                  rel="noreferrer"
+                >
+                  Desire Div
+                </a>
+                ❤️ for your dream home
               </div>
             </div>
 
@@ -290,7 +301,7 @@ const Footer = () => {
               {/* Premium Scroll to top button */}
               <button
                 onClick={scrollToTop}
-                className="w-10 h-10  backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-all duration-300 hover:scale-110 shadow-premium border border-white/20 hover:border-white/40 group"
+                className="w-10 h-10 backdrop-blur-sm rounded-xl flex items-center justify-center text-white transition-all duration-300 hover:scale-110 shadow-lg border border-white/20 hover:border-white/40 group"
                 aria-label="Scroll to top"
               >
                 <ArrowUp className="h-5 w-5 group-hover:scale-110 transition-transform" />

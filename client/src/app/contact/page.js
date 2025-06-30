@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Phone,
   Mail,
@@ -16,9 +16,7 @@ import {
   Twitter,
   Instagram,
   Linkedin,
-  CheckCircle,
   ArrowRight,
-  Home,
   Shield,
   Award,
   Users,
@@ -218,12 +216,12 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-[#493AB1] via-[#6B5FC7] to-[#8A79DD] py-20">
+      <div className="bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-bold text-white mb-6">
             Get in Touch With Us
           </h1>
-          <p className="text-xl text-indigo-100 max-w-3xl mx-auto">
+          <p className="text-xl text-white/90 max-w-3xl mx-auto">
             Ready to find your perfect property? Our expert team is here to help
             you every step of the way. Contact us today for personalized real
             estate solutions.
@@ -243,7 +241,7 @@ export default function ContactPage() {
               >
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="h-8 w-8 text-primary" />
+                    <Icon className="h-8 w-8 text-[#1A3B4C]" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {info.title}
@@ -253,7 +251,7 @@ export default function ContactPage() {
                   </p>
                   <a
                     href={info.action}
-                    className="text-indigo-600 hover:text-indigo-700 font-semibold text-lg transition-colors duration-200"
+                    className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-lg transition-colors duration-200"
                   >
                     {info.value}
                   </a>
@@ -270,9 +268,9 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div>
             <Card className="shadow-2xl border-0 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+              <CardHeader className="bg-gradient-to-r from-[#1A3B4C]/10 to-[#2A4B5C]/10 border-b border-gray-200">
                 <CardTitle className="text-2xl font-bold text-gray-900 flex items-center">
-                  <MessageSquare className="h-6 w-6 mr-3 text-indigo-600" />
+                  <MessageSquare className="h-6 w-6 mr-3 text-[#1A3B4C]" />
                   Send Us a Message
                 </CardTitle>
                 <p className="text-gray-600 mt-2">
@@ -296,7 +294,7 @@ export default function ContactPage() {
                       value={formData.inquiryType}
                       onChange={handleInputChange}
                       required
-                      className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                      className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3B4C] focus:border-transparent bg-white"
                     >
                       {inquiryTypes.map((type) => (
                         <option key={type.value} value={type.value}>
@@ -325,11 +323,10 @@ export default function ContactPage() {
                           onChange={handleInputChange}
                           required
                           placeholder="Enter your full name"
-                          className="pl-10 py-3 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                          className="pl-10 py-3 border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                         />
                       </div>
                     </div>
-
                     <div>
                       <Label
                         htmlFor="email"
@@ -347,7 +344,7 @@ export default function ContactPage() {
                           onChange={handleInputChange}
                           required
                           placeholder="Enter your email"
-                          className="pl-10 py-3 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                          className="pl-10 py-3 border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                         />
                       </div>
                     </div>
@@ -371,11 +368,10 @@ export default function ContactPage() {
                           value={formData.phone}
                           onChange={handleInputChange}
                           placeholder="+91 98765 43210"
-                          className="pl-10 py-3 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                          className="pl-10 py-3 border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                         />
                       </div>
                     </div>
-
                     <div>
                       <Label
                         htmlFor="propertyType"
@@ -390,7 +386,7 @@ export default function ContactPage() {
                           name="propertyType"
                           value={formData.propertyType}
                           onChange={handleInputChange}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white appearance-none"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3B4C] focus:border-transparent bg-white appearance-none"
                         >
                           {propertyTypes.map((type) => (
                             <option key={type.value} value={type.value}>
@@ -418,7 +414,7 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       required
                       placeholder="What can we help you with?"
-                      className="mt-2 py-3 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                      className="mt-2 py-3 border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                     />
                   </div>
 
@@ -438,7 +434,7 @@ export default function ContactPage() {
                       required
                       rows={5}
                       placeholder="Tell us more about your requirements..."
-                      className="mt-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 resize-none"
+                      className="mt-2 border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C] resize-none"
                     />
                   </div>
 
@@ -446,7 +442,7 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full gradient-primary  text-white px-8 py-3 rounded-xl font-semibold shadow-premium hover:shadow-premium-lg transition-all duration-300 mt-6 md:mt-0 hover:scale-105"
+                    className="w-full bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0 hover:scale-105"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center">
@@ -471,7 +467,7 @@ export default function ContactPage() {
             <Card className="shadow-2xl border border-gray-200 overflow-hidden">
               <CardHeader className="bg-gray-50 border-b border-gray-200">
                 <CardTitle className="text-xl font-bold text-gray-900 flex items-center">
-                  <MapPin className="h-6 w-6 mr-3 text-primary" />
+                  <MapPin className="h-6 w-6 mr-3 text-[#1A3B4C]" />
                   Our Location
                 </CardTitle>
               </CardHeader>
@@ -504,7 +500,7 @@ export default function ContactPage() {
                       );
                     }}
                     variant="outline"
-                    className="w-full border-primary text-primary hover:bg-primary hover:text-white"
+                    className="w-full border-[#1A3B4C] text-[#1A3B4C] hover:bg-[#1A3B4C] hover:text-white"
                   >
                     Get Directions
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -530,7 +526,7 @@ export default function ContactPage() {
                         className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                       >
                         <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Icon className="h-5 w-5 text-primary" />
+                          <Icon className="h-5 w-5 text-[#1A3B4C]" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-1">
@@ -582,7 +578,7 @@ export default function ContactPage() {
                     return (
                       <button
                         key={index}
-                        className="w-12 h-12 bg-gray-100 hover:bg-primary hover:text-white rounded-lg flex items-center justify-center transition-all duration-200 transform hover:scale-110"
+                        className="w-12 h-12 bg-gray-100 hover:bg-[#1A3B4C] hover:text-white rounded-lg flex items-center justify-center transition-all duration-200 transform hover:scale-110"
                         title={social.name}
                       >
                         <Icon className="h-5 w-5" />
@@ -609,7 +605,6 @@ export default function ContactPage() {
               Housing.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <Card
@@ -619,7 +614,7 @@ export default function ContactPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
                     <Image
-                      src={testimonial.image}
+                      src={testimonial.image || "/placeholder.svg"}
                       alt={testimonial.name}
                       className="w-12 h-12 rounded-full mr-4 object-cover"
                       width={64}
@@ -634,7 +629,6 @@ export default function ContactPage() {
                       </p>
                     </div>
                   </div>
-
                   <div className="flex items-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star
@@ -643,7 +637,6 @@ export default function ContactPage() {
                       />
                     ))}
                   </div>
-
                   <Quote className="h-8 w-8 text-gray-300 mb-3" />
                   <p className="text-gray-700 italic leading-relaxed">
                     &apos;{testimonial.comment}&apos;
@@ -665,7 +658,6 @@ export default function ContactPage() {
             Get quick answers to the most common questions about our services.
           </p>
         </div>
-
         <div className="space-y-4">
           {[
             {
@@ -692,8 +684,8 @@ export default function ContactPage() {
             <Card key={index} className="shadow-lg border-0">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-indigo-600 font-bold text-sm">
+                  <div className="w-8 h-8 bg-[#1A3B4C]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#1A3B4C] font-bold text-sm">
                       {index + 1}
                     </span>
                   </div>
