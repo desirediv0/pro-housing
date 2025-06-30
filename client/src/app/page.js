@@ -159,58 +159,265 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <motion.div
-        className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
+        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {/* Animated Background with Blur */}
+        {/* Enhanced Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C]">
           <div className="absolute inset-0 backdrop-blur-[100px]">
             {/* Animated Circles */}
             <div className="absolute top-20 left-20 w-72 h-72 bg-[#1A3B4C]/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
             <div className="absolute top-40 right-20 w-72 h-72 bg-[#2A4B5C]/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
             <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-[#3A5B6C]/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+
+            {/* Additional Dynamic Circles */}
+            <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-yellow-300/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse"></div>
+            <div className="absolute bottom-1/3 right-1/4 w-56 h-56 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse animation-delay-3000"></div>
           </div>
         </div>
 
-        {/* Background Buildings Silhouette with enhanced opacity */}
+        {/* Floating Property Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Floating Icons */}
+          <motion.div
+            className="absolute top-1/4 left-1/6 opacity-20"
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 5, 0],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          >
+            <div className="w-16 h-16 bg-white/30 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+              <Home className="w-8 h-8 text-white/60" />
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="absolute top-2/3 right-1/5 opacity-20"
+            animate={{
+              y: [0, 15, 0],
+              rotate: [0, -5, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: 2,
+            }}
+          >
+            <div className="w-12 h-12 bg-yellow-300/40 rounded-xl backdrop-blur-sm flex items-center justify-center">
+              <Building className="w-6 h-6 text-white/70" />
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="absolute top-1/2 left-3/4 opacity-20"
+            animate={{
+              y: [0, -25, 0],
+              x: [0, 10, 0],
+            }}
+            transition={{
+              duration: 7,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: 1,
+            }}
+          >
+            <div className="w-14 h-14 bg-blue-300/30 rounded-2xl backdrop-blur-sm flex items-center justify-center">
+              <MapPin className="w-7 h-7 text-white/60" />
+            </div>
+          </motion.div>
+
+          {/* Geometric Patterns */}
+          <motion.div
+            className="absolute top-1/5 right-1/3 opacity-10"
+            animate={{
+              rotate: [0, 360],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
+          >
+            <div className="w-32 h-32 border border-white/30 rounded-full"></div>
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-1/4 left-1/3 opacity-10"
+            animate={{
+              rotate: [360, 0],
+            }}
+            transition={{
+              duration: 25,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
+          >
+            <div className="w-24 h-24 border border-yellow-300/30 rotate-45"></div>
+          </motion.div>
+
+          {/* Additional Floating Property Cards */}
+          <motion.div
+            className="absolute top-3/4 left-1/5 opacity-15"
+            animate={{
+              y: [0, -30, 0],
+              rotate: [0, 3, 0],
+            }}
+            transition={{
+              duration: 9,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: 0.5,
+            }}
+          >
+            <div className="w-20 h-16 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30 flex flex-col items-center justify-center">
+              <Home className="w-4 h-4 text-white/60 mb-1" />
+              <div className="w-8 h-1 bg-white/40 rounded"></div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="absolute top-1/6 right-1/6 opacity-15"
+            animate={{
+              y: [0, 20, 0],
+              x: [0, -10, 0],
+            }}
+            transition={{
+              duration: 11,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: 1.5,
+            }}
+          >
+            <div className="w-18 h-14 bg-yellow-300/25 rounded-lg backdrop-blur-sm border border-yellow-300/40 flex flex-col items-center justify-center">
+              <Building className="w-4 h-4 text-white/70 mb-1" />
+              <div className="w-6 h-0.5 bg-white/50 rounded"></div>
+            </div>
+          </motion.div>
+
+          {/* Floating Particles */}
+          {[...Array(8)].map((_, index) => (
+            <motion.div
+              key={index}
+              className="absolute w-2 h-2 bg-white/20 rounded-full"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -100, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 8 + Math.random() * 4,
+                repeat: Number.POSITIVE_INFINITY,
+                delay: Math.random() * 5,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+
+          {/* Property Stats Floating Elements */}
+          <motion.div
+            className="absolute top-1/3 right-1/4 opacity-12"
+            animate={{
+              scale: [1, 1.1, 1],
+              rotate: [0, -2, 0],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: 2.5,
+            }}
+          >
+            <div className="w-16 h-12 bg-blue-400/20 rounded-lg backdrop-blur-sm border border-blue-300/30 flex flex-col items-center justify-center">
+              <div className="text-xs text-white/60 font-bold">9K+</div>
+              <div className="w-8 h-0.5 bg-white/40 rounded mt-1"></div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Enhanced Buildings Silhouette */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/30 to-transparent"></div>
-          {/* Geometric buildings pattern with enhanced visibility */}
-          <div className="absolute bottom-0 left-0 opacity-30">
+
+          {/* Multiple Building Layers */}
+          <div className="absolute bottom-0 left-0 opacity-20">
             <svg
-              width="300"
-              height="200"
-              viewBox="0 0 300 200"
-              className="text-white/40 fill-current"
+              width="400"
+              height="250"
+              viewBox="0 0 400 250"
+              className="text-white/30 fill-current"
             >
-              <rect x="20" y="80" width="40" height="120" />
-              <rect x="70" y="60" width="35" height="140" />
-              <rect x="115" y="90" width="30" height="110" />
-              <rect x="155" y="50" width="45" height="150" />
-              <rect x="210" y="70" width="35" height="130" />
-              <rect x="255" y="40" width="40" height="160" />
+              <rect x="20" y="100" width="45" height="150" />
+              <rect x="75" y="80" width="40" height="170" />
+              <rect x="125" y="110" width="35" height="140" />
+              <rect x="170" y="70" width="50" height="180" />
+              <rect x="230" y="90" width="40" height="160" />
+              <rect x="280" y="60" width="45" height="190" />
+              <rect x="335" y="85" width="35" height="165" />
             </svg>
           </div>
+
+          <div className="absolute bottom-0 right-0 opacity-15">
+            <svg
+              width="350"
+              height="200"
+              viewBox="0 0 350 200"
+              className="text-white/25 fill-current"
+            >
+              <rect x="30" y="90" width="35" height="110" />
+              <rect x="75" y="70" width="40" height="130" />
+              <rect x="125" y="85" width="30" height="115" />
+              <rect x="165" y="60" width="45" height="140" />
+              <rect x="220" y="80" width="35" height="120" />
+              <rect x="265" y="50" width="40" height="150" />
+            </svg>
+          </div>
+
+          {/* Animated Grid Pattern */}
+          <motion.div
+            className="absolute inset-0 opacity-5"
+            animate={{
+              backgroundPosition: ["0px 0px", "50px 50px"],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
+            style={{
+              backgroundImage: `linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
+                               linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)`,
+              backgroundSize: "50px 50px",
+            }}
+          />
         </div>
 
         {/* Hero Content Container */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10 w-full">
+          <div className="grid lg:grid-cols-2 gap-4 lg:gap-8 items-center">
             {/* Left Content */}
             <motion.div
-              className="text-white space-y-8"
+              className="text-white space-y-3 lg:space-y-5"
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="space-y-6">
-                <h1 className="text-5xl lg:text-6xl font-bold font-display leading-tight">
+              <div className="space-y-2 lg:space-y-3">
+                <h1 className="text-2xl lg:text-4xl xl:text-5xl font-bold font-display leading-tight">
                   Properties to buy in{" "}
                   <span className="text-yellow-300">Delhi</span>
                 </h1>
-                <p className="text-xl text-white/90 leading-relaxed">
+                <p className="text-sm sm:text-base lg:text-lg text-white/90 leading-relaxed">
                   <span className="font-semibold">9K+</span> listings added
                   daily and <span className="font-semibold">65K+</span> total
                   verified
@@ -218,283 +425,249 @@ export default function HomePage() {
               </div>
 
               {/* Search Bar */}
-              <div className="bg-white/95 backdrop-blur-lg rounded-2xl p-4 sm:p-6 shadow-2xl border border-white/20">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-3 sm:p-5 shadow-2xl">
                 <form
                   onSubmit={handleSearch}
-                  className="space-y-4 sm:space-y-6"
+                  className="space-y-3 sm:space-y-4"
                 >
-                  {/* Main Search Row */}
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    <div className="w-full sm:w-48">
-                      <Select value={location} onValueChange={setLocation}>
-                        <SelectTrigger className="w-full h-12 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-[#1A3B4C] ring-offset-2 ring-offset-white font-medium text-gray-800">
-                          <SelectValue
-                            placeholder="Select City"
-                            className="placeholder:text-gray-500"
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
-                          <SelectGroup>
-                            <SelectLabel className="text-[#1A3B4C] font-semibold">
-                              Popular Cities
-                            </SelectLabel>
-                            <SelectItem
-                              value="Delhi"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Delhi
-                            </SelectItem>
-                            <SelectItem
-                              value="Mumbai"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Mumbai
-                            </SelectItem>
-                            <SelectItem
-                              value="Bangalore"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Bangalore
-                            </SelectItem>
-                            <SelectItem
-                              value="Pune"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Pune
-                            </SelectItem>
-                            <SelectItem
-                              value="Chennai"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Chennai
-                            </SelectItem>
-                            <SelectItem
-                              value="Hyderabad"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Hyderabad
-                            </SelectItem>
-                            <SelectItem
-                              value="Kolkata"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Kolkata
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                  {/* Enhanced Filter Tabs */}
+                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-1 mb-3 sm:mb-4 border border-white/30">
+                    {/* Mobile: Compact scrollable tabs */}
+                    <div className="sm:hidden">
+                      <div
+                        className="flex overflow-x-auto gap-1"
+                        style={{
+                          scrollbarWidth: "none",
+                          msOverflowStyle: "none",
+                          WebkitOverflowScrolling: "touch",
+                        }}
+                      >
+                        {[
+                          { key: "SALE", label: "Buy", icon: Home },
+                          { key: "RENT", label: "Rent", icon: Building },
+                          {
+                            key: "COMMERCIAL",
+                            label: "Commercial",
+                            icon: Building,
+                          },
+                          { key: "PLOT", label: "Plots", icon: Square },
+                          { key: "PG", label: "PG", icon: Home },
+                        ].map((tab) => (
+                          <button
+                            key={tab.key}
+                            type="button"
+                            onClick={() => setListingType(tab.key)}
+                            className={`flex-shrink-0 py-1.5 px-3 rounded-lg font-semibold transition-all duration-300 text-xs whitespace-nowrap ${
+                              listingType === tab.key ||
+                              (!listingType && tab.key === "SALE")
+                                ? "bg-white/90 text-[#1A3B4C] shadow-lg"
+                                : "text-white/80 hover:text-white hover:bg-white/10"
+                            }`}
+                          >
+                            <tab.icon className="h-3 w-3 inline mr-1" />
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex-1 relative">
-                      <input
-                        type="text"
-                        placeholder="Search for locality, landmark, project, or builder"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full h-12 px-4 bg-gray-50/50 rounded-xl border text-gray-700 placeholder-gray-500 focus:ring-2 focus:ring-[#1A3B4C] ring-offset-2 ring-offset-white"
-                      />
+
+                    {/* Desktop: Full width tabs */}
+                    <div className="hidden sm:flex">
+                      {[
+                        { key: "SALE", label: "Buy", icon: Home },
+                        { key: "RENT", label: "Rent", icon: Building },
+                        {
+                          key: "COMMERCIAL",
+                          label: "Commercial",
+                          icon: Building,
+                        },
+                        { key: "PLOT", label: "Plots", icon: Square },
+                        { key: "PG", label: "PG", icon: Home },
+                      ].map((tab) => (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          onClick={() => setListingType(tab.key)}
+                          className={`flex-1 flex items-center justify-center py-2 px-2 rounded-lg font-bold transition-all duration-300 text-sm ${
+                            listingType === tab.key ||
+                            (!listingType && tab.key === "SALE")
+                              ? "bg-white/90 text-[#1A3B4C] shadow-lg backdrop-blur-sm"
+                              : "text-white/80 hover:text-white hover:bg-white/10"
+                          }`}
+                        >
+                          <tab.icon className="h-4 w-4 inline mr-1" />
+                          {tab.label}
+                        </button>
+                      ))}
                     </div>
-                    <Button
-                      type="submit"
-                      className="h-12 px-6 sm:px-8 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] hover:to-[#1A3B4C] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
-                    >
-                      Search
-                    </Button>
                   </div>
 
-                  {/* Filters Row */}
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    <div className="flex-1">
-                      <Select
-                        value={listingType}
-                        onValueChange={setListingType}
-                      >
-                        <SelectTrigger className="w-full h-10 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-[#1A3B4C] ring-offset-2 ring-offset-white font-medium text-gray-800">
-                          <SelectValue
-                            placeholder="Buy / Rent"
-                            className="placeholder:text-gray-500"
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
-                          <SelectGroup>
-                            <SelectLabel className="text-[#1A3B4C] font-semibold">
-                              Listing Type
-                            </SelectLabel>
-                            <SelectItem
-                              value="SALE"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Buy
-                            </SelectItem>
-                            <SelectItem
-                              value="RENT"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Rent
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  {/* Integrated Search Section */}
+                  <div className="space-y-4">
+                    {/* Combined Search Bar - Housing.com Style */}
+                    <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/30 overflow-hidden">
+                      <div className="flex flex-col sm:flex-row">
+                        {/* City Selector */}
+                        <div className="sm:w-1/4 border-b sm:border-b-0 sm:border-r border-gray-200/50">
+                          <Select value={location} onValueChange={setLocation}>
+                            <SelectTrigger className="w-full h-10 sm:h-11 bg-transparent border-0 hover:bg-gray-50/50 focus:ring-0 focus:ring-offset-0 rounded-none font-medium text-gray-800 transition-all duration-300 text-sm">
+                              <div className="flex items-center">
+                                <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                                <SelectValue
+                                  placeholder="Delhi"
+                                  className="placeholder:text-gray-500"
+                                />
+                              </div>
+                            </SelectTrigger>
+                            <SelectContent className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-2xl rounded-lg">
+                              <SelectGroup>
+                                <SelectLabel className="text-[#1A3B4C] font-semibold px-3 py-2">
+                                  Popular Cities
+                                </SelectLabel>
+                                {[
+                                  "Delhi",
+                                  "Mumbai",
+                                  "Bangalore",
+                                  "Pune",
+                                  "Chennai",
+                                  "Hyderabad",
+                                  "Kolkata",
+                                ].map((city) => (
+                                  <SelectItem
+                                    key={city}
+                                    value={city}
+                                    className="hover:bg-[#1A3B4C]/10 focus:bg-[#1A3B4C]/10 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/20 data-[state=checked]:text-[#1A3B4C] mx-2 my-1 rounded-lg"
+                                  >
+                                    {city}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                    <div className="flex-1">
-                      <Select
-                        value={propertyType}
-                        onValueChange={setPropertyType}
-                      >
-                        <SelectTrigger className="w-full h-10 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-[#1A3B4C] ring-offset-2 ring-offset-white font-medium text-gray-800">
-                          <SelectValue
-                            placeholder="Property Type"
-                            className="placeholder:text-gray-500"
+                        {/* Search Input */}
+                        <div className="flex-1 relative">
+                          <input
+                            type="text"
+                            placeholder="Search locality, landmark, project..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full h-10 sm:h-11 px-3 sm:px-4 bg-transparent border-0 focus:ring-0 focus:ring-offset-0 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 text-sm rounded-none"
                           />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
-                          <SelectGroup>
-                            <SelectLabel className="text-[#1A3B4C] font-semibold">
-                              Property Types
-                            </SelectLabel>
-                            <SelectItem
-                              value="apartment"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Apartment
-                            </SelectItem>
-                            <SelectItem
-                              value="house"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              House
-                            </SelectItem>
-                            <SelectItem
-                              value="villa"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Villa
-                            </SelectItem>
-                            <SelectItem
-                              value="commercial"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Commercial
-                            </SelectItem>
-                            <SelectItem
-                              value="plot"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Plot
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        </div>
 
-                    <div className="flex-1">
-                      <Select value={priceRange} onValueChange={setPriceRange}>
-                        <SelectTrigger className="w-full h-10 bg-white border border-gray-200 hover:bg-gray-50 focus:ring-2 focus:ring-[#1A3B4C] ring-offset-2 ring-offset-white font-medium text-gray-800">
-                          <SelectValue
-                            placeholder="Budget Range"
-                            className="placeholder:text-gray-500"
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-xl">
-                          <SelectGroup>
-                            <SelectLabel className="text-[#1A3B4C] font-semibold">
-                              Budget Range
-                            </SelectLabel>
-                            <SelectItem
-                              value="0-25"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Under ₹25 Lakhs
-                            </SelectItem>
-                            <SelectItem
-                              value="25-50"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              ₹25-50 Lakhs
-                            </SelectItem>
-                            <SelectItem
-                              value="50-100"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              ₹50 Lakhs - ₹1 Crore
-                            </SelectItem>
-                            <SelectItem
-                              value="100+"
-                              className="hover:bg-gray-50 focus:bg-gray-50 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C]"
-                            >
-                              Above ₹1 Crore
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                        {/* Search Button */}
+                        <div className="sm:w-auto">
+                          <Button
+                            type="submit"
+                            className="w-full sm:w-auto h-10 sm:h-11 px-4 sm:px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-none sm:rounded-r-xl shadow-none border-0 transition-all duration-300 text-sm"
+                          >
+                            <Building className="h-4 w-4 mr-2 sm:mr-0 sm:hidden" />
+                            <span className="sm:hidden">Search</span>
+                            <span className="hidden sm:inline">Search</span>
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </form>
-              </div>
 
-              {/* Continue Last Search */}
-              <div className="space-y-4">
-                <p className="text-white/80 font-medium">
-                  Continue last search
-                </p>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => {
-                      setSearchQuery("Dwarka Mor");
-                      setLocation("Delhi");
-                    }}
-                    className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all"
-                  >
-                    Dwarka Mor, Any BHK...
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSearchQuery("Dwarka");
-                      setLocation("Delhi");
-                    }}
-                    className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all"
-                  >
-                    Dwarka Delhi, New Delhi...
-                  </button>
+                {/* Quick Search & Budget Filters */}
+                <div className="mt-4 space-y-3">
+                  {/* Budget Range Filter */}
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-white/90 mb-2">
+                      Budget Range:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      {[
+                        { value: "0-25", label: "Under ₹25L" },
+                        { value: "25-50", label: "₹25-50L" },
+                        { value: "50-100", label: "₹50L-1Cr" },
+                        { value: "100+", label: "Above ₹1Cr" },
+                      ].map((range, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setPriceRange(range.value)}
+                          className={`px-2.5 sm:px-3 py-1.5 sm:py-2 backdrop-blur-lg rounded-lg hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium border hover:scale-105 ${
+                            priceRange === range.value
+                              ? "bg-white/30 text-white border-white/50"
+                              : "bg-white/20 text-white/90 border-white/30 hover:bg-white/25 hover:border-white/40"
+                          }`}
+                        >
+                          {range.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick Search */}
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-white/90 mb-2">
+                      Quick Search:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      {[
+                        { label: "Dwarka Mor", location: "Delhi" },
+                        { label: "Dwarka", location: "Delhi" },
+                        { label: "Gurgaon", location: "Delhi" },
+                        { label: "Noida", location: "Delhi" },
+                      ].map((tag, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            setSearchQuery(tag.label);
+                            setLocation(tag.location);
+                          }}
+                          className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white/20 backdrop-blur-lg text-white rounded-lg hover:bg-white/30 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium border border-white/30 hover:border-white/50 shadow-md hover:scale-105"
+                        >
+                          {tag.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
 
             {/* Right Content - Hero Image */}
             <motion.div
-              className="relative"
+              className="relative mt-4 lg:mt-0"
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <div className="relative">
                 {/* Main hero image placeholder */}
-                <div className="w-full h-96 bg-gradient-to-br from-white/20 to-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                <div className="w-full h-40 sm:h-48 lg:h-72 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
                   <div className="text-white/70 text-center">
-                    <Building className="h-24 w-24 mx-auto mb-4" />
-                    <p className="text-lg font-medium">Premium Properties</p>
+                    <Building className="h-10 sm:h-14 lg:h-18 w-10 sm:w-14 lg:w-18 mx-auto mb-2" />
+                    <p className="text-xs sm:text-sm font-medium">
+                      Premium Properties
+                    </p>
                   </div>
                 </div>
 
                 {/* Floating decorative elements */}
                 <motion.div
-                  className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-300 rounded-2xl flex items-center justify-center shadow-lg"
-                  animate={{ y: [0, -10, 0] }}
+                  className="absolute -top-2 -right-2 w-10 sm:w-14 lg:w-16 h-10 sm:h-14 lg:h-16 bg-yellow-300 rounded-xl flex items-center justify-center shadow-lg"
+                  animate={{ y: [0, -8, 0] }}
                   transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
                 >
-                  <Home className="h-12 w-12 text-[#1A3B4C]" />
+                  <Home className="h-5 sm:h-7 lg:h-8 w-5 sm:w-7 lg:w-8 text-[#1A3B4C]" />
                 </motion.div>
 
                 <motion.div
-                  className="absolute -bottom-6 -left-6 w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg"
-                  animate={{ y: [0, 10, 0] }}
+                  className="absolute -bottom-2 -left-2 w-8 sm:w-12 lg:w-14 h-8 sm:h-12 lg:h-14 bg-white rounded-xl flex items-center justify-center shadow-lg"
+                  animate={{ y: [0, 8, 0] }}
                   transition={{
                     duration: 3,
                     repeat: Number.POSITIVE_INFINITY,
                     delay: 1,
                   }}
                 >
-                  <MapPin className="h-10 w-10 text-[#1A3B4C]" />
+                  <MapPin className="h-4 sm:h-6 lg:h-7 w-4 sm:w-6 lg:w-7 text-[#1A3B4C]" />
                 </motion.div>
               </div>
             </motion.div>
