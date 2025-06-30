@@ -15,6 +15,7 @@ import {
   Sparkles,
   ArrowUp,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const Footer = () => {
@@ -43,21 +44,16 @@ const Footer = () => {
           {/* Premium Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center mb-8">
-              <div className="relative">
-                <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg animate-pulse">
-                  <Home className="h-8 w-8 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full border-2 border-[#1A3B4C] animate-pulse">
-                  <Sparkles className="h-2 w-2 text-white absolute top-0.5 left-0.5" />
-                </div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-2xl font-black font-display text-white">
-                  Pro Housing
-                </h3>
-                <p className="text-sm text-white/70 font-medium">
-                  Premium Real Estate
-                </p>
+              <div className="flex items-center">
+                <Link href="/" className="flex items-center group">
+                  <Image 
+                    src="/logo.png"
+                    alt="Pro Housing Logo"
+                    width={40}
+                    height={40}
+                    className="h-16 w-full transition-transform duration-300 group-hover:scale-110"
+                  />
+                </Link>
               </div>
             </div>
 
