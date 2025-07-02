@@ -133,7 +133,7 @@ export default function ContactPage() {
       icon: MapPin,
       title: "Visit Us",
       description: "Our office location",
-      value: "Bandra West, Mumbai, Maharashtra 400050",
+      value: "89/2 sector 39 gurugram haryana",
       action: "#",
     },
     {

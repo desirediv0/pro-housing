@@ -46,7 +46,7 @@ const Footer = () => {
             <div className="flex items-center mb-8">
               <div className="flex items-center">
                 <Link href="/" className="flex items-center group">
-                  <Image 
+                  <Image
                     src="/logo.png"
                     alt="Pro Housing Logo"
                     width={40}
@@ -216,10 +216,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-white/80 leading-relaxed">
-                    123 Business Avenue
-                    <br />
-                    Mumbai, Maharashtra 400001
-                    <br />
+                    89/2 sector 39 gurugram, haryana,
                     India
                   </p>
                 </div>
