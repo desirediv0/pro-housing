@@ -1250,7 +1250,7 @@ export default function EditProperty() {
                   <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
                       <strong>Main Image:</strong> The main image is displayed
-                      as the property's primary photo. If you delete it and
+                      as the property&apos;s primary photo. If you delete it and
                       upload new images, the first new image will become the
                       main image.
                     </p>
