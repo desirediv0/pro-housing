@@ -246,7 +246,7 @@ export function SimpleAreaDisplay({
 
   return (
     <span className={`font-medium text-gray-900 ${className}`}>
-      {formatArea(value, unit)}
+      ~{formatArea(value, unit)}
     </span>
   );
 }

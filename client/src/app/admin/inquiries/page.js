@@ -112,7 +112,7 @@ export default function AdminInquiries() {
           SPAM: statusStats?.SPAM || 0,
         });
       } else {
-        throw new Error(response.message || 'Failed to fetch inquiries');
+        throw new Error(response.message || "Failed to fetch inquiries");
       }
     } catch (error) {
       console.error("Error fetching inquiries:", error);
@@ -237,11 +237,11 @@ export default function AdminInquiries() {
           prevInquiries.map((inquiry) =>
             inquiry.id === selectedInquiry.id
               ? {
-                ...inquiry,
-                status: "RESPONDED",
-                adminResponse: responseText,
-                respondedAt: new Date().toISOString(),
-              }
+                  ...inquiry,
+                  status: "RESPONDED",
+                  adminResponse: responseText,
+                  respondedAt: new Date().toISOString(),
+                }
               : inquiry
           )
         );
@@ -386,7 +386,7 @@ export default function AdminInquiries() {
                   {inquiry.property?.area && (
                     <div className="flex items-center space-x-1 text-xs text-gray-600">
                       <Square className="h-3 w-3" />
-                      <span>{inquiry.property.area} sq ft</span>
+                      <span>~{inquiry.property.area} sq ft</span>
                     </div>
                   )}
                   {inquiry.property?.parking && (

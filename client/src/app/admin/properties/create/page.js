@@ -11,7 +11,7 @@ import {
   Save,
   MapPin,
   Home,
-  DollarSign,
+  IndianRupee,
   Image,
   Users,
   Settings,
@@ -110,9 +110,9 @@ export default function CreateProperty() {
         );
       case "floor":
       case "totalFloors":
-        return category !== "land" && type !== "PLOT";
+        return category !== "land" && type !== "PLOT" && type !== "FARM_LAND";
       case "builtYear":
-        return type !== "PLOT";
+        return type !== "PLOT" && type !== "FARM_LAND";
       case "area":
         return true; // Always show area
       default:
@@ -127,7 +127,9 @@ export default function CreateProperty() {
     { value: "DUPLEX", label: "Duplex", category: "residential" },
     { value: "PENTHOUSE", label: "Penthouse", category: "residential" },
     { value: "STUDIO", label: "Studio", category: "residential" },
+    { value: "BUILDER_FLOOR", label: "Builder Floor", category: "residential" },
     { value: "PLOT", label: "Plot", category: "land" },
+    { value: "FARM_LAND", label: "Farm Land", category: "land" },
     { value: "FARMHOUSE", label: "Farmhouse", category: "residential" },
     { value: "COMMERCIAL", label: "Commercial", category: "commercial" },
     { value: "WAREHOUSE", label: "Warehouse", category: "commercial" },
@@ -374,7 +376,7 @@ export default function CreateProperty() {
                   Price (₹) *
                 </Label>
                 <div className="relative mt-1">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     id="price"
                     name="price"
@@ -393,7 +395,7 @@ export default function CreateProperty() {
                   htmlFor="area"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Area (sq ft)
+                  Area (approx sq ft)
                 </Label>
                 <Input
                   id="area"
@@ -524,7 +526,7 @@ export default function CreateProperty() {
                   htmlFor="area"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Area (sq ft) *
+                  Area (approx sq ft) *
                 </Label>
                 <Input
                   id="area"

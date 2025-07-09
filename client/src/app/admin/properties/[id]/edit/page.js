@@ -11,7 +11,6 @@ import {
   Save,
   MapPin,
   Home,
-  DollarSign,
   Image as ImageIcon,
   Users,
   Settings,
@@ -27,6 +26,7 @@ import {
   Building,
   Eye,
   Loader2,
+  IndianRupee,
 } from "lucide-react";
 import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
@@ -120,9 +120,9 @@ export default function EditProperty() {
         );
       case "floor":
       case "totalFloors":
-        return category !== "land" && type !== "PLOT";
+        return category !== "land" && type !== "PLOT" && type !== "FARM_LAND";
       case "builtYear":
-        return type !== "PLOT";
+        return type !== "PLOT" && type !== "FARM_LAND";
       case "area":
         return true; // Always show area
       default:
@@ -137,7 +137,9 @@ export default function EditProperty() {
     { value: "DUPLEX", label: "Duplex", category: "residential" },
     { value: "PENTHOUSE", label: "Penthouse", category: "residential" },
     { value: "STUDIO", label: "Studio", category: "residential" },
+    { value: "BUILDER_FLOOR", label: "Builder Floor", category: "residential" },
     { value: "PLOT", label: "Plot", category: "land" },
+    { value: "FARM_LAND", label: "Farm Land", category: "land" },
     { value: "FARMHOUSE", label: "Farmhouse", category: "residential" },
     { value: "COMMERCIAL", label: "Commercial", category: "commercial" },
     { value: "WAREHOUSE", label: "Warehouse", category: "commercial" },
@@ -250,7 +252,36 @@ export default function EditProperty() {
           }
 
           // Set existing media
-          setExistingImages(property.images || []);
+          let images = property.images || [];
+
+          // Always add mainImage to the list if it exists
+          if (property.mainImage) {
+            // Check if mainImage is already in the images array
+            const mainImageExists = images.some(
+              (img) => img.url === property.mainImage
+            );
+
+            if (!mainImageExists) {
+              // Add mainImage at the beginning of the array
+              images = [
+                {
+                  id: "main-image",
+                  url: property.mainImage,
+                  title: "Main Image",
+                  isMainImage: true,
+                },
+                ...images,
+              ];
+            } else {
+              // Mark the existing image as main image
+              images = images.map((img) => ({
+                ...img,
+                isMainImage: img.url === property.mainImage,
+              }));
+            }
+          }
+
+          setExistingImages(images);
           setExistingVideos(property.videos || []);
         }
       } catch (error) {
@@ -286,10 +317,31 @@ export default function EditProperty() {
   };
 
   const handleRemoveExistingImage = (imageToRemove) => {
+    // Confirm deletion for main image
+    if (imageToRemove.isMainImage) {
+      const confirmDelete = window.confirm(
+        "This is the main image of the property. Are you sure you want to delete it?\n\nIf you upload new images, the first one will become the new main image."
+      );
+      if (!confirmDelete) return;
+    }
+
     setExistingImages((prev) =>
       prev.filter((img) => img.id !== imageToRemove.id)
     );
-    setImagesToDelete((prev) => [...prev, imageToRemove]);
+
+    // Handle main image deletion separately
+    if (imageToRemove.isMainImage) {
+      setImagesToDelete((prev) => [
+        ...prev,
+        {
+          id: imageToRemove.id,
+          url: imageToRemove.url,
+          isMainImage: true,
+        },
+      ]);
+    } else {
+      setImagesToDelete((prev) => [...prev, imageToRemove]);
+    }
   };
 
   const handleRemoveExistingVideo = (videoToRemove) => {
@@ -325,6 +377,12 @@ export default function EditProperty() {
       // Add images/videos to delete
       if (imagesToDelete.length > 0) {
         submitData.append("imagesToDelete", JSON.stringify(imagesToDelete));
+
+        // Check if main image is being deleted
+        const mainImageToDelete = imagesToDelete.find((img) => img.isMainImage);
+        if (mainImageToDelete) {
+          submitData.append("deleteMainImage", "true");
+        }
       }
       if (videosToDelete.length > 0) {
         submitData.append("videosToDelete", JSON.stringify(videosToDelete));
@@ -495,8 +553,9 @@ export default function EditProperty() {
                 >
                   Price (₹) *
                 </Label>
+
                 <div className="relative mt-1">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
                     id="price"
                     name="price"
@@ -515,7 +574,7 @@ export default function EditProperty() {
                   htmlFor="area"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Area (sq ft)
+                  Area (approx sq ft)
                 </Label>
                 <Input
                   id="area"
@@ -650,7 +709,7 @@ export default function EditProperty() {
                   htmlFor="area"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Area (sq ft) *
+                  Area (approx sq ft) *
                 </Label>
                 <Input
                   id="area"
@@ -1185,6 +1244,18 @@ export default function EditProperty() {
                 <Label className="text-sm font-medium text-gray-700 mb-3 block">
                   Current Images
                 </Label>
+
+                {/* Main Image Info */}
+                {existingImages.some((img) => img.isMainImage) && (
+                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <strong>Main Image:</strong> The main image is displayed
+                      as the property's primary photo. If you delete it and
+                      upload new images, the first new image will become the
+                      main image.
+                    </p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {existingImages.map((image) => (
                     <div key={image.id} className="relative group">
@@ -1196,6 +1267,14 @@ export default function EditProperty() {
                           className="object-cover group-hover:scale-105 transition-transform duration-200"
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200" />
+
+                        {/* Main Image Badge */}
+                        {image.isMainImage && (
+                          <div className="absolute top-2 left-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-2 py-1 rounded-md text-xs font-medium">
+                            Main Image
+                          </div>
+                        )}
+
                         <button
                           type="button"
                           onClick={() => handleRemoveExistingImage(image)}

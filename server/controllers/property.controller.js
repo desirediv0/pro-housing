@@ -477,18 +477,65 @@ export const updateProperty = asyncHandler(async (req, res) => {
     updateData.mainImage = mainImageResult.url;
   }
 
+  // Handle main image deletion
+  let mainImageDeleted = false;
+  if (req.body.deleteMainImage === "true") {
+    if (existingProperty.mainImage) {
+      await deleteFromS3(existingProperty.mainImage);
+      mainImageDeleted = true;
+
+      // Check if there are existing gallery images to promote to main image
+      if (existingProperty.images && existingProperty.images.length > 0) {
+        // Use first existing gallery image as new main image
+        const firstGalleryImage = existingProperty.images[0];
+        updateData.mainImage = firstGalleryImage.url;
+
+        // Remove this image from gallery since it's now the main image
+        await prisma.propertyImage.delete({
+          where: { id: firstGalleryImage.id },
+        });
+      }
+      // If no existing gallery images, we'll handle this after processing new uploads
+    }
+  }
+
   // Handle images to delete
   if (req.body.imagesToDelete) {
     try {
       const imagesToDelete = JSON.parse(req.body.imagesToDelete);
 
-      // Delete images from S3
+      // Delete images from S3 and database
       for (const image of imagesToDelete) {
         if (image.url) {
           await deleteFromS3(image.url);
         }
-        // Delete from database
-        await prisma.propertyImage.delete({ where: { id: image.id } });
+
+        // Only try to delete from propertyImage table if it's not the main image
+        if (!image.isMainImage && image.id !== "main-image") {
+          try {
+            // First check if the image exists in the database
+            const existingImage = await prisma.propertyImage.findUnique({
+              where: { id: image.id },
+            });
+
+            if (existingImage) {
+              await prisma.propertyImage.delete({ where: { id: image.id } });
+              console.log(
+                `Successfully deleted image ${image.id} from database`
+              );
+            } else {
+              console.log(
+                `Image ${image.id} not found in database, skipping database deletion`
+              );
+            }
+          } catch (dbError) {
+            console.error(
+              `Error deleting image ${image.id} from database:`,
+              dbError
+            );
+            // Continue with other images even if one fails
+          }
+        }
       }
     } catch (error) {
       console.error("Error deleting images:", error);
@@ -500,13 +547,33 @@ export const updateProperty = asyncHandler(async (req, res) => {
     try {
       const videosToDelete = JSON.parse(req.body.videosToDelete);
 
-      // Delete videos from S3
+      // Delete videos from S3 and database
       for (const video of videosToDelete) {
         if (video.url) {
           await deleteFromS3(video.url);
         }
-        // Delete from database
-        await prisma.propertyVideo.delete({ where: { id: video.id } });
+
+        try {
+          // Check if video exists before deleting
+          const existingVideo = await prisma.propertyVideo.findUnique({
+            where: { id: video.id },
+          });
+
+          if (existingVideo) {
+            await prisma.propertyVideo.delete({ where: { id: video.id } });
+            console.log(`Successfully deleted video ${video.id} from database`);
+          } else {
+            console.log(
+              `Video ${video.id} not found in database, skipping database deletion`
+            );
+          }
+        } catch (dbError) {
+          console.error(
+            `Error deleting video ${video.id} from database:`,
+            dbError
+          );
+          // Continue with other videos even if one fails
+        }
       }
     } catch (error) {
       console.error("Error deleting videos:", error);
@@ -522,23 +589,45 @@ export const updateProperty = asyncHandler(async (req, res) => {
       1920
     );
 
-    // Get current max order
-    const maxOrder = await prisma.propertyImage.findFirst({
-      where: { propertyId: existingProperty.id },
-      orderBy: { order: "desc" },
-    });
+    // If main image was deleted and no existing images were promoted, use first new image as main
+    if (
+      mainImageDeleted &&
+      !updateData.mainImage &&
+      imageResults.files.length > 0
+    ) {
+      updateData.mainImage = imageResults.files[0].url;
+      // Remove first image from gallery images since it's now the main image
+      imageResults.files.shift();
+    }
 
-    const startOrder = maxOrder ? maxOrder.order + 1 : 1;
+    // Add remaining images to gallery if any
+    if (imageResults.files.length > 0) {
+      // Get current max order
+      const maxOrder = await prisma.propertyImage.findFirst({
+        where: { propertyId: existingProperty.id },
+        orderBy: { order: "desc" },
+      });
 
-    const imageData = imageResults.files.map((result, index) => ({
-      url: result.url,
-      propertyId: existingProperty.id,
-      order: startOrder + index,
-    }));
+      const startOrder = maxOrder ? maxOrder.order + 1 : 1;
 
-    await prisma.propertyImage.createMany({
-      data: imageData,
-    });
+      const imageData = imageResults.files.map((result, index) => ({
+        url: result.url,
+        propertyId: existingProperty.id,
+        order: startOrder + index,
+      }));
+
+      await prisma.propertyImage.createMany({
+        data: imageData,
+      });
+    }
+  }
+
+  // Final check: If main image was deleted but no replacement found, prevent the update
+  if (mainImageDeleted && !updateData.mainImage) {
+    throw new ApiError(
+      400,
+      "Cannot delete main image without providing a replacement. Please upload at least one new image or keep existing gallery images."
+    );
   }
 
   // Handle new videos

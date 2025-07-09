@@ -1,9 +1,14 @@
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://prohousing.in/api";
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:4001/api"
+    : process.env.NEXT_PUBLIC_API_URL || "https://prohousing.in/api";
 
 class AdminAPI {
   constructor() {
     this.baseURL = API_BASE_URL;
+    if (typeof window !== "undefined") {
+      console.log(`🔗 AdminAPI initialized with: ${this.baseURL}`);
+    }
   }
 
   getAuthHeaders() {

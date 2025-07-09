@@ -27,7 +27,7 @@ import {
   Video,
   Star,
   Home,
-  DollarSign,
+  IndianRupee,
 } from "lucide-react";
 import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
@@ -64,11 +64,23 @@ export default function AdminProperties() {
     { value: "APARTMENT", label: "Apartment" },
     { value: "HOUSE", label: "House" },
     { value: "VILLA", label: "Villa" },
+    { value: "DUPLEX", label: "Duplex" },
+    { value: "PENTHOUSE", label: "Penthouse" },
+    { value: "STUDIO", label: "Studio" },
+    { value: "BUILDER_FLOOR", label: "Builder Floor" },
     { value: "PLOT", label: "Plot" },
+    { value: "FARM_LAND", label: "Farm Land" },
+    { value: "FARMHOUSE", label: "Farmhouse" },
     { value: "COMMERCIAL", label: "Commercial" },
     { value: "WAREHOUSE", label: "Warehouse" },
     { value: "OFFICE", label: "Office" },
     { value: "SHOP", label: "Shop" },
+    { value: "SHOWROOM", label: "Showroom" },
+    { value: "MALL", label: "Mall" },
+    { value: "RESTAURANT", label: "Restaurant" },
+    { value: "HOTEL", label: "Hotel" },
+    { value: "HOSPITAL", label: "Hospital" },
+    { value: "SCHOOL", label: "School" },
     { value: "PG", label: "PG" },
     { value: "HOSTEL", label: "Hostel" },
   ];
@@ -386,7 +398,7 @@ export default function AdminProperties() {
                   <div className="text-lg font-semibold text-gray-900">
                     {property.area}
                   </div>
-                  <div className="text-xs text-gray-500">Sq Ft</div>
+                  <div className="text-xs text-gray-500">Sq Ft (approx)</div>
                 </div>
               )}
             </div>
@@ -519,7 +531,7 @@ export default function AdminProperties() {
                   <span className="font-medium">{property.propertyType}</span>
                 </div>
                 <div className="flex items-center">
-                  <DollarSign className="h-4 w-4 mr-1" />
+                  <IndianRupee className="h-4 w-4 mr-1" />
                   <span>{property.listingType}</span>
                 </div>
                 {property.bedrooms && (
@@ -537,7 +549,7 @@ export default function AdminProperties() {
                 {property.area && (
                   <div className="flex items-center">
                     <Square className="h-4 w-4 mr-1" />
-                    <span>{property.area} sq ft</span>
+                    <span>~{property.area} sq ft</span>
                   </div>
                 )}
               </div>

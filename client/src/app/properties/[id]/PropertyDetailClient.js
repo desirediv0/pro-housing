@@ -460,7 +460,7 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             />
                           </div>
                           <div className="text-sm text-gray-600 font-medium">
-                            Area (Click to convert)
+                            Area (approx, Click to convert)
                           </div>
                         </div>
                       )}
@@ -863,7 +863,7 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
 
 ${property.bedrooms ? `🛏️ *Bedrooms:* ${property.bedrooms}` : ""}
 
-${property.area ? `📐 *Area:* ${property.area} sq ft` : ""}
+        ${property.area ? `📐 *Area:* ~${property.area} sq ft` : ""}
 
 🔗 *View Details:* ${window.location.href}
 
