@@ -111,6 +111,7 @@ export default function HomePage() {
       // Fetch category stats
       const statsResponse = await publicAPI.getCategoryStats();
       const stats = statsResponse.data.data || statsResponse.data || {};
+
       setCategoryStats(stats);
 
       // Fetch properties for each category
@@ -131,8 +132,15 @@ export default function HomePage() {
               category,
               6
             );
-            propertiesData[category] =
-              response.data.data || response.data || [];
+            // Ensure we get proper array from API response
+            let categoryData = response.data.data || response.data || [];
+            if (categoryData.data && Array.isArray(categoryData.data)) {
+              categoryData = categoryData.data;
+            }
+
+            propertiesData[category] = Array.isArray(categoryData)
+              ? categoryData
+              : [];
           } catch (error) {
             console.error(`Error fetching ${category} properties:`, error);
             propertiesData[category] = [];
@@ -247,7 +255,8 @@ export default function HomePage() {
 
   // Get properties for active category
   const getPropertiesForCategory = (category) => {
-    return categoryProperties[category] || [];
+    const properties = categoryProperties[category];
+    return Array.isArray(properties) ? properties : [];
   };
 
   // Get formatted count for category stats
@@ -902,7 +911,7 @@ export default function HomePage() {
 
       {/* Housing Edge Services Section */}
       <motion.section
-        className="py-20 bg-gray-50"
+        className="py-10 md:py-20 bg-gray-50"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -911,10 +920,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <div>
-              <h2 className="text-4xl font-bold text-gray-800 mb-2">
+              <h2 className="md:text-4xl text-2xl font-bold text-gray-800 mb-2 text-center md:text-left">
                 Top Development Projects
               </h2>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 text-lg md:text-left text-center">
                 Premium developments shaping Gurugram&apos;s skyline
               </p>
             </div>
@@ -923,10 +932,10 @@ export default function HomePage() {
           {/* Development Sectors Statistics */}
           <div className="bg-white  p-8 shadow-lg">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              <h3 className="md:text-2xl text-xl font-bold text-gray-800 mb-2">
                 Prime Development Sectors
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 md:text-left">
                 Strategic locations driving Gurugram&apos;s real estate growth
               </p>
             </div>

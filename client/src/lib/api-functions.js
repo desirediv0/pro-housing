@@ -81,8 +81,8 @@ export const publicAPI = {
 
   // Categories
   getPropertiesByCategory: (category, limit = 6) =>
-    apiClient.get(`/properties/category/${category}?limit=${limit}`),
-  getCategoryStats: () => apiClient.get("/properties/categories/stats"),
+    apiClient.get(`/properties/public/category/${category}?limit=${limit}`),
+  getCategoryStats: () => apiClient.get("/properties/public/categories/stats"),
 
   // Inquiries
   submitInquiry: (inquiry) => apiClient.post("/inquiries", inquiry),
