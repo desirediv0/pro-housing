@@ -1030,26 +1030,24 @@ export default function HomePage() {
           </div>
 
           {/* Property Stats Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                number: "10K+",
-                label: "Properties",
+                number: "9K+",
+                label: "Certified Properties",
+                subLabel: "from Direct Sellers",
                 icon: Building,
-              },
-              {
-                number: "50+",
-                label: "Cities",
-                icon: MapPin,
               },
               {
                 number: "98%",
                 label: "Satisfaction",
+                subLabel: "from Buyers",
                 icon: Star,
               },
               {
                 number: "24/7",
                 label: "Support",
+                subLabel: "Available",
                 icon: Clock,
               },
             ].map((stat, index) => (
@@ -1073,6 +1071,7 @@ export default function HomePage() {
                     <div className="text-gray-600 font-medium">
                       {stat.label}
                     </div>
+                    <div className="text-sm text-gray-500">{stat.subLabel}</div>
                   </CardContent>
                 </Card>
               </motion.div>
