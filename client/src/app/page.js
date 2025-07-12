@@ -931,15 +931,6 @@ export default function HomePage() {
 
           {/* Development Sectors Statistics */}
           <div className="bg-white  p-8 shadow-lg">
-            <div className="text-center mb-8">
-              <h3 className="md:text-2xl text-xl font-bold text-gray-800 mb-2">
-                Prime Development Sectors
-              </h3>
-              <p className="text-gray-600 md:text-left">
-                Strategic locations driving Gurugram&apos;s real estate growth
-              </p>
-            </div>
-
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {[
                 {
