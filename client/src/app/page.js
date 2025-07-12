@@ -35,6 +35,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -128,31 +135,54 @@ export default function HomePage() {
 
   const testimonials = [
     {
-      name: "Rajesh Kumar",
+      name: "Arun Sharma",
       role: "Property Buyer",
       content:
-        "Pro Housing helped me find my dream home in Mumbai. Their service was exceptional and the process was smooth.",
+        "Found my dream apartment in Sector 48, Gurugram through Pro Housing. Their team was extremely professional and helped me negotiate the best price. The entire process from property viewing to documentation was seamless.",
       rating: 5,
-      image: "/user1.jpg",
-      location: "Mumbai",
+      location: "Sector 48, Gurugram",
+      date: "2 weeks ago",
+      propertyType: "3 BHK Apartment",
     },
     {
-      name: "Priya Sharma",
+      name: "Priya Malhotra",
+      role: "Home Owner",
+      content:
+        "Pro Housing helped me sell my property in DLF Phase 5 at the best market price. Their market analysis and property valuation was spot on. The team's dedication and regular updates made the selling process stress-free.",
+      rating: 5,
+      location: "DLF Phase 5, Gurugram",
+      date: "1 month ago",
+      propertyType: "4 BHK Villa",
+    },
+    {
+      name: "Rajat Verma",
       role: "First-time Buyer",
       content:
-        "Amazing experience! The team guided me through every step of buying my first property. Highly recommended!",
+        "As a first-time homebuyer in Gurugram, I was quite nervous. Pro Housing's team guided me through every step, from shortlisting properties in Golf Course Road to handling all the paperwork. Highly recommend their services!",
       rating: 5,
-      image: "/user3.jpg",
-      location: "Delhi",
+      location: "Golf Course Road, Gurugram",
+      date: "3 weeks ago",
+      propertyType: "2 BHK Apartment",
     },
     {
-      name: "Amit Patel",
-      role: "Investor",
+      name: "Neha Gupta",
+      role: "Property Investor",
       content:
-        "Professional service and great property options. Found the perfect investment property through Pro Housing.",
+        "Pro Housing has been instrumental in building my property portfolio in Gurugram. Their investment advice and market insights for Sohna Road properties were invaluable. The rental management services are excellent too.",
       rating: 5,
-      image: "/user2.jpg",
-      location: "Bangalore",
+      location: "Sohna Road, Gurugram",
+      date: "1 week ago",
+      propertyType: "Commercial Space",
+    },
+    {
+      name: "Vikram Singh",
+      role: "NRI Investor",
+      content:
+        "Managing property investment from abroad was made easy by Pro Housing. They helped me acquire a premium property in Sector 60 and are managing it perfectly. Their virtual tours and detailed reports are excellent.",
+      rating: 5,
+      location: "Sector 60, Gurugram",
+      date: "2 months ago",
+      propertyType: "Luxury Apartment",
     },
   ];
 
@@ -1068,7 +1098,7 @@ export default function HomePage() {
             viewport={{ once: true }}
           >
             <div>
-              <h2 className="text-5xl font-bold font-display text-gray-800 mb-4">
+              <h2 className="text-3xl md:text-5xl font-bold font-display text-gray-800 mb-4">
                 Featured Properties
               </h2>
               <p className="text-xl text-gray-600">
@@ -1255,7 +1285,7 @@ export default function HomePage() {
                     Check back soon for amazing property listings!
                   </p>
                   <Link href="/properties">
-                    <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                    <Button className="bg-gradient-to-r  from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl  font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                       Browse All Properties
                     </Button>
                   </Link>
@@ -1268,171 +1298,133 @@ export default function HomePage() {
 
       {/* Premium Testimonials Section */}
       <motion.section
-        className="py-24 bg-gradient-to-br from-[#1A3B4C]/5 to-[#2A4B5C]/5 relative overflow-hidden"
+        className="py-24 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        {/* Background decorative elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 right-0 w-72 h-72 bg-[#1A3B4C]/5 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-20 left-0 w-72 h-72 bg-[#2A4B5C]/5 rounded-full filter blur-3xl"></div>
-        </div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
-            className="mb-16"
+            className="text-center mb-16"
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <span className="text-[#1A3B4C] font-semibold mb-4 block">
-              TESTIMONIALS
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold font-display py-4 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] bg-clip-text text-transparent">
-              What Our Clients Say
-            </h2>
-            <p className="text-xl text-gray-600/80">
-              Real experiences from real people who found their dream homes
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <h2 className="text-3xl font-bold text-gray-900">
+                What Our Clients Say
+              </h2>
+            </div>
+            <div className="flex items-center justify-center space-x-4 mb-2">
+              <div className="text-3xl font-bold text-gray-900">4.9</div>
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((_, i) => (
+                  <Star
+                    key={i}
+                    className="h-6 w-6 text-yellow-400 fill-current"
+                  />
+                ))}
+              </div>
+            </div>
+            <p className="text-gray-600">
+              Based on {testimonials.length} reviews from Gurugram
             </p>
           </motion.div>
 
-          <motion.div
-            key={currentTestimonial}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative"
-          >
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 relative z-10 overflow-hidden">
-              {/* Decorative elements */}
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#1A3B4C]/10 rounded-full filter blur-2xl"></div>
-              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-[#2A4B5C]/10 rounded-full filter blur-2xl"></div>
+          <div className="px-8">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+                skipSnaps: false,
+                slidesToScroll: 1,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {testimonials.map((testimonial, index) => (
+                  <CarouselItem
+                    key={index}
+                    className="pl-2 md:pl-4 md:basis-1/3 lg:basis-1/3"
+                  >
+                    <div className="h-full">
+                      <div className="h-full bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">
+                              {testimonial.name}
+                            </h4>
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm text-gray-500">
+                                {testimonial.date}
+                              </p>
+                              <span className="text-gray-300">•</span>
+                              <div className="flex">
+                                {[...Array(testimonial.rating)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className="h-4 w-4 text-yellow-400 fill-current"
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
-              <div className="relative">
-                <div className="flex justify-center mb-8">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-7 w-7 text-yellow-400 fill-current mx-1 animate-pulse"
-                      style={{ animationDelay: `${i * 200}ms` }}
-                    />
-                  ))}
-                </div>
+                        <div className="mb-4">
+                          <div className="flex items-center text-sm text-gray-600 mb-2">
+                            <Building className="h-4 w-4 mr-2" />
+                            <span>{testimonial.propertyType}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            <span>{testimonial.location}</span>
+                          </div>
+                        </div>
 
-                <blockquote className="text-xl md:text-2xl text-gray-800 mb-10 italic leading-relaxed relative">
-                  <span className="absolute -top-6 -left-4 text-6xl text-[#1A3B4C]/20">
-                    &ldquo;
-                  </span>
-                  <span className="relative z-10">
-                    {testimonials[currentTestimonial].content}
-                  </span>
-                  <span className="absolute -bottom-6 -right-4 text-6xl text-[#1A3B4C]/20">
-                    &rdquo;
-                  </span>
-                </blockquote>
+                        <p className="text-gray-700 text-sm leading-relaxed line-clamp-4 mb-4">
+                          {testimonial.content}
+                        </p>
 
-                <div className="flex items-center justify-center">
-                  <div className="relative">
-                    <Image
-                      src={
-                        testimonials[currentTestimonial].image ||
-                        "/placeholder.svg"
-                      }
-                      alt={testimonials[currentTestimonial].name}
-                      className="w-20 h-20 rounded-full object-cover ring-4 ring-[#1A3B4C]/20"
-                      width={80}
-                      height={80}
-                    />
-                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center ring-4 ring-white">
-                      <CheckCircle className="w-5 h-5 text-white" />
+                        <div className="pt-4 border-t border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-600">
+                              {testimonial.role}
+                            </span>
+                            <div className="flex items-center text-green-600">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              <span className="text-xs">Verified</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-left ml-6">
-                    <h4 className="font-bold text-xl text-gray-800">
-                      {testimonials[currentTestimonial].name}
-                    </h4>
-                    <p className="text-[#1A3B4C]/80 font-medium mb-1">
-                      {testimonials[currentTestimonial].role}
-                    </p>
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <MapPin className="w-4 h-4 mr-1 text-[#1A3B4C]/60" />
-                      {testimonials[currentTestimonial].location}
-                    </p>
-                  </div>
-                </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="hidden md:block">
+                <CarouselPrevious className="-left-4 bg-white hover:bg-gray-100" />
+                <CarouselNext className="-right-4 bg-white hover:bg-gray-100" />
               </div>
-            </div>
-
-            {/* Navigation buttons */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between items-center z-20 pointer-events-none">
-              <button
-                onClick={() =>
-                  setCurrentTestimonial(
-                    (prev) =>
-                      (prev - 1 + testimonials.length) % testimonials.length
-                  )
-                }
-                className="p-3 rounded-full bg-white/80 shadow-lg backdrop-blur-sm border border-white/20 text-[#1A3B4C] hover:bg-white transition-all duration-300 pointer-events-auto"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-
-              <button
-                onClick={() =>
-                  setCurrentTestimonial(
-                    (prev) => (prev + 1) % testimonials.length
-                  )
-                }
-                className="p-3 rounded-full bg-white/80 shadow-lg backdrop-blur-sm border border-white/20 text-[#1A3B4C] hover:bg-white transition-all duration-300 pointer-events-auto"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Testimonial indicators */}
-          <div className="flex justify-center mt-8 space-x-3">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentTestimonial(index)}
-                className={`w-12 h-1.5 rounded-full transition-all duration-300 ${
-                  index === currentTestimonial
-                    ? "bg-[#1A3B4C] w-20"
-                    : "bg-gray-300 hover:bg-[#1A3B4C]/50"
-                }`}
-              />
-            ))}
+            </Carousel>
           </div>
+
+          {/* <div className="mt-12 text-center">
+            <Button
+              className="bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg transition-all duration-300 px-8 py-3 rounded-full font-medium"
+              onClick={() =>
+                window.open(
+                  "https://g.page/r/your-google-review-link",
+                  "_blank"
+                )
+              }
+            >
+              Write a review
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div> */}
         </div>
       </motion.section>
 
