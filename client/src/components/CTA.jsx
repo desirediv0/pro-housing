@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Search, Phone } from "lucide-react";
+import Link from "next/link";
 
 const CTA = () => {
   return (
@@ -27,21 +28,25 @@ const CTA = () => {
             with Pro Housing
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-[#1A3B4C] hover:bg-gray-100 hover:text-[#1A3B4C] font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <Search className="h-5 w-5 mr-2" />
-              Start Searching
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-[#1A3B4C] font-bold px-8 py-4 rounded-xl transition-all duration-300 bg-transparent"
-            >
-              <Phone className="h-5 w-5 mr-2" />
-              Talk to Expert
-            </Button>
+            <Link href="/properties" className="flex-1 sm:flex-none">
+              <Button
+                size="lg"
+                className="w-full bg-white text-[#1A3B4C] hover:bg-gray-100 hover:text-[#1A3B4C] font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Search className="h-5 w-5 mr-2" />
+                Start Searching
+              </Button>
+            </Link>
+            <Link href="/contact" className="flex-1 sm:flex-none">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full border-white text-white hover:bg-white hover:text-[#1A3B4C] font-bold px-8 py-4 rounded-xl transition-all duration-300 bg-transparent"
+              >
+                <Phone className="h-5 w-5 mr-2" />
+                Talk to Expert
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </div>

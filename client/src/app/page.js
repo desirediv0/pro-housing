@@ -43,6 +43,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { dlfcamellias, glfcyberhub, m3m, trumptower } from "@/assets";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,6 +55,8 @@ export default function HomePage() {
   const [sidebarContent, setSidebarContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  const router = useRouter();
 
   useEffect(() => {
     fetchFeaturedProperties();
@@ -968,6 +971,31 @@ export default function HomePage() {
                         <div className="flex items-center gap-2">
                           <Crown className="h-4 w-4" />
                           <span>5-Star Facilities</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 text-center sm:text-left">
+                        <div>
+                          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                            Ready to Find Your Dream Home?
+                          </h3>
+                          <p className="text-white/80 text-sm sm:text-base">
+                            Join thousands of happy customers who found their
+                            perfect property with Pro Housing
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <Link href="/properties" className="flex-1">
+                            <Button className="w-full bg-[#1A3B4C] hover:bg-[#2A4B5C] text-white px-6 py-2.5 rounded-lg font-medium text-sm">
+                              Start Searching
+                            </Button>
+                          </Link>
+                          <Link href="/contact" className="flex-1">
+                            <Button className="w-full bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/40 px-6 py-2.5 rounded-lg font-medium text-sm">
+                              Talk to Expert
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     </div>
