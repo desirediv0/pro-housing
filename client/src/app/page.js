@@ -915,7 +915,7 @@ export default function HomePage() {
                 Top Development Projects
               </h2>
               <p className="text-gray-600 text-lg">
-                Premium developments shaping Gurugram's skyline
+                Premium developments shaping Gurugram&apos;s skyline
               </p>
             </div>
           </div>
@@ -927,7 +927,7 @@ export default function HomePage() {
                 Prime Development Sectors
               </h3>
               <p className="text-gray-600">
-                Strategic locations driving Gurugram's real estate growth
+                Strategic locations driving Gurugram&apos;s real estate growth
               </p>
             </div>
 
