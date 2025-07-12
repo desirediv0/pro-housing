@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 const API_BASE_URL =
   process.env.NODE_ENV === "development"
-    ? "https://prohousing.in/api"
+    ? "http://localhost:4001/api"
     : process.env.NEXT_PUBLIC_API_URL || "https://prohousing.in/api";
 
 // Create axios instance
