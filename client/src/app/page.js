@@ -56,11 +56,20 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
+  const [activeCategory, setActiveCategory] = useState("apartment");
+
   const router = useRouter();
+
+  // Category-specific states
+  const [categoryProperties, setCategoryProperties] = useState({});
+  const [categoryStats, setCategoryStats] = useState({});
+  const [categoryLoading, setCategoryLoading] = useState(true);
+  const [categoryError, setCategoryError] = useState(null);
 
   useEffect(() => {
     fetchFeaturedProperties();
     fetchSidebarContent();
+    fetchCategoryData();
     // Auto-rotate testimonials
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -91,6 +100,52 @@ export default function HomePage() {
       setSidebarContent([]); // Set empty array on error
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategoryData = async () => {
+    try {
+      setCategoryLoading(true);
+      setCategoryError(null);
+
+      // Fetch category stats
+      const statsResponse = await publicAPI.getCategoryStats();
+      const stats = statsResponse.data.data || statsResponse.data || {};
+      setCategoryStats(stats);
+
+      // Fetch properties for each category
+      const categories = [
+        "apartment",
+        "house",
+        "commercial",
+        "plot",
+        "pg",
+        "invest",
+      ];
+      const propertiesData = {};
+
+      await Promise.all(
+        categories.map(async (category) => {
+          try {
+            const response = await publicAPI.getPropertiesByCategory(
+              category,
+              6
+            );
+            propertiesData[category] =
+              response.data.data || response.data || [];
+          } catch (error) {
+            console.error(`Error fetching ${category} properties:`, error);
+            propertiesData[category] = [];
+          }
+        })
+      );
+
+      setCategoryProperties(propertiesData);
+    } catch (error) {
+      console.error("Error fetching category data:", error);
+      setCategoryError("Failed to load properties. Please try again.");
+    } finally {
+      setCategoryLoading(false);
     }
   };
 
@@ -189,6 +244,20 @@ export default function HomePage() {
       propertyType: "Luxury Apartment",
     },
   ];
+
+  // Get properties for active category
+  const getPropertiesForCategory = (category) => {
+    return categoryProperties[category] || [];
+  };
+
+  // Get formatted count for category stats
+  const getCategoryCount = (category) => {
+    const count = categoryStats[category] || 0;
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K+`;
+    }
+    return `${count}+`;
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -1333,6 +1402,452 @@ export default function HomePage() {
               </Card>
             </motion.div>
           )}
+        </div>
+      </motion.section>
+
+      {/* Property Categories Carousel Section */}
+      <motion.section
+        className="py-24 bg-gray-50"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <motion.div
+            className="text-center mb-16"
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-1 w-16 bg-[#1A3B4C] rounded-full mr-4"></div>
+              <h2 className="text-3xl md:text-5xl font-bold font-display text-gray-800">
+                Explore by Category
+              </h2>
+              <div className="h-1 w-16 bg-[#1A3B4C] rounded-full ml-4"></div>
+            </div>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Discover properties tailored to your specific needs and
+              preferences
+            </p>
+          </motion.div>
+
+          {/* Category Tabs */}
+          <div className="mb-12">
+            {/* Mobile: Dropdown */}
+            <div className="sm:hidden">
+              <Select value={activeCategory} onValueChange={setActiveCategory}>
+                <SelectTrigger className="w-full bg-white border-2 border-[#1A3B4C]/20 rounded-xl shadow-sm">
+                  <SelectValue placeholder="Select Property Category" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-2 border-[#1A3B4C]/20 shadow-xl rounded-xl">
+                  <SelectGroup>
+                    <SelectLabel className="text-[#1A3B4C] font-semibold">
+                      Property Types
+                    </SelectLabel>
+                    <SelectItem value="apartment">
+                      <div className="flex items-center">
+                        <Building className="h-4 w-4 mr-2" />
+                        Apartments
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="house">
+                      <div className="flex items-center">
+                        <Home className="h-4 w-4 mr-2" />
+                        Houses & Villas
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="commercial">
+                      <div className="flex items-center">
+                        <Building className="h-4 w-4 mr-2" />
+                        Commercial
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="plot">
+                      <div className="flex items-center">
+                        <Square className="h-4 w-4 mr-2" />
+                        Plots & Land
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="pg">
+                      <div className="flex items-center">
+                        <Home className="h-4 w-4 mr-2" />
+                        PG & Hostels
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="invest">
+                      <div className="flex items-center">
+                        <Crown className="h-4 w-4 mr-2" />
+                        Investment
+                      </div>
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Desktop: Tab Navigation */}
+            <div className="hidden sm:flex justify-center">
+              <div className="bg-white rounded-2xl p-2 shadow-lg border border-gray-200">
+                <div className="flex space-x-2">
+                  {[
+                    {
+                      key: "apartment",
+                      label: "Apartments",
+                      icon: Building,
+                      count: getCategoryCount("apartment"),
+                    },
+                    {
+                      key: "house",
+                      label: "Houses & Villas",
+                      icon: Home,
+                      count: getCategoryCount("house"),
+                    },
+                    {
+                      key: "commercial",
+                      label: "Commercial",
+                      icon: Building,
+                      count: getCategoryCount("commercial"),
+                    },
+                    {
+                      key: "plot",
+                      label: "Plots & Land",
+                      icon: Square,
+                      count: getCategoryCount("plot"),
+                    },
+                    {
+                      key: "pg",
+                      label: "PG & Hostels",
+                      icon: Home,
+                      count: getCategoryCount("pg"),
+                    },
+                    {
+                      key: "invest",
+                      label: "Investment",
+                      icon: Crown,
+                      count: getCategoryCount("invest"),
+                    },
+                  ].map((category) => (
+                    <button
+                      key={category.key}
+                      onClick={() => setActiveCategory(category.key)}
+                      className={`flex flex-col items-center px-4 py-3 rounded-xl transition-all duration-300 group min-w-[120px] ${
+                        activeCategory === category.key
+                          ? "bg-[#1A3B4C] text-white"
+                          : "hover:bg-[#1A3B4C] hover:text-white"
+                      }`}
+                    >
+                      <category.icon
+                        className={`h-6 w-6 mb-2 transition-colors ${
+                          activeCategory === category.key
+                            ? "text-white"
+                            : "text-[#1A3B4C] group-hover:text-white"
+                        }`}
+                      />
+                      <span
+                        className={`text-sm font-semibold transition-colors ${
+                          activeCategory === category.key
+                            ? "text-white"
+                            : "text-gray-800 group-hover:text-white"
+                        }`}
+                      >
+                        {category.label}
+                      </span>
+                      <span
+                        className={`text-xs transition-colors ${
+                          activeCategory === category.key
+                            ? "text-white/80"
+                            : "text-gray-500 group-hover:text-white/80"
+                        }`}
+                      >
+                        {category.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Properties Carousel */}
+          <div className="px-4 sm:px-8">
+            {categoryLoading ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <Card key={i} className="animate-pulse border-0 shadow-lg">
+                    <div className="aspect-video bg-gray-200 rounded-t-xl"></div>
+                    <CardContent className="p-6">
+                      <div className="h-6 bg-gray-200 rounded mb-3"></div>
+                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : categoryError ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building className="h-8 w-8 text-red-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  Failed to Load Properties
+                </h3>
+                <p className="text-gray-600 mb-4">{categoryError}</p>
+                <Button
+                  onClick={fetchCategoryData}
+                  className="bg-[#1A3B4C] hover:bg-[#2A4B5C] text-white"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : getPropertiesForCategory(activeCategory).length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  No Properties Available
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  No properties found in this category. Check back later!
+                </p>
+                <Link href="/properties">
+                  <Button className="bg-[#1A3B4C] hover:bg-[#2A4B5C] text-white">
+                    View All Properties
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                  skipSnaps: false,
+                  slidesToScroll: 1,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {/* Properties for Active Category */}
+                  {getPropertiesForCategory(activeCategory).map(
+                    (property, index) => (
+                      <CarouselItem
+                        key={property.id}
+                        className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
+                      >
+                        <div className="h-full">
+                          <motion.div
+                            initial={{ y: 50, opacity: 0 }}
+                            whileInView={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                            whileHover={{ y: -10, scale: 1.02 }}
+                            className="group h-full"
+                          >
+                            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden h-full">
+                              <div className="relative">
+                                <div className="aspect-video relative overflow-hidden">
+                                  <Image
+                                    src={
+                                      property.mainImage ||
+                                      property.images?.[0]?.url ||
+                                      "/placeholder.svg"
+                                    }
+                                    alt={property.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    width={400}
+                                    height={300}
+                                  />
+                                  {/* Highlight Badge */}
+                                  {property.highlight && (
+                                    <div
+                                      className={`absolute top-4 left-4 px-3 py-1 text-xs font-bold text-white rounded-full ${getHighlightColor(
+                                        property.highlight
+                                      )}`}
+                                    >
+                                      {property.highlight}
+                                    </div>
+                                  )}
+                                  {/* Status Badge */}
+                                  <div
+                                    className={`absolute top-4 right-4 px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                                      property.status
+                                    )}`}
+                                  >
+                                    {property.status?.replace("_", " ")}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <CardContent className="p-6">
+                                <div className="space-y-4">
+                                  {/* Title and Location */}
+                                  <div>
+                                    <h3 className="text-xl font-bold font-display text-gray-800 line-clamp-2 group-hover:text-[#1A3B4C] transition-colors duration-300">
+                                      {property.title}
+                                    </h3>
+                                    <div className="flex items-center text-sm text-gray-600 mt-2">
+                                      <MapPin className="h-4 w-4 mr-1" />
+                                      <span className="line-clamp-1">
+                                        {property.location ||
+                                          `${
+                                            property.locality
+                                              ? property.locality + ", "
+                                              : ""
+                                          }${property.city}, ${property.state}`}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Features */}
+                                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                    {property.bedrooms && (
+                                      <div className="flex items-center">
+                                        <Bed className="h-4 w-4 mr-1" />
+                                        <span>{property.bedrooms} Bed</span>
+                                      </div>
+                                    )}
+                                    {property.bathrooms && (
+                                      <div className="flex items-center">
+                                        <Bath className="h-4 w-4 mr-1" />
+                                        <span>{property.bathrooms} Bath</span>
+                                      </div>
+                                    )}
+                                    {property.area && (
+                                      <div className="flex items-center">
+                                        <Square className="h-4 w-4 mr-1" />
+                                        <SimpleAreaDisplay
+                                          value={property.area}
+                                          unit="sq_feet"
+                                          className="text-sm text-gray-600"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Price and Actions */}
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <div className="text-2xl font-bold text-[#1A3B4C]">
+                                        {formatPrice(property.price)}
+                                      </div>
+                                      <div className="text-sm text-gray-600">
+                                        {property.propertyType === "PG" ||
+                                        property.propertyType === "HOSTEL"
+                                          ? "Per Month"
+                                          : property.listingType === "RENT"
+                                          ? "For Rent"
+                                          : property.listingType === "LEASE"
+                                          ? "For Lease"
+                                          : "For Sale"}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <span className="text-xs text-gray-600">
+                                        {property.propertyType}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex space-x-2">
+                                    <Link
+                                      href={`/properties/${
+                                        property.slug || property.id
+                                      }`}
+                                      className="flex-1"
+                                    >
+                                      <Button
+                                        size="sm"
+                                        className="w-full bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] hover:shadow-lg text-white"
+                                      >
+                                        <Calendar className="h-4 w-4 mr-1" />
+                                        View Details
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        </div>
+                      </CarouselItem>
+                    )
+                  )}
+                </CarouselContent>
+                <div className="hidden md:block">
+                  <CarouselPrevious className="-left-4 bg-white hover:bg-gray-100 border-2 border-gray-200 shadow-lg" />
+                  <CarouselNext className="-right-4 bg-white hover:bg-gray-100 border-2 border-gray-200 shadow-lg" />
+                </div>
+              </Carousel>
+            )}
+          </div>
+
+          {/* Category Stats */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-6 gap-6">
+            {[
+              {
+                category: "Apartments",
+                key: "apartment",
+                icon: Building,
+                color: "from-blue-500 to-blue-600",
+              },
+              {
+                category: "Houses & Villas",
+                key: "house",
+                icon: Home,
+                color: "from-green-500 to-green-600",
+              },
+              {
+                category: "Commercial",
+                key: "commercial",
+                icon: Building,
+                color: "from-purple-500 to-purple-600",
+              },
+              {
+                category: "Plots & Land",
+                key: "plot",
+                icon: Square,
+                color: "from-orange-500 to-orange-600",
+              },
+              {
+                category: "PG & Hostels",
+                key: "pg",
+                icon: Home,
+                color: "from-pink-500 to-pink-600",
+              },
+              {
+                category: "Investment",
+                key: "invest",
+                icon: Crown,
+                color: "from-yellow-500 to-yellow-600",
+              },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ y: 30, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center group"
+              >
+                <div className="relative">
+                  <div
+                    className={`w-16 h-16 bg-gradient-to-r ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+                  >
+                    <stat.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-800 mb-1">
+                    {getCategoryCount(stat.key)}
+                  </div>
+                  <div className="text-sm text-gray-600">{stat.category}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.section>
 

@@ -1418,3 +1418,164 @@ export const getPublicPropertyBySlug = asyncHandler(async (req, res) => {
       )
     );
 });
+
+// Get Properties by Category - For Carousel
+export const getPropertiesByCategory = asyncHandler(async (req, res) => {
+  const { category } = req.params;
+  const { limit = 6 } = req.query;
+
+  // Define property type mappings for each category
+  const categoryMappings = {
+    apartment: ["APARTMENT", "STUDIO", "PENTHOUSE"],
+    house: ["HOUSE", "VILLA", "DUPLEX", "FARMHOUSE"],
+    commercial: [
+      "COMMERCIAL",
+      "OFFICE",
+      "SHOP",
+      "SHOWROOM",
+      "MALL",
+      "RESTAURANT",
+      "HOTEL",
+      "WAREHOUSE",
+    ],
+    plot: ["PLOT"],
+    pg: ["PG", "HOSTEL"],
+    invest: ["APARTMENT", "HOUSE", "VILLA", "COMMERCIAL", "PLOT"], // Investment properties from all types
+  };
+
+  // Validate category
+  if (!categoryMappings[category]) {
+    throw new ApiError(
+      400,
+      `Invalid category. Available categories: ${Object.keys(
+        categoryMappings
+      ).join(", ")}`
+    );
+  }
+
+  let whereClause = {
+    isActive: true,
+  };
+
+  // Special handling for investment category
+  if (category === "invest") {
+    whereClause = {
+      ...whereClause,
+      propertyType: { in: categoryMappings[category] },
+      OR: [
+        { highlight: "PREMIUM" },
+        { highlight: "FEATURED" },
+        { price: { gte: 5000000 } }, // High value properties for investment
+        { listingType: "LEASE" },
+      ],
+    };
+  } else {
+    whereClause = {
+      ...whereClause,
+      propertyType: { in: categoryMappings[category] },
+    };
+  }
+
+  const properties = await prisma.property.findMany({
+    where: whereClause,
+    include: {
+      images: {
+        orderBy: { order: "asc" },
+        take: 1, // Only main image for carousel
+      },
+      _count: {
+        select: { inquiries: true },
+      },
+    },
+    take: parseInt(limit),
+    orderBy: [
+      { highlight: "asc" }, // Featured properties first
+      { views: "desc" }, // Popular properties
+      { createdAt: "desc" }, // Latest properties
+    ],
+  });
+
+  // Format properties for frontend
+  const formattedProperties = properties.map((property) => ({
+    ...property,
+    formattedPrice: new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(property.price),
+    mainImage: property.mainImage || property.images[0]?.url,
+    location: `${property.locality ? property.locality + ", " : ""}${
+      property.city
+    }, ${property.state}`,
+  }));
+
+  res.status(200).json(
+    new ApiResponsive(
+      200,
+      {
+        data: formattedProperties,
+        category: category,
+        total: formattedProperties.length,
+      },
+      `${category} properties retrieved successfully`
+    )
+  );
+});
+
+// Get Property Categories Stats
+export const getPropertyCategoriesStats = asyncHandler(async (req, res) => {
+  // Get counts for each category
+  const categoryMappings = {
+    apartment: ["APARTMENT", "STUDIO", "PENTHOUSE"],
+    house: ["HOUSE", "VILLA", "DUPLEX", "FARMHOUSE"],
+    commercial: [
+      "COMMERCIAL",
+      "OFFICE",
+      "SHOP",
+      "SHOWROOM",
+      "MALL",
+      "RESTAURANT",
+      "HOTEL",
+      "WAREHOUSE",
+    ],
+    plot: ["PLOT"],
+    pg: ["PG", "HOSTEL"],
+  };
+
+  const stats = {};
+
+  for (const [category, types] of Object.entries(categoryMappings)) {
+    const count = await prisma.property.count({
+      where: {
+        isActive: true,
+        propertyType: { in: types },
+      },
+    });
+    stats[category] = count;
+  }
+
+  // Investment properties count (high value properties)
+  const investmentCount = await prisma.property.count({
+    where: {
+      isActive: true,
+      OR: [
+        { highlight: "PREMIUM" },
+        { highlight: "FEATURED" },
+        { price: { gte: 5000000 } },
+        { listingType: "LEASE" },
+      ],
+    },
+  });
+
+  stats.invest = investmentCount;
+
+  res
+    .status(200)
+    .json(
+      new ApiResponsive(
+        200,
+        stats,
+        "Property categories statistics retrieved successfully"
+      )
+    );
+});

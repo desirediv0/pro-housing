@@ -79,6 +79,11 @@ export const publicAPI = {
   getPropertyById: (id) => apiClient.get(`/properties/public/${id}`),
   getFeaturedProperties: () => apiClient.get("/properties/public/featured"),
 
+  // Categories
+  getPropertiesByCategory: (category, limit = 6) =>
+    apiClient.get(`/properties/category/${category}?limit=${limit}`),
+  getCategoryStats: () => apiClient.get("/properties/categories/stats"),
+
   // Inquiries
   submitInquiry: (inquiry) => apiClient.post("/inquiries", inquiry),
   submitGeneralInquiry: (inquiry) =>

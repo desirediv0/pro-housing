@@ -18,6 +18,8 @@ import {
   getPropertiesByHighlight,
   getPublicProperties,
   getPublicPropertyBySlug,
+  getPropertiesByCategory,
+  getPropertyCategoriesStats,
 } from "../controllers/property.controller.js";
 import { verifyAdminToken } from "../middlewares/admin.middleware.js";
 import {
@@ -38,6 +40,12 @@ router.get("/trending", getTrendingProperties);
 router.get("/highlight/:highlight", getPropertiesByHighlight);
 router.get("/public/slug/:slug", getPublicPropertyBySlug); // Public property details by slug
 router.get("/public/:propertyId", getPropertyById); // Public property details
+router.get("/public/category/:category", getPropertiesByCategory); // Public properties by category
+router.get("/public/categories/stats", getPropertyCategoriesStats); // Public category statistics
+
+// Categories routes
+router.get("/categories/stats", getPropertyCategoriesStats); // Category statistics
+router.get("/category/:category", getPropertiesByCategory); // Properties by category
 
 // Admin routes (require authentication)
 router.use(verifyAdminToken);

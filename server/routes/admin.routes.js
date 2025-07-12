@@ -1,13 +1,13 @@
 import express from "express";
 import {
-    createAdmin,
-    loginAdmin,
-    logoutAdmin,
-    getCurrentAdmin,
-    updateAdminProfile,
-    changeAdminPassword,
-    getAllAdmins,
-    deleteAdmin,
+  createAdmin,
+  loginAdmin,
+  logoutAdmin,
+  getCurrentAdmin,
+  updateAdminProfile,
+  changeAdminPassword,
+  getAllAdmins,
+  deleteAdmin,
 } from "../controllers/admin.controller.js";
 import { verifyAdminToken } from "../middlewares/admin.middleware.js";
 
