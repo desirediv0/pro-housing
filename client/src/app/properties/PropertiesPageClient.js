@@ -20,6 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { publicAPI } from "@/lib/api-functions";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -212,21 +219,6 @@ export default function PropertiesPageClient({ searchParams }) {
     }).format(price);
   };
 
-  // Custom Select component
-  const Select = ({ value, onValueChange, className, children }) => (
-    <select
-      value={value}
-      onChange={(e) => onValueChange(e.target.value)}
-      className={`px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A3B4C] focus:border-transparent bg-white text-gray-900 ${className}`}
-    >
-      {children}
-    </select>
-  );
-
-  const SelectItem = ({ value, children }) => (
-    <option value={value}>{children}</option>
-  );
-
   return (
     <div className="min-h-screen bg-white">
       {/* Header with Enhanced Search */}
@@ -302,6 +294,7 @@ export default function PropertiesPageClient({ searchParams }) {
                 {[
                   "For Sale",
                   "For Rent",
+                  "Invest",
                   "1 BHK",
                   "2 BHK",
                   "3 BHK",
@@ -317,6 +310,8 @@ export default function PropertiesPageClient({ searchParams }) {
                         handleFilterChange("listingType", "SALE");
                       else if (chip === "For Rent")
                         handleFilterChange("listingType", "RENT");
+                      else if (chip === "Invest")
+                        handleFilterChange("listingType", "INVEST");
                       else if (chip.includes("BHK"))
                         handleFilterChange("bedrooms", chip.charAt(0));
                       else if (chip === "Furnished")
@@ -364,16 +359,20 @@ export default function PropertiesPageClient({ searchParams }) {
                   <Select
                     value={filters.type}
                     onValueChange={(value) => handleFilterChange("type", value)}
-                    className="mt-2"
                   >
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="Apartment">Apartment</SelectItem>
-                    <SelectItem value="House">House</SelectItem>
-                    <SelectItem value="Villa">Villa</SelectItem>
-                    <SelectItem value="Studio">Studio</SelectItem>
-                    <SelectItem value="Penthouse">Penthouse</SelectItem>
-                    <SelectItem value="Commercial">Commercial</SelectItem>
-                    <SelectItem value="Plot">Plot</SelectItem>
+                    <SelectTrigger className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]">
+                      <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="Apartment">Apartment</SelectItem>
+                      <SelectItem value="House">House</SelectItem>
+                      <SelectItem value="Villa">Villa</SelectItem>
+                      <SelectItem value="Studio">Studio</SelectItem>
+                      <SelectItem value="Penthouse">Penthouse</SelectItem>
+                      <SelectItem value="Commercial">Commercial</SelectItem>
+                      <SelectItem value="Invest">Invest</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -388,11 +387,16 @@ export default function PropertiesPageClient({ searchParams }) {
                     onValueChange={(value) =>
                       handleFilterChange("listingType", value)
                     }
-                    className="mt-2"
                   >
-                    <SelectItem value="all">All Listings</SelectItem>
-                    <SelectItem value="SALE">For Sale</SelectItem>
-                    <SelectItem value="RENT">For Rent</SelectItem>
+                    <SelectTrigger className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]">
+                      <SelectValue placeholder="All Listings" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Listings</SelectItem>
+                      <SelectItem value="SALE">For Sale</SelectItem>
+                      <SelectItem value="RENT">For Rent</SelectItem>
+                      <SelectItem value="INVEST">Invest</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -407,14 +411,18 @@ export default function PropertiesPageClient({ searchParams }) {
                     onValueChange={(value) =>
                       handleFilterChange("bedrooms", value)
                     }
-                    className="mt-2"
                   >
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1">1 BHK</SelectItem>
-                    <SelectItem value="2">2 BHK</SelectItem>
-                    <SelectItem value="3">3 BHK</SelectItem>
-                    <SelectItem value="4">4 BHK</SelectItem>
-                    <SelectItem value="5">5+ BHK</SelectItem>
+                    <SelectTrigger className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any</SelectItem>
+                      <SelectItem value="1">1 BHK</SelectItem>
+                      <SelectItem value="2">2 BHK</SelectItem>
+                      <SelectItem value="3">3 BHK</SelectItem>
+                      <SelectItem value="4">4 BHK</SelectItem>
+                      <SelectItem value="5">5+ BHK</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -465,11 +473,15 @@ export default function PropertiesPageClient({ searchParams }) {
                     onValueChange={(value) =>
                       handleFilterChange("furnished", value)
                     }
-                    className="mt-2"
                   >
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="true">Furnished</SelectItem>
-                    <SelectItem value="false">Unfurnished</SelectItem>
+                    <SelectTrigger className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any</SelectItem>
+                      <SelectItem value="true">Furnished</SelectItem>
+                      <SelectItem value="false">Unfurnished</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
                 <div>
@@ -484,11 +496,15 @@ export default function PropertiesPageClient({ searchParams }) {
                     onValueChange={(value) =>
                       handleFilterChange("parking", value)
                     }
-                    className="mt-2"
                   >
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="true">With Parking</SelectItem>
-                    <SelectItem value="false">No Parking</SelectItem>
+                    <SelectTrigger className="mt-2 rounded-xl border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]">
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any</SelectItem>
+                      <SelectItem value="true">With Parking</SelectItem>
+                      <SelectItem value="false">No Parking</SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
               </div>
@@ -523,7 +539,15 @@ export default function PropertiesPageClient({ searchParams }) {
               {filters.location && ` in ${filters.location}`}
               {filters.type && ` • ${filters.type}`}
               {filters.listingType &&
-                ` • For ${filters.listingType.toLowerCase()}`}
+                ` • ${
+                  filters.listingType === "SALE"
+                    ? "For Sale"
+                    : filters.listingType === "RENT"
+                    ? "For Rent"
+                    : filters.listingType === "INVEST"
+                    ? "Invest"
+                    : filters.listingType.toLowerCase()
+                }`}
             </p>
           </div>
           <div className="flex items-center space-x-2 mt-4 sm:mt-0">
@@ -916,7 +940,7 @@ export default function PropertiesPageClient({ searchParams }) {
                         phone: e.target.value,
                       }))
                     }
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 90909 08081"
                     className="mt-2 rounded-xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                   />
                 </div>

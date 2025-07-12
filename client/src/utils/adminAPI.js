@@ -1,6 +1,6 @@
 const API_BASE_URL =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:4001/api"
+    ? "https://prohousing.in/api"
     : process.env.NEXT_PUBLIC_API_URL || "https://prohousing.in/api";
 
 class AdminAPI {
@@ -14,11 +14,6 @@ class AdminAPI {
   getAuthHeaders() {
     const accessToken = this.getCookie("accessToken");
     const adminToken = this.getCookie("adminToken");
-
-    console.log("Tokens found:", {
-      accessToken: !!accessToken,
-      adminToken: !!adminToken,
-    });
 
     const token = accessToken || adminToken;
 
@@ -65,9 +60,6 @@ class AdminAPI {
     const url = `${this.baseURL}${endpoint}`;
     const headers = this.getAuthHeaders();
 
-    console.log("Request URL:", url);
-    console.log("Request Headers:", headers);
-
     const config = {
       headers,
       credentials: "include", // Add this to include cookies
@@ -75,13 +67,10 @@ class AdminAPI {
     };
 
     try {
-      console.log("Making request with config:", config);
       const response = await fetch(url, config);
-      console.log("Response Status:", response.status);
 
       // Try to get the response body regardless of status
       const responseData = await response.json().catch(() => ({}));
-      console.log("Response Data:", responseData);
 
       if (!response.ok) {
         throw new Error(

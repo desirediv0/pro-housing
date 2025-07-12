@@ -119,7 +119,7 @@ export default function ContactPage() {
       icon: Phone,
       title: "Call Us",
       description: "Speak with our experts",
-      value: "+91 98765 43210",
+      value: "+91 90909 08081",
       action: "tel:+919876543210",
     },
     {
@@ -367,7 +367,7 @@ export default function ContactPage() {
                           type="tel"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          placeholder="+91 98765 43210"
+                          placeholder="+91 90909 08081"
                           className="pl-10 py-3 border-gray-300 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                         />
                       </div>

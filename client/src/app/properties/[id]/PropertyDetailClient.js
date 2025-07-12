@@ -990,7 +990,7 @@ Please share more details about this property.`;
                         phone: e.target.value,
                       }))
                     }
-                    placeholder="+91 98765 43210"
+                    placeholder="+91 90909 08081"
                     className="mt-2 rounded-xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]"
                     required
                   />

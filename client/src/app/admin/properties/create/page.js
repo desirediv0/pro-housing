@@ -951,7 +951,7 @@ export default function CreateProperty() {
                   name="contactPhone"
                   value={formData.contactPhone}
                   onChange={handleChange}
-                  placeholder="+91 98765 43210"
+                  placeholder="+91 90909 08081"
                   className="mt-1"
                 />
               </div>

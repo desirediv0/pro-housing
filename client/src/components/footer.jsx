@@ -216,8 +216,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-white/80 leading-relaxed">
-                    89/2 sector 39 gurugram, haryana,
-                    India
+                    89/2 sector 39 gurugram, haryana, India
                   </p>
                 </div>
               </li>
@@ -229,7 +228,7 @@ const Footer = () => {
                   href="tel:+919876543210"
                   className="text-white/80 hover:text-white transition-all duration-300"
                 >
-                  +91 98765 43210
+                  +91 90909 08081
                 </a>
               </li>
               <li className="flex items-center group">

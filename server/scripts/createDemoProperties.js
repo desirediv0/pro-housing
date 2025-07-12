@@ -32,7 +32,7 @@ const demoProperties = [
     highlight: "FEATURED",
     mainImage: "/placeholder-property.jpg",
     contactName: "Real Estate Expert",
-    contactPhone: "+91 98765 43210",
+    contactPhone: "+91 90909 08081",
     contactEmail: "contact@prohousing.com",
     slug: "luxury-3bhk-apartment-bandra-west",
   },

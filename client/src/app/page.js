@@ -416,12 +416,12 @@ export default function HomePage() {
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold font-display leading-tight text-white drop-shadow-lg">
                   Properties to buy in{" "}
                   <span className="text-yellow-300 drop-shadow-lg">
-                    Gurgaon
+                    Gurugram
                   </span>
                 </h1>
                 <p className="text-sm sm:text-base lg:text-lg text-white leading-relaxed drop-shadow">
-                  <span className="font-semibold">9K+</span> listings added
-                  daily and <span className="font-semibold">65K+</span> total
+                  <span className="font-semibold">700+</span> listings added
+                  daily and <span className="font-semibold">9K+</span> total
                   verified
                 </p>
               </div>
@@ -451,7 +451,7 @@ export default function HomePage() {
                             {listingType === "COMMERCIAL" && (
                               <Building className="h-4 w-4 mr-2" />
                             )}
-                            {listingType === "PLOT" && (
+                            {listingType === "INVEST" && (
                               <Square className="h-4 w-4 mr-2" />
                             )}
                             {listingType === "PG" && (
@@ -470,7 +470,7 @@ export default function HomePage() {
                                 label: "Commercial",
                                 icon: Building,
                               },
-                              { key: "PLOT", label: "Plots", icon: Square },
+                              { key: "INVEST", label: "Invest", icon: Square },
                               { key: "PG", label: "PG", icon: Home },
                             ].map((tab) => (
                               <SelectItem
@@ -499,7 +499,7 @@ export default function HomePage() {
                           label: "Commercial",
                           icon: Building,
                         },
-                        { key: "PLOT", label: "Plots", icon: Square },
+                        { key: "INVEST", label: "Invest", icon: Square },
                         { key: "PG", label: "PG", icon: Home },
                       ].map((tab) => (
                         <button
@@ -532,7 +532,7 @@ export default function HomePage() {
                               <div className="flex items-center">
                                 <MapPin className="h-4 w-4 mr-2 text-gray-600" />
                                 <SelectValue
-                                  placeholder="Gurgaon"
+                                  placeholder="Gurugram"
                                   className="text-gray-800"
                                 />
                               </div>
@@ -542,16 +542,7 @@ export default function HomePage() {
                                 <SelectLabel className="text-[#1A3B4C] font-semibold px-3 py-2 text-sm">
                                   Popular Cities
                                 </SelectLabel>
-                                {[
-                                  "Gurgaon",
-                                  "Delhi",
-                                  "Mumbai",
-                                  "Bangalore",
-                                  "Pune",
-                                  "Chennai",
-                                  "Hyderabad",
-                                  "Kolkata",
-                                ].map((city) => (
+                                {["Gurugram"].map((city) => (
                                   <SelectItem
                                     key={city}
                                     value={city}
@@ -664,10 +655,20 @@ export default function HomePage() {
                         value={searchQuery}
                         onValueChange={(value) => {
                           const selected = [
-                            { label: "Dwarka Mor", location: "Delhi" },
-                            { label: "Dwarka", location: "Delhi" },
-                            { label: "Gurgaon", location: "Delhi" },
-                            { label: "Noida", location: "Delhi" },
+                            { label: "Golf Course Road", location: "Gurugram" },
+                            {
+                              label: "Golf Course Extension",
+                              location: "Gurugram",
+                            },
+                            { label: "SPR Road", location: "Gurugram" },
+                            {
+                              label: "NH8 Delhi Jaipur Highway",
+                              location: "Gurugram",
+                            },
+                            {
+                              label: "Dwarka Expressway",
+                              location: "Gurugram",
+                            },
                           ].find((item) => item.label === value);
                           if (selected) {
                             setSearchQuery(selected.label);
@@ -687,10 +688,23 @@ export default function HomePage() {
                               Popular Locations
                             </SelectLabel>
                             {[
-                              { label: "Dwarka Mor", location: "Delhi" },
-                              { label: "Dwarka", location: "Delhi" },
-                              { label: "Gurgaon", location: "Delhi" },
-                              { label: "Noida", location: "Delhi" },
+                              {
+                                label: "Golf Course Road",
+                                location: "Gurugram",
+                              },
+                              {
+                                label: "Golf Course Extension",
+                                location: "Gurugram",
+                              },
+                              { label: "SPR Road", location: "Gurugram" },
+                              {
+                                label: "NH8 Delhi Jaipur Highway",
+                                location: "Gurugram",
+                              },
+                              {
+                                label: "Dwarka Expressway",
+                                location: "Gurugram",
+                              },
                             ].map((location) => (
                               <SelectItem
                                 key={location.label}
@@ -710,10 +724,17 @@ export default function HomePage() {
                     {/* Desktop: Quick Search Buttons */}
                     <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2">
                       {[
-                        { label: "Dwarka Mor", location: "Delhi" },
-                        { label: "Dwarka", location: "Delhi" },
-                        { label: "Gurgaon", location: "Delhi" },
-                        { label: "Noida", location: "Delhi" },
+                        { label: "Golf Course Road", location: "Gurugram" },
+                        {
+                          label: "Golf Course Extension",
+                          location: "Gurugram",
+                        },
+                        { label: "SPR Road", location: "Gurugram" },
+                        {
+                          label: "NH8 Delhi Jaipur Highway",
+                          location: "Gurugram",
+                        },
+                        { label: "Dwarka Expressway", location: "Gurugram" },
                       ].map((tag, index) => (
                         <button
                           key={index}
@@ -799,13 +820,8 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              {
-                icon: CreditCard,
-                title: "Pay on Credit",
-                description: "Pay your rent using Credit Card",
-              },
               {
                 icon: Crown,
                 title: "Housing Premium",
