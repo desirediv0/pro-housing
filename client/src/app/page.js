@@ -403,21 +403,23 @@ export default function HomePage() {
         </div>
 
         {/* Hero Content Container */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10 w-full">
-          <div className="grid lg:grid-cols-2 gap-4 lg:gap-8 items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10 w-full">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
             {/* Left Content */}
             <motion.div
-              className="text-white space-y-3 lg:space-y-5"
+              className="text-white space-y-4 sm:space-y-5 lg:space-y-6"
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="space-y-2 lg:space-y-3">
-                <h1 className="text-2xl lg:text-4xl xl:text-5xl font-bold font-display leading-tight">
+              <div className="space-y-2 sm:space-y-3">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold font-display leading-tight text-white drop-shadow-lg">
                   Properties to buy in{" "}
-                  <span className="text-yellow-300">Delhi</span>
+                  <span className="text-yellow-300 drop-shadow-lg">
+                    Gurgaon
+                  </span>
                 </h1>
-                <p className="text-sm sm:text-base lg:text-lg text-white/90 leading-relaxed">
+                <p className="text-sm sm:text-base lg:text-lg text-white leading-relaxed drop-shadow">
                   <span className="font-semibold">9K+</span> listings added
                   daily and <span className="font-semibold">65K+</span> total
                   verified
@@ -425,50 +427,66 @@ export default function HomePage() {
               </div>
 
               {/* Search Bar */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-3 sm:p-5 shadow-2xl">
+              <div className="bg-white/95 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-5 shadow-2xl">
                 <form
                   onSubmit={handleSearch}
                   className="space-y-3 sm:space-y-4"
                 >
                   {/* Enhanced Filter Tabs */}
-                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-1 mb-3 sm:mb-4 border border-white/30">
-                    {/* Mobile: Compact scrollable tabs */}
-                    <div className="sm:hidden">
-                      <div
-                        className="flex overflow-x-auto gap-1"
-                        style={{
-                          scrollbarWidth: "none",
-                          msOverflowStyle: "none",
-                          WebkitOverflowScrolling: "touch",
-                        }}
+                  <div className="bg-[#1A3B4C]/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-1.5 mb-3 sm:mb-4 border border-[#1A3B4C]/20">
+                    {/* Mobile: Dropdown */}
+                    <div className="sm:hidden w-full">
+                      <Select
+                        value={listingType || "SALE"}
+                        onValueChange={setListingType}
                       >
-                        {[
-                          { key: "SALE", label: "Buy", icon: Home },
-                          { key: "RENT", label: "Rent", icon: Building },
-                          {
-                            key: "COMMERCIAL",
-                            label: "Commercial",
-                            icon: Building,
-                          },
-                          { key: "PLOT", label: "Plots", icon: Square },
-                          { key: "PG", label: "PG", icon: Home },
-                        ].map((tab) => (
-                          <button
-                            key={tab.key}
-                            type="button"
-                            onClick={() => setListingType(tab.key)}
-                            className={`flex-shrink-0 py-1.5 px-3 rounded-lg font-semibold transition-all duration-300 text-xs whitespace-nowrap ${
-                              listingType === tab.key ||
-                              (!listingType && tab.key === "SALE")
-                                ? "bg-white/90 text-[#1A3B4C] shadow-lg"
-                                : "text-white/80 hover:text-white hover:bg-white/10"
-                            }`}
-                          >
-                            <tab.icon className="h-3 w-3 inline mr-1" />
-                            {tab.label}
-                          </button>
-                        ))}
-                      </div>
+                        <SelectTrigger className="w-full h-10 bg-white/50 hover:bg-white/60 border border-[#1A3B4C]/20 rounded-lg focus:ring-1 focus:ring-[#1A3B4C] focus:ring-offset-0 text-[#1A3B4C] font-semibold">
+                          <div className="flex items-center">
+                            {listingType === "SALE" && (
+                              <Home className="h-4 w-4 mr-2" />
+                            )}
+                            {listingType === "RENT" && (
+                              <Building className="h-4 w-4 mr-2" />
+                            )}
+                            {listingType === "COMMERCIAL" && (
+                              <Building className="h-4 w-4 mr-2" />
+                            )}
+                            {listingType === "PLOT" && (
+                              <Square className="h-4 w-4 mr-2" />
+                            )}
+                            {listingType === "PG" && (
+                              <Home className="h-4 w-4 mr-2" />
+                            )}
+                            <SelectValue placeholder="Select Property Type" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-[#1A3B4C]/20 shadow-lg rounded-lg">
+                          <SelectGroup>
+                            {[
+                              { key: "SALE", label: "Buy", icon: Home },
+                              { key: "RENT", label: "Rent", icon: Building },
+                              {
+                                key: "COMMERCIAL",
+                                label: "Commercial",
+                                icon: Building,
+                              },
+                              { key: "PLOT", label: "Plots", icon: Square },
+                              { key: "PG", label: "PG", icon: Home },
+                            ].map((tab) => (
+                              <SelectItem
+                                key={tab.key}
+                                value={tab.key}
+                                className="flex items-center py-2.5 px-3 hover:bg-[#1A3B4C]/5 cursor-pointer font-medium"
+                              >
+                                <div className="flex items-center">
+                                  <tab.icon className="h-4 w-4 mr-2 text-[#1A3B4C]" />
+                                  {tab.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {/* Desktop: Full width tabs */}
@@ -488,14 +506,14 @@ export default function HomePage() {
                           key={tab.key}
                           type="button"
                           onClick={() => setListingType(tab.key)}
-                          className={`flex-1 flex items-center justify-center py-2 px-2 rounded-lg font-bold transition-all duration-300 text-sm ${
+                          className={`flex-1 flex items-center justify-center py-2.5 px-3 rounded-lg font-bold transition-all duration-300 text-sm ${
                             listingType === tab.key ||
                             (!listingType && tab.key === "SALE")
-                              ? "bg-white/90 text-[#1A3B4C] shadow-lg backdrop-blur-sm"
-                              : "text-white/80 hover:text-white hover:bg-white/10"
+                              ? "bg-[#1A3B4C] text-white shadow-lg"
+                              : "text-[#1A3B4C] hover:bg-[#1A3B4C]/10"
                           }`}
                         >
-                          <tab.icon className="h-4 w-4 inline mr-1" />
+                          <tab.icon className="h-4 w-4 inline mr-1.5" />
                           {tab.label}
                         </button>
                       ))}
@@ -503,28 +521,29 @@ export default function HomePage() {
                   </div>
 
                   {/* Integrated Search Section */}
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {/* Combined Search Bar - Housing.com Style */}
-                    <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/30 overflow-hidden">
+                    <div className="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                       <div className="flex flex-col sm:flex-row">
                         {/* City Selector */}
-                        <div className="sm:w-1/4 border-b sm:border-b-0 sm:border-r border-gray-200/50">
+                        <div className="sm:w-1/4 border-b sm:border-b-0 sm:border-r border-gray-200">
                           <Select value={location} onValueChange={setLocation}>
-                            <SelectTrigger className="w-full h-10 sm:h-11 bg-transparent border-0 hover:bg-gray-50/50 focus:ring-0 focus:ring-offset-0 rounded-none font-medium text-gray-800 transition-all duration-300 text-sm">
+                            <SelectTrigger className="w-full h-12 sm:h-12 lg:h-12 bg-transparent border-0 hover:bg-gray-50 focus:ring-0 focus:ring-offset-0 rounded-none font-medium text-gray-800 transition-all duration-300 text-sm">
                               <div className="flex items-center">
-                                <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                                <MapPin className="h-4 w-4 mr-2 text-gray-600" />
                                 <SelectValue
-                                  placeholder="Delhi"
-                                  className="placeholder:text-gray-500"
+                                  placeholder="Gurgaon"
+                                  className="text-gray-800"
                                 />
                               </div>
                             </SelectTrigger>
-                            <SelectContent className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-2xl rounded-lg">
+                            <SelectContent className="bg-white border border-gray-200 shadow-xl rounded-lg">
                               <SelectGroup>
-                                <SelectLabel className="text-[#1A3B4C] font-semibold px-3 py-2">
+                                <SelectLabel className="text-[#1A3B4C] font-semibold px-3 py-2 text-sm">
                                   Popular Cities
                                 </SelectLabel>
                                 {[
+                                  "Gurgaon",
                                   "Delhi",
                                   "Mumbai",
                                   "Bangalore",
@@ -536,7 +555,7 @@ export default function HomePage() {
                                   <SelectItem
                                     key={city}
                                     value={city}
-                                    className="hover:bg-[#1A3B4C]/10 focus:bg-[#1A3B4C]/10 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/20 data-[state=checked]:text-[#1A3B4C] mx-2 my-1 rounded-lg"
+                                    className="hover:bg-[#1A3B4C]/5 focus:bg-[#1A3B4C]/5 cursor-pointer font-medium data-[state=checked]:bg-[#1A3B4C]/10 data-[state=checked]:text-[#1A3B4C] mx-2 my-1 rounded-lg text-sm"
                                   >
                                     {city}
                                   </SelectItem>
@@ -553,7 +572,7 @@ export default function HomePage() {
                             placeholder="Search locality, landmark, project..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-10 sm:h-11 px-3 sm:px-4 bg-transparent border-0 focus:ring-0 focus:ring-offset-0 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 text-sm rounded-none"
+                            className="w-full h-12 sm:h-12 lg:h-12 px-4 bg-transparent border-0 focus:ring-0 focus:ring-offset-0 text-gray-800 placeholder-gray-500 font-medium transition-all duration-300 text-sm rounded-none"
                           />
                         </div>
 
@@ -561,11 +580,10 @@ export default function HomePage() {
                         <div className="sm:w-auto">
                           <Button
                             type="submit"
-                            className="w-full sm:w-auto h-10 sm:h-11 px-4 sm:px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-none sm:rounded-r-xl shadow-none border-0 transition-all duration-300 text-sm"
+                            className="w-full sm:w-auto h-12 sm:h-12 lg:h-12 px-6 bg-[#1A3B4C] hover:bg-[#2A4B5C] text-white font-bold rounded-none sm:rounded-r-xl shadow-none border-0 transition-all duration-300 text-sm flex items-center justify-center"
                           >
                             <Building className="h-4 w-4 mr-2 sm:mr-0 sm:hidden" />
-                            <span className="sm:hidden">Search</span>
-                            <span className="hidden sm:inline">Search</span>
+                            <span>Search</span>
                           </Button>
                         </div>
                       </div>
@@ -577,10 +595,43 @@ export default function HomePage() {
                 <div className="mt-4 space-y-3">
                   {/* Budget Range Filter */}
                   <div>
-                    <p className="text-xs sm:text-sm font-bold text-white/90 mb-2">
+                    <p className="text-sm font-bold text-[#1A3B4C] mb-2 hidden sm:block">
                       Budget Range:
                     </p>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {/* Mobile: Budget Dropdown */}
+                    <div className="sm:hidden w-full">
+                      <Select value={priceRange} onValueChange={setPriceRange}>
+                        <SelectTrigger className="w-full h-10 bg-white/50 hover:bg-white/60 border border-[#1A3B4C]/20 rounded-lg focus:ring-1 focus:ring-[#1A3B4C] focus:ring-offset-0 text-[#1A3B4C] font-semibold">
+                          <div className="flex items-center">
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="Select Budget Range" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-[#1A3B4C]/20 shadow-lg rounded-lg">
+                          <SelectGroup>
+                            <SelectLabel className="px-3 py-2 text-sm font-semibold text-[#1A3B4C]">
+                              Budget Range
+                            </SelectLabel>
+                            {[
+                              { value: "0-25", label: "Under ₹25L" },
+                              { value: "25-50", label: "₹25-50L" },
+                              { value: "50-100", label: "₹50L-1Cr" },
+                              { value: "100+", label: "Above ₹1Cr" },
+                            ].map((range) => (
+                              <SelectItem
+                                key={range.value}
+                                value={range.value}
+                                className="flex items-center py-2.5 px-3 hover:bg-[#1A3B4C]/5 cursor-pointer font-medium"
+                              >
+                                {range.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {/* Desktop: Budget Buttons */}
+                    <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2">
                       {[
                         { value: "0-25", label: "Under ₹25L" },
                         { value: "25-50", label: "₹25-50L" },
@@ -590,10 +641,10 @@ export default function HomePage() {
                         <button
                           key={index}
                           onClick={() => setPriceRange(range.value)}
-                          className={`px-2.5 sm:px-3 py-1.5 sm:py-2 backdrop-blur-lg rounded-lg hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium border hover:scale-105 ${
+                          className={`px-3 sm:px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-medium border ${
                             priceRange === range.value
-                              ? "bg-white/30 text-white border-white/50"
-                              : "bg-white/20 text-white/90 border-white/30 hover:bg-white/25 hover:border-white/40"
+                              ? "bg-[#1A3B4C] text-white border-[#1A3B4C]"
+                              : "bg-[#1A3B4C]/5 text-[#1A3B4C] border-[#1A3B4C]/20 hover:bg-[#1A3B4C]/10"
                           }`}
                         >
                           {range.label}
@@ -604,10 +655,60 @@ export default function HomePage() {
 
                   {/* Quick Search */}
                   <div>
-                    <p className="text-xs sm:text-sm font-bold text-white/90 mb-2">
+                    <p className="text-sm font-bold text-[#1A3B4C] mb-2 hidden sm:block">
                       Quick Search:
                     </p>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {/* Mobile: Location Dropdown */}
+                    <div className="sm:hidden w-full">
+                      <Select
+                        value={searchQuery}
+                        onValueChange={(value) => {
+                          const selected = [
+                            { label: "Dwarka Mor", location: "Delhi" },
+                            { label: "Dwarka", location: "Delhi" },
+                            { label: "Gurgaon", location: "Delhi" },
+                            { label: "Noida", location: "Delhi" },
+                          ].find((item) => item.label === value);
+                          if (selected) {
+                            setSearchQuery(selected.label);
+                            setLocation(selected.location);
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-full h-10 bg-white/50 hover:bg-white/60 border border-[#1A3B4C]/20 rounded-lg focus:ring-1 focus:ring-[#1A3B4C] focus:ring-offset-0 text-[#1A3B4C] font-semibold">
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="Quick Search Location" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-[#1A3B4C]/20 shadow-lg rounded-lg">
+                          <SelectGroup>
+                            <SelectLabel className="px-3 py-2 text-sm font-semibold text-[#1A3B4C]">
+                              Popular Locations
+                            </SelectLabel>
+                            {[
+                              { label: "Dwarka Mor", location: "Delhi" },
+                              { label: "Dwarka", location: "Delhi" },
+                              { label: "Gurgaon", location: "Delhi" },
+                              { label: "Noida", location: "Delhi" },
+                            ].map((location) => (
+                              <SelectItem
+                                key={location.label}
+                                value={location.label}
+                                className="flex items-center py-2.5 px-3 hover:bg-[#1A3B4C]/5 cursor-pointer font-medium"
+                              >
+                                <div className="flex items-center">
+                                  <MapPin className="h-4 w-4 mr-2 text-[#1A3B4C]" />
+                                  {location.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {/* Desktop: Quick Search Buttons */}
+                    <div className="hidden sm:flex flex-wrap gap-1.5 sm:gap-2">
                       {[
                         { label: "Dwarka Mor", location: "Delhi" },
                         { label: "Dwarka", location: "Delhi" },
@@ -620,7 +721,7 @@ export default function HomePage() {
                             setSearchQuery(tag.label);
                             setLocation(tag.location);
                           }}
-                          className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white/20 backdrop-blur-lg text-white rounded-lg hover:bg-white/30 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium border border-white/30 hover:border-white/50 shadow-md hover:scale-105"
+                          className="px-3 sm:px-4 py-2 bg-[#1A3B4C]/5 text-[#1A3B4C] rounded-lg hover:bg-[#1A3B4C]/10 transition-all duration-300 text-sm font-medium border border-[#1A3B4C]/20 shadow hover:shadow-lg"
                         >
                           {tag.label}
                         </button>
@@ -633,16 +734,16 @@ export default function HomePage() {
 
             {/* Right Content - Hero Image */}
             <motion.div
-              className="relative mt-4 lg:mt-0"
+              className="relative mt-4 lg:mt-0 hidden sm:block"
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
               <div className="relative">
                 {/* Main hero image placeholder */}
-                <div className="w-full h-40 sm:h-48 lg:h-72 bg-gradient-to-br from-white/20 to-white/10 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                <div className="w-full h-32 sm:h-40 lg:h-72 bg-gradient-to-br from-white/20 to-white/10 rounded-xl sm:rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
                   <div className="text-white/70 text-center">
-                    <Building className="h-10 sm:h-14 lg:h-18 w-10 sm:w-14 lg:w-18 mx-auto mb-2" />
+                    <Building className="h-8 sm:h-10 lg:h-18 w-8 sm:w-10 lg:w-18 mx-auto mb-2" />
                     <p className="text-xs sm:text-sm font-medium">
                       Premium Properties
                     </p>
@@ -651,15 +752,15 @@ export default function HomePage() {
 
                 {/* Floating decorative elements */}
                 <motion.div
-                  className="absolute -top-2 -right-2 w-10 sm:w-14 lg:w-16 h-10 sm:h-14 lg:h-16 bg-yellow-300 rounded-xl flex items-center justify-center shadow-lg"
+                  className="absolute -top-2 -right-2 w-8 sm:w-10 lg:w-16 h-8 sm:h-10 lg:h-16 bg-yellow-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
                   animate={{ y: [0, -8, 0] }}
                   transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
                 >
-                  <Home className="h-5 sm:h-7 lg:h-8 w-5 sm:w-7 lg:w-8 text-[#1A3B4C]" />
+                  <Home className="h-4 sm:h-5 lg:h-8 w-4 sm:w-5 lg:w-8 text-[#1A3B4C]" />
                 </motion.div>
 
                 <motion.div
-                  className="absolute -bottom-2 -left-2 w-8 sm:w-12 lg:w-14 h-8 sm:h-12 lg:h-14 bg-white rounded-xl flex items-center justify-center shadow-lg"
+                  className="absolute -bottom-2 -left-2 w-6 sm:w-8 lg:w-14 h-6 sm:h-8 lg:h-14 bg-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
                   animate={{ y: [0, 8, 0] }}
                   transition={{
                     duration: 3,
@@ -667,7 +768,7 @@ export default function HomePage() {
                     delay: 1,
                   }}
                 >
-                  <MapPin className="h-4 sm:h-6 lg:h-7 w-4 sm:w-6 lg:w-7 text-[#1A3B4C]" />
+                  <MapPin className="h-3 sm:h-4 lg:h-7 w-3 sm:w-4 lg:w-7 text-[#1A3B4C]" />
                 </motion.div>
               </div>
             </motion.div>
@@ -684,7 +785,7 @@ export default function HomePage() {
         viewport={{ once: true }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
             <div>
               <h2 className="text-4xl font-bold text-gray-800 mb-2">
                 Housing Edge
@@ -693,7 +794,7 @@ export default function HomePage() {
                 Explore property related services
               </p>
             </div>
-            <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0">
+            <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl text-nowrap transition-all duration-300 mt-6 md:mt-0">
               Explore Services →
             </Button>
           </div>
@@ -779,17 +880,19 @@ export default function HomePage() {
             >
               <Card className="overflow-hidden shadow-xl rounded-3xl bg-gradient-to-br from-[#1A3B4C]/10 via-[#1A3B4C]/5 to-white">
                 <div className="p-8">
-                  <div className="flex items-start gap-6 mb-8">
-                    <div className="flex-shrink-0">
-                      <div className="w-16 h-16 bg-gradient-to-br from-[#1A3B4C] to-[#2A4B5C] rounded-2xl flex items-center justify-center">
-                        <Building className="h-8 w-8 text-white" />
+                  <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
+                    <div className="flex items-center gap-6">
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#1A3B4C] to-[#2A4B5C] rounded-2xl flex items-center justify-center">
+                          <Building className="h-8 w-8 text-white" />
+                        </div>
                       </div>
-                    </div>
-                    <div>
                       <h3 className="text-2xl font-bold text-gray-800 mb-2">
                         Homes
                       </h3>
-                      <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0 text-sm">
+                    </div>
+                    <div className="w-full sm:w-auto">
+                      <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 text-nowrap py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0 text-sm w-full sm:w-auto">
                         View Projects
                       </Button>
                     </div>

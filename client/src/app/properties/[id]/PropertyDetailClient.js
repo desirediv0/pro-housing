@@ -420,7 +420,7 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                     </div>
 
                     {/* Property Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                       {property.bedrooms && property.bedrooms > 0 && (
                         <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl">
                           <div className="flex items-center justify-center mb-2">
