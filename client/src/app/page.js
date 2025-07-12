@@ -909,62 +909,109 @@ export default function HomePage() {
         viewport={{ once: true }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
+          <div className="flex flex-col sm:flex-row justify-between items-center">
             <div>
               <h2 className="text-4xl font-bold text-gray-800 mb-2">
-                Housing Edge
+                Top Development Projects
               </h2>
               <p className="text-gray-600 text-lg">
-                Explore property related services
+                Premium developments shaping Gurugram's skyline
               </p>
             </div>
-            <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl text-nowrap transition-all duration-300 mt-6 md:mt-0">
-              Explore Services →
-            </Button>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Crown,
-                title: "Housing Premium",
-                description: "Instant access to zero brokerage properties",
-              },
-              {
-                icon: Calculator,
-                title: "Home Loans",
-                description: "Lowest interest rate offers",
-              },
-              {
-                icon: Shield,
-                title: "Housing Protect",
-                description: "Protection against cyber frauds",
-              },
-            ].map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                className="group"
-              >
-                <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 h-full">
-                  <CardContent className="p-6">
-                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <service.icon className="h-8 w-8 text-[#1A3B4C]" />
+          {/* Development Sectors Statistics */}
+          <div className="bg-white  p-8 shadow-lg">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Prime Development Sectors
+              </h3>
+              <p className="text-gray-600">
+                Strategic locations driving Gurugram's real estate growth
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {[
+                {
+                  sector: "Golf Course Road",
+                  properties: "850+",
+
+                  type: "Ultra Luxury",
+                  growth: "+15%",
+                  icon: Crown,
+                },
+                {
+                  sector: "Sector 54",
+                  properties: "1.2K+",
+
+                  type: "Premium",
+                  growth: "+12%",
+                  icon: Building,
+                },
+                {
+                  sector: "DLF Phase 5",
+                  properties: "650+",
+
+                  type: "Luxury",
+                  growth: "+18%",
+                  icon: Star,
+                },
+                {
+                  sector: "Sector 65",
+                  properties: "950+",
+
+                  type: "Modern",
+                  growth: "+20%",
+                  icon: Home,
+                },
+                {
+                  sector: "Sohna Road",
+                  properties: "1.5K+",
+
+                  type: "Emerging",
+                  growth: "+25%",
+                  icon: MapPin,
+                },
+                {
+                  sector: "New Gurgaon",
+                  properties: "800+",
+
+                  type: "Developing",
+                  growth: "+30%",
+                  icon: Square,
+                },
+              ].map((sector, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ y: 30, opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="text-center group"
+                >
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <sector.icon className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">
-                      {service.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {service.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-gray-800 text-sm line-clamp-1">
+                        {sector.sector}
+                      </h4>
+                      <div className="text-lg font-bold text-[#1A3B4C]">
+                        {sector.properties}
+                      </div>
+                      <div className="text-xs text-gray-600">{sector.type}</div>
+
+                      <div className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                        <ArrowRight className="h-3 w-3 mr-1" />
+                        {sector.growth}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </motion.section>
