@@ -42,6 +42,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { dlfcamellias, glfcyberhub, m3m, trumptower } from "@/assets";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -904,18 +905,21 @@ export default function HomePage() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
-          <div className="mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-2">
-              Housing&apos;s top picks
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="text-[#1A3B4C] font-medium text-sm uppercase tracking-wider mb-2 block">
+              DISCOVER EXCELLENCE
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1A3B4C] mb-3">
+              Premium Properties in Gurugram
             </h2>
-            <p className="text-gray-600 text-lg">
-              Explore top living options with us
+            <p className="text-gray-600 text-base">
+              Experience luxury living in the heart of Millennium City
             </p>
           </div>
 
-          {/* Featured Property Showcase */}
-          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+          {/* Featured Property Grid */}
+          <div className="grid lg:grid-cols-3 gap-6 mb-6">
             {/* Main Featured Property */}
             <motion.div
               className="lg:col-span-2"
@@ -924,53 +928,49 @@ export default function HomePage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <Card className="overflow-hidden shadow-xl rounded-3xl bg-gradient-to-br from-[#1A3B4C]/10 via-[#1A3B4C]/5 to-white">
-                <div className="p-8">
-                  <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
-                    <div className="flex items-center gap-6">
-                      <div className="flex-shrink-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-[#1A3B4C] to-[#2A4B5C] rounded-2xl flex items-center justify-center">
-                          <Building className="h-8 w-8 text-white" />
+              <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group border-0">
+                <div className="relative">
+                  <div className="h-[500px] md:h-[750px] relative overflow-hidden">
+                    <Image
+                      src={glfcyberhub}
+                      alt="DLF Cyber Hub"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      width={1000}
+                      height={1000}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 bg-yellow-400 text-black text-xs font-semibold rounded-full">
+                        FEATURED
+                      </span>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                        DLF Cyber Hub
+                      </h3>
+                      <p className="text-white/90 text-sm mb-4">
+                        DLF Cyber City, Gurugram
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-4 text-white/90 text-sm mb-6">
+                        <div className="flex items-center gap-2">
+                          <Building className="h-4 w-4" />
+                          <span>Premium Office Spaces</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          <span>Prime Business District</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Star className="h-4 w-4" />
+                          <span>World-class Amenities</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Crown className="h-4 w-4" />
+                          <span>5-Star Facilities</span>
                         </div>
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                        Homes
-                      </h3>
                     </div>
-                    <div className="w-full sm:w-auto">
-                      <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 text-nowrap py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0 text-sm w-full sm:w-auto">
-                        View Projects
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h4 className="text-3xl font-bold text-gray-800">
-                      Lavish Floors
-                    </h4>
-                    <p className="text-gray-600">
-                      Dwarka Mor, South West Delhi, New Delhi
-                    </p>
-                    <div className="flex items-center gap-4 text-2xl font-bold text-gray-800">
-                      <span>₹70.0 L - 1.5 Cr</span>
-                    </div>
-                    <p className="text-gray-600">4 BHK Builder Floor</p>
-                    <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-lg text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0 w-full">
-                      Contact
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Property Image */}
-                <div className="relative h-64 bg-gradient-to-br from-gray-100 to-gray-200">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Image
-                      src="/main.jpg"
-                      alt="Property Image"
-                      className="h-64 w-full object-cover object-center"
-                      width={400}
-                      height={400}
-                    />
                   </div>
                 </div>
               </Card>
@@ -978,7 +978,7 @@ export default function HomePage() {
 
             {/* Side Property Cards */}
             <motion.div
-              className="space-y-6"
+              className="space-y-4"
               initial={{ x: 50, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8 }}
@@ -986,43 +986,53 @@ export default function HomePage() {
             >
               {[
                 {
-                  title: "Innovative Homes",
-                  description: "Premium Location",
-                  image: "/1.jpg",
+                  title: "DLF The Camellias",
+                  location: "Golf Course Road",
+                  image: dlfcamellias,
+                  tag: "ULTRA LUXURY",
                 },
                 {
-                  title: "Lavish Floors",
-                  description: "Premium Location",
-                  image: "/2.jpg",
+                  title: "Trump Towers",
+                  location: "Golf Course Road Ext.",
+                  image: trumptower,
+                  tag: "PREMIUM",
                 },
                 {
-                  title: "Home Luxury",
-                  description: "Premium Location",
-                  image: "/3.jpg",
+                  title: "M3M Golf Estate",
+                  location: "Sector 65, Gurugram",
+                  image: m3m,
+                  tag: "FEATURED",
                 },
               ].map((property, index) => (
                 <Card
                   key={index}
-                  className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group border-0"
                 >
-                  <div className="relative h-32 bg-gradient-to-br from-gray-100 to-gray-200">
-                    <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative">
+                    <div className="h-56 md:h-44 relative overflow-hidden">
                       <Image
-                        src={property.image || "/placeholder.svg"}
+                        src={property.image}
                         alt={property.title}
-                        className="h-40 w-full object-cover object-top"
-                        width={300}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        width={400}
                         height={300}
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2 py-0.5 bg-yellow-400 text-black text-xs font-semibold rounded-full">
+                          {property.tag}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <h4 className="font-bold text-gray-800 my-1">
-                      {property.title}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {property.description}
-                    </p>
+                    <div className="p-4">
+                      <h4 className="font-semibold text-[#1A3B4C] mb-1">
+                        {property.title}
+                      </h4>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {property.location}
+                      </div>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -1030,7 +1040,7 @@ export default function HomePage() {
           </div>
 
           {/* Property Stats Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 number: "9K+",
@@ -1039,10 +1049,10 @@ export default function HomePage() {
                 icon: Building,
               },
               {
-                number: "98%",
-                label: "Satisfaction",
-                subLabel: "from Buyers",
-                icon: Star,
+                number: "700+",
+                label: "New Listings",
+                subLabel: "Added Daily",
+                icon: Square,
               },
               {
                 number: "24/7",
@@ -1050,29 +1060,32 @@ export default function HomePage() {
                 subLabel: "Available",
                 icon: Clock,
               },
+              {
+                number: "100%",
+                label: "Verified",
+                subLabel: "Properties",
+                icon: CheckCircle,
+              },
             ].map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ y: 50, opacity: 0 }}
+                initial={{ y: 20, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -5 }}
                 className="group"
               >
-                <Card className="border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <stat.icon className="h-8 w-8 text-[#1A3B4C]" />
-                    </div>
-                    <div className="text-3xl font-bold text-gray-800 mb-1">
-                      {stat.number}
-                    </div>
-                    <div className="text-gray-600 font-medium">
-                      {stat.label}
-                    </div>
-                    <div className="text-sm text-gray-500">{stat.subLabel}</div>
-                  </CardContent>
+                <Card className="border-0 shadow-sm hover:shadow transition-all duration-300 bg-white text-center p-4">
+                  <div className="w-10 h-10 bg-[#1A3B4C]/5 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <stat.icon className="h-5 w-5 text-[#1A3B4C]" />
+                  </div>
+                  <div className="text-xl font-bold text-[#1A3B4C] mb-0.5">
+                    {stat.number}
+                  </div>
+                  <div className="text-sm font-medium text-gray-800">
+                    {stat.label}
+                  </div>
+                  <div className="text-xs text-gray-500">{stat.subLabel}</div>
                 </Card>
               </motion.div>
             ))}
