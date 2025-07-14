@@ -55,9 +55,13 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
                     </span>
                     Contact Agent
                   </p>
-                  <a
-                    href={`tel:${item.phoneNumber}`}
-                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group shadow-md hover:shadow-lg transform hover:scale-105"
+                  <button
+                    onClick={() => {
+                      if (confirm(`Do you want to call ${item.phoneNumber}?`)) {
+                        window.open(`tel:${item.phoneNumber}`);
+                      }
+                    }}
+                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group shadow-md hover:shadow-lg transform hover:scale-105 w-full text-left"
                   >
                     <div className="p-3 bg-blue-500 rounded-full group-hover:bg-blue-600 transition-all duration-300 shadow-lg">
                       <Phone className="h-5 w-5 text-white" />
@@ -73,7 +77,7 @@ const SidebarContent = ({ content = [], currentProperty = null }) => {
                         ⚡ Instant Response
                       </p>
                     </div>
-                  </a>
+                  </button>
                 </div>
               )}
 

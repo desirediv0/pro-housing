@@ -803,15 +803,23 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             </div>
                           )}
                           {property.contactPhone && (
-                            <a
-                              href={`tel:${property.contactPhone}`}
-                              className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group"
+                            <button
+                              onClick={() => {
+                                if (
+                                  confirm(
+                                    `Do you want to call ${property.contactPhone}?`
+                                  )
+                                ) {
+                                  window.open(`tel:${property.contactPhone}`);
+                                }
+                              }}
+                              className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group w-full text-left"
                             >
                               <Phone className="h-6 w-6 text-[#1A3B4C]" />
                               <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
                                 {property.contactPhone}
                               </span>
-                            </a>
+                            </button>
                           )}
                           {property.contactEmail && (
                             <a
@@ -840,9 +848,15 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                       {property.contactPhone && (
                         <div className="flex-1 flex gap-2">
                           <Button
-                            onClick={() =>
-                              window.open(`tel:${property.contactPhone}`)
-                            }
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  `Do you want to call ${property.contactPhone}?`
+                                )
+                              ) {
+                                window.open(`tel:${property.contactPhone}`);
+                              }
+                            }}
                             variant="outline"
                             className="flex-1 border-[#1A3B4C] text-[#1A3B4C] hover:bg-[#1A3B4C] hover:text-white py-3 px-6 rounded-xl text-lg font-semibold transition-all"
                           >

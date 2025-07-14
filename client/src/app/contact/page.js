@@ -249,12 +249,25 @@ export default function ContactPage() {
                   <p className="text-gray-600 text-sm mb-3">
                     {info.description}
                   </p>
-                  <a
-                    href={info.action}
-                    className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-lg transition-colors duration-200"
-                  >
-                    {info.value}
-                  </a>
+                  {info.action.startsWith("tel:") ? (
+                    <button
+                      onClick={() => {
+                        if (confirm(`Do you want to call ${info.value}?`)) {
+                          window.open(info.action);
+                        }
+                      }}
+                      className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-lg transition-colors duration-200"
+                    >
+                      {info.value}
+                    </button>
+                  ) : (
+                    <a
+                      href={info.action}
+                      className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-lg transition-colors duration-200"
+                    >
+                      {info.value}
+                    </a>
+                  )}
                 </CardContent>
               </Card>
             );
