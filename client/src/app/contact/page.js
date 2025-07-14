@@ -120,7 +120,7 @@ export default function ContactPage() {
       title: "Call Us",
       description: "Speak with our experts",
       value: "+91 90909 08081",
-      action: "tel:+919876543210",
+      action: "tel:+919090908081",
     },
     {
       icon: Mail,
