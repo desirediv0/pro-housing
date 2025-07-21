@@ -99,7 +99,7 @@ const Navbar = () => {
                 <span className="sm:hidden">+91 9090908081</span>
               </button>
 
-              <button
+              {/* <button
                 onClick={() => {
                   setWhatsappBannerVisible(false);
                   setBannerManuallyClosed(true);
@@ -107,7 +107,7 @@ const Navbar = () => {
                 className="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10 transition-all duration-300"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
