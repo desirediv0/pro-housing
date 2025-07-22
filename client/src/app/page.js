@@ -985,7 +985,13 @@ export default function HomePage() {
               ].map((property, index) => (
                 <Card
                   key={index}
-                  className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group border-0"
+                  className="overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group border-0 cursor-pointer"
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    params.set("search", property.title);
+                    router.push(`/properties?${params.toString()}`);
+                  }}
+                  title={`See properties for ${property.title}`}
                 >
                   <div className="relative">
                     <div className="h-56 md:h-44 relative overflow-hidden">
