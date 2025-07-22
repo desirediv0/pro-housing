@@ -42,7 +42,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { dlfcamellias, glfcyberhub, m3m, trumptower } from "@/assets";
+import {
+  card1,
+  card2,
+  card3,
+  dlfcamellias,
+  glfcyberhub,
+  m3m,
+  trumptower,
+} from "@/assets";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
@@ -65,6 +73,8 @@ export default function HomePage() {
   const [categoryStats, setCategoryStats] = useState({});
   const [categoryLoading, setCategoryLoading] = useState(true);
   const [categoryError, setCategoryError] = useState(null);
+
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   useEffect(() => {
     fetchFeaturedProperties();
@@ -866,6 +876,80 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Custom Image Carousel Section */}
+      <div className="py-8 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-[#1A3B4C]">
+              Explore Top Localities
+            </h2>
+            <p className="text-gray-600">
+              Click any image to view properties in that area
+            </p>
+          </div>
+          <Carousel
+            opts={{
+              align: "center",
+              loop: true,
+              skipSnaps: false,
+              slidesToScroll: 1,
+            }}
+            className="w-full"
+            setApi={(api) => {
+              if (!api) return;
+              api.on("select", () => {
+                setCarouselIndex(api.selectedScrollSnap());
+              });
+            }}
+          >
+            <CarouselContent className="flex">
+              {[
+                {
+                  src: card1,
+                  alt: "Smartworld One DXP",
+                  search: "Smartworld One DXP",
+                },
+                {
+                  src: card2,
+                  alt: "Cloverdale SPR",
+                  search: "Cloverdale SPR",
+                },
+                {
+                  src: card3,
+                  alt: "DLF Privana North",
+                  search: "DLF Privana North",
+                },
+              ].map((img) => (
+                <CarouselItem
+                  key={img.alt}
+                  className="group px-2 md:basis-1/3 lg:basis-1/3 cursor-pointer"
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    params.set("search", img.search);
+                    router.push(`/properties?${params.toString()}`);
+                  }}
+                >
+                  <div className="relative w-full  min-h-[650px] lg:min-h-[450px] max-w-5xl mx-auto flex items-center justify-center">
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      className="object-fill rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-300 border-4 border-white"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white flex items-center justify-center text-nowrap px-4 py-2 rounded-full text-lg font-semibold shadow">
+                      {img.alt}
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-4 bg-white hover:bg-gray-100 border-2 border-gray-200 shadow-lg" />
+            <CarouselNext className="-right-4 bg-white hover:bg-gray-100 border-2 border-gray-200 shadow-lg" />
+          </Carousel>
         </div>
       </div>
 
