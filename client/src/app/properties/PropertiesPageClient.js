@@ -70,6 +70,8 @@ export default function PropertiesPageClient({ searchParams }) {
     limit: 12,
   });
 
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
+
   const fetchProperties = useCallback(async () => {
     setLoading(true);
     try {
@@ -116,11 +118,14 @@ export default function PropertiesPageClient({ searchParams }) {
     };
     setFilters(newFilters);
     setCurrentPage(newFilters.page);
+    setFiltersInitialized(true);
   }, [searchParams]);
 
   useEffect(() => {
-    fetchProperties();
-  }, [fetchProperties]);
+    if (filtersInitialized) {
+      fetchProperties();
+    }
+  }, [filters, filtersInitialized]);
 
   const updateURL = (newFilters) => {
     const params = new URLSearchParams();

@@ -270,12 +270,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <motion.div
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
+      <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Enhanced Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C]">
           <div className="absolute inset-0 backdrop-blur-[100px]">
@@ -293,168 +288,67 @@ export default function HomePage() {
         {/* Floating Property Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {/* Floating Icons */}
-          <motion.div
-            className="absolute top-1/4 left-1/6 opacity-20"
-            animate={{
-              y: [0, -20, 0],
-              rotate: [0, 5, 0],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          >
+          <div className="absolute top-1/4 left-1/6 opacity-20">
             <div className="w-16 h-16 bg-white/30 rounded-2xl backdrop-blur-sm flex items-center justify-center">
               <Home className="w-8 h-8 text-white/60" />
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="absolute top-2/3 right-1/5 opacity-20"
-            animate={{
-              y: [0, 15, 0],
-              rotate: [0, -5, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 2,
-            }}
-          >
+          <div className="absolute top-2/3 right-1/5 opacity-20">
             <div className="w-12 h-12 bg-yellow-300/40 rounded-xl backdrop-blur-sm flex items-center justify-center">
               <Building className="w-6 h-6 text-white/70" />
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="absolute top-1/2 left-3/4 opacity-20"
-            animate={{
-              y: [0, -25, 0],
-              x: [0, 10, 0],
-            }}
-            transition={{
-              duration: 7,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 1,
-            }}
-          >
+          <div className="absolute top-1/2 left-3/4 opacity-20">
             <div className="w-14 h-14 bg-blue-300/30 rounded-2xl backdrop-blur-sm flex items-center justify-center">
               <MapPin className="w-7 h-7 text-white/60" />
             </div>
-          </motion.div>
+          </div>
 
           {/* Geometric Patterns */}
-          <motion.div
-            className="absolute top-1/5 right-1/3 opacity-10"
-            animate={{
-              rotate: [0, 360],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
+          <div className="absolute top-1/5 right-1/3 opacity-10">
             <div className="w-32 h-32 border border-white/30 rounded-full"></div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="absolute bottom-1/4 left-1/3 opacity-10"
-            animate={{
-              rotate: [360, 0],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
+          <div className="absolute bottom-1/4 left-1/3 opacity-10">
             <div className="w-24 h-24 border border-yellow-300/30 rotate-45"></div>
-          </motion.div>
+          </div>
 
           {/* Additional Floating Property Cards */}
-          <motion.div
-            className="absolute top-3/4 left-1/5 opacity-15"
-            animate={{
-              y: [0, -30, 0],
-              rotate: [0, 3, 0],
-            }}
-            transition={{
-              duration: 9,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 0.5,
-            }}
-          >
+          <div className="absolute top-3/4 left-1/5 opacity-15">
             <div className="w-20 h-16 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30 flex flex-col items-center justify-center">
               <Home className="w-4 h-4 text-white/60 mb-1" />
               <div className="w-8 h-1 bg-white/40 rounded"></div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="absolute top-1/6 right-1/6 opacity-15"
-            animate={{
-              y: [0, 20, 0],
-              x: [0, -10, 0],
-            }}
-            transition={{
-              duration: 11,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 1.5,
-            }}
-          >
+          <div className="absolute top-1/6 right-1/6 opacity-15">
             <div className="w-18 h-14 bg-yellow-300/25 rounded-lg backdrop-blur-sm border border-yellow-300/40 flex flex-col items-center justify-center">
               <Building className="w-4 h-4 text-white/70 mb-1" />
               <div className="w-6 h-0.5 bg-white/50 rounded"></div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Floating Particles */}
           {[...Array(8)].map((_, index) => (
-            <motion.div
+            <div
               key={index}
               className="absolute w-2 h-2 bg-white/20 rounded-full"
               style={{
                 top: `${Math.random() * 100}%`,
                 left: `${Math.random() * 100}%`,
               }}
-              animate={{
-                y: [0, -100, 0],
-                opacity: [0, 1, 0],
-              }}
-              transition={{
-                duration: 8 + Math.random() * 4,
-                repeat: Number.POSITIVE_INFINITY,
-                delay: Math.random() * 5,
-                ease: "easeInOut",
-              }}
             />
           ))}
 
           {/* Property Stats Floating Elements */}
-          <motion.div
-            className="absolute top-1/3 right-1/4 opacity-12"
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, -2, 0],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 2.5,
-            }}
-          >
+          <div className="absolute top-1/3 right-1/4 opacity-12">
             <div className="w-16 h-12 bg-blue-400/20 rounded-lg backdrop-blur-sm border border-blue-300/30 flex flex-col items-center justify-center">
               <div className="text-xs text-white/60 font-bold">9K+</div>
               <div className="w-8 h-0.5 bg-white/40 rounded mt-1"></div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Enhanced Buildings Silhouette */}
@@ -496,34 +390,21 @@ export default function HomePage() {
           </div>
 
           {/* Animated Grid Pattern */}
-          <motion.div
+          <div
             className="absolute inset-0 opacity-5"
-            animate={{
-              backgroundPosition: ["0px 0px", "50px 50px"],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
             style={{
               backgroundImage: `linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
                                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)`,
               backgroundSize: "50px 50px",
             }}
-          />
+          ></div>
         </div>
 
         {/* Hero Content Container */}
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10 w-full">
           <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
             {/* Left Content */}
-            <motion.div
-              className="text-white space-y-4 sm:space-y-5 lg:space-y-6"
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
+            <div className="text-white space-y-4 sm:space-y-5 lg:space-y-6">
               <div className="space-y-2 sm:space-y-3">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold font-display leading-tight text-white drop-shadow-lg">
                   Properties to buy in{" "}
@@ -863,15 +744,10 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Right Content - Hero Image */}
-            <motion.div
-              className="relative mt-4 lg:mt-0 hidden sm:block"
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
+            <div className="relative mt-4 lg:mt-0 hidden sm:block">
               <div className="relative">
                 {/* Main hero image placeholder */}
                 <div className="w-full h-32 sm:h-40 lg:h-72 bg-gradient-to-br from-white/20 to-white/10 rounded-xl sm:rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
@@ -884,39 +760,21 @@ export default function HomePage() {
                 </div>
 
                 {/* Floating decorative elements */}
-                <motion.div
-                  className="absolute -top-2 -right-2 w-8 sm:w-10 lg:w-16 h-8 sm:h-10 lg:h-16 bg-yellow-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                >
+                <div className="absolute -top-2 -right-2 w-8 sm:w-10 lg:w-16 h-8 sm:h-10 lg:h-16 bg-yellow-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
                   <Home className="h-4 sm:h-5 lg:h-8 w-4 sm:w-5 lg:w-8 text-[#1A3B4C]" />
-                </motion.div>
+                </div>
 
-                <motion.div
-                  className="absolute -bottom-2 -left-2 w-6 sm:w-8 lg:w-14 h-6 sm:h-8 lg:h-14 bg-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    delay: 1,
-                  }}
-                >
+                <div className="absolute -bottom-2 -left-2 w-6 sm:w-8 lg:w-14 h-6 sm:h-8 lg:h-14 bg-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
                   <MapPin className="h-3 sm:h-4 lg:h-7 w-3 sm:w-4 lg:w-7 text-[#1A3B4C]" />
-                </motion.div>
+                </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Housing Edge Services Section */}
-      <motion.section
-        className="py-10 md:py-20 bg-gray-50"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
+      <div className="py-10 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <div>
@@ -936,7 +794,6 @@ export default function HomePage() {
                 {
                   sector: "Golf Course Road",
                   properties: "850+",
-
                   type: "Ultra Luxury",
                   growth: "+15%",
                   icon: Crown,
@@ -944,7 +801,6 @@ export default function HomePage() {
                 {
                   sector: "Sector 54",
                   properties: "1.2K+",
-
                   type: "Premium",
                   growth: "+12%",
                   icon: Building,
@@ -952,7 +808,6 @@ export default function HomePage() {
                 {
                   sector: "DLF Phase 5",
                   properties: "650+",
-
                   type: "Luxury",
                   growth: "+18%",
                   icon: Star,
@@ -960,7 +815,6 @@ export default function HomePage() {
                 {
                   sector: "Sector 65",
                   properties: "950+",
-
                   type: "Modern",
                   growth: "+20%",
                   icon: Home,
@@ -968,7 +822,6 @@ export default function HomePage() {
                 {
                   sector: "Sohna Road",
                   properties: "1.5K+",
-
                   type: "Emerging",
                   growth: "+25%",
                   icon: MapPin,
@@ -976,19 +829,20 @@ export default function HomePage() {
                 {
                   sector: "New Gurgaon",
                   properties: "800+",
-
                   type: "Developing",
                   growth: "+30%",
                   icon: Square,
                 },
               ].map((sector, index) => (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ y: 30, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="text-center group"
+                  className="text-center group cursor-pointer hover:shadow-lg transition-all duration-300 border border-gray-200 rounded-lg p-4"
+                  onClick={() => {
+                    const params = new URLSearchParams();
+                    params.set("search", sector.sector);
+                    router.push(`/properties?${params.toString()}`);
+                  }}
+                  title={`See properties in ${sector.sector}`}
                 >
                   <div className="relative">
                     <div className="w-16 h-16 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -1002,28 +856,21 @@ export default function HomePage() {
                         {sector.properties}
                       </div>
                       <div className="text-xs text-gray-600">{sector.type}</div>
-
                       <div className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
                         <ArrowRight className="h-3 w-3 mr-1" />
                         {sector.growth}
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </div>
-      </motion.section>
+      </div>
 
       {/* Housing's Top Picks Section */}
-      <motion.section
-        className="py-20 bg-white"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
+      <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="text-[#1A3B4C] font-medium text-sm uppercase tracking-wider mb-2 block">
@@ -1040,13 +887,7 @@ export default function HomePage() {
           {/* Featured Property Grid */}
           <div className="grid lg:grid-cols-3 gap-6 mb-6">
             {/* Main Featured Property */}
-            <motion.div
-              className="lg:col-span-2"
-              initial={{ x: -50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
+            <div className="lg:col-span-2">
               <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group border-0">
                 <div className="relative">
                   <div className="h-[500px] md:h-[750px] relative overflow-hidden">
@@ -1118,16 +959,10 @@ export default function HomePage() {
                   </div>
                 </div>
               </Card>
-            </motion.div>
+            </div>
 
             {/* Side Property Cards */}
-            <motion.div
-              className="space-y-4"
-              initial={{ x: 50, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
+            <div className="space-y-4">
               {[
                 {
                   title: "DLF The Camellias",
@@ -1180,7 +1015,7 @@ export default function HomePage() {
                   </div>
                 </Card>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Property Stats Grid */}
@@ -1211,14 +1046,7 @@ export default function HomePage() {
                 icon: CheckCircle,
               },
             ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 20, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group"
-              >
+              <div key={index} className="group">
                 <Card className="border-0 shadow-sm hover:shadow transition-all duration-300 bg-white text-center p-4">
                   <div className="w-10 h-10 bg-[#1A3B4C]/5 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <stat.icon className="h-5 w-5 text-[#1A3B4C]" />
@@ -1231,28 +1059,16 @@ export default function HomePage() {
                   </div>
                   <div className="text-xs text-gray-500">{stat.subLabel}</div>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
-      </motion.section>
+      </div>
 
       {/* Premium Featured Properties Section */}
-      <motion.section
-        className="py-24 bg-white"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
+      <div className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="flex flex-col md:flex-row md:justify-between md:items-center mb-16"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-16">
             <div>
               <h2 className="text-3xl md:text-5xl font-bold font-display text-gray-800 mb-4">
                 Featured Properties
@@ -1267,7 +1083,7 @@ export default function HomePage() {
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </Link>
-          </motion.div>
+          </div>
 
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -1285,15 +1101,7 @@ export default function HomePage() {
           ) : featuredProperties.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredProperties.slice(0, 6).map((property, index) => (
-                <motion.div
-                  key={property.id}
-                  initial={{ y: 50, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="group"
-                >
+                <div key={property.id} className="group">
                   <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden">
                     <div className="relative">
                       <div className="aspect-video relative overflow-hidden">
@@ -1419,16 +1227,11 @@ export default function HomePage() {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
+            <div>
               <Card className="border-0 shadow-lg">
                 <CardContent className="p-16 text-center">
                   <div className="w-24 h-24 bg-[#1A3B4C]/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1447,28 +1250,16 @@ export default function HomePage() {
                   </Link>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           )}
         </div>
-      </motion.section>
+      </div>
 
       {/* Property Categories Carousel Section */}
-      <motion.section
-        className="py-24 bg-gray-50"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
+      <div className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <motion.div
-            className="text-center mb-16"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+          <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-4">
               <div className="h-1 w-16 bg-[#1A3B4C] rounded-full mr-4"></div>
               <h2 className="text-3xl md:text-5xl font-bold font-display text-gray-800">
@@ -1480,7 +1271,7 @@ export default function HomePage() {
               Discover properties tailored to your specific needs and
               preferences
             </p>
-          </motion.div>
+          </div>
 
           {/* Category Tabs */}
           <div className="mb-12">
@@ -1896,24 +1687,12 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </motion.section>
+      </div>
 
       {/* Premium Testimonials Section */}
-      <motion.section
-        className="py-24 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-      >
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
+          <div className="text-center mb-16">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <h2 className="text-3xl font-bold text-gray-900">
                 What Our Clients Say
@@ -1933,7 +1712,7 @@ export default function HomePage() {
             <p className="text-gray-600">
               Based on {testimonials.length} reviews from Gurugram
             </p>
-          </motion.div>
+          </div>
 
           <div className="px-8">
             <Carousel
@@ -2028,7 +1807,7 @@ export default function HomePage() {
             </Button>
           </div> */}
         </div>
-      </motion.section>
+      </section>
 
       {/* CTA Section */}
       <CTA />
