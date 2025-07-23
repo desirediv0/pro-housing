@@ -77,10 +77,10 @@ export default function EMICalculator() {
   const quickAmounts = [
     { label: "25L", value: 2500000 },
     { label: "50L", value: 5000000 },
-    { label: "75L", value: 7500000 },
     { label: "1Cr", value: 10000000 },
-    { label: "1.5Cr", value: 15000000 },
     { label: "2Cr", value: 20000000 },
+    { label: "5Cr", value: 50000000 },
+    { label: "10Cr", value: 100000000 },
   ];
 
   return (
@@ -135,24 +135,40 @@ export default function EMICalculator() {
                     </span>
                   </div>
 
+                  {/* Manual Input for Unlimited Amount */}
+                  <div className="space-y-2">
+                    <input
+                      type="number"
+                      value={propertyValue}
+                      onChange={(e) =>
+                        setPropertyValue(parseInt(e.target.value) || 0)
+                      }
+                      placeholder="Enter any amount"
+                      className="w-full h-12 text-lg font-semibold border-2 border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C]/20 rounded-xl px-4"
+                    />
+                    <div className="text-xs text-gray-500 text-center">
+                      Enter any amount - no limits!
+                    </div>
+                  </div>
+
                   {/* Property Value Slider */}
                   <div className="space-y-2">
                     <input
                       type="range"
-                      min="1000000"
-                      max="50000000"
-                      step="500000"
-                      value={propertyValue}
+                      min="100000"
+                      max="100000000"
+                      step="100000"
+                      value={Math.min(propertyValue, 100000000)}
                       onChange={(e) =>
                         setPropertyValue(parseInt(e.target.value))
                       }
                       className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                     />
                     <div className="flex justify-between text-sm text-gray-500">
+                      <span>₹1L</span>
                       <span>₹10L</span>
-                      <span>₹50L</span>
                       <span>₹1Cr</span>
-                      <span>₹5Cr</span>
+                      <span>₹10Cr+</span>
                     </div>
                   </div>
 
