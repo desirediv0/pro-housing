@@ -883,7 +883,7 @@ export default function HomePage() {
       <div className="py-8 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-[#1A3B4C]">
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1A3B4C] mb-3">
               Explore Top Localities
             </h2>
             <p className="text-gray-600">
