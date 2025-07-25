@@ -5,17 +5,25 @@ import {
   getDeleteTemplate,
 } from "../email/temp/EmailTemplate.js";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMPT_HOST,
+const smtpConfig = {
+  host: process.env.SMTP_HOST,
   port: 587,
   secure: false,
   auth: {
-    user: process.env.SMPT_USER,
+    user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD,
   },
-});
+};
 
-export const SendEmail = async ({ email, subject, message, emailType, attachments }) => {
+const transporter = nodemailer.createTransport(smtpConfig);
+
+export const SendEmail = async ({
+  email,
+  subject,
+  message,
+  emailType,
+  attachments,
+}) => {
   try {
     let htmlContent;
 
@@ -37,17 +45,24 @@ export const SendEmail = async ({ email, subject, message, emailType, attachment
     }
 
     const mailOptions = {
-      from: process.env.FROM_EMAIL,
+      from: process.env.FROM_EMAIL || "codeshorts007@gmail.com",
       to: email,
       subject,
       html: htmlContent,
-      attachments: attachments || []
+      attachments: attachments || [],
     };
 
-    await transporter.sendMail(mailOptions);
+    const result = await transporter.sendMail(mailOptions);
+
     return true;
   } catch (error) {
     console.error("Error sending email:", error);
+    console.error("Error details:", {
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode,
+    });
     return false;
   }
 };

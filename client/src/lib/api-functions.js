@@ -42,6 +42,16 @@ export const adminAPI = {
   bulkUpdateInquiries: (ids, action) =>
     apiClient.post("/inquiries/bulk", { ids, action }),
 
+  // Expertise Inquiries
+  getAllExpertiseInquiries: (params) => apiClient.get("/expertise", { params }),
+  updateExpertiseInquiryStatus: (id, status) =>
+    apiClient.put(`/expertise/${id}`, { status }),
+  respondToExpertiseInquiry: (id, response) =>
+    apiClient.post(`/expertise/${id}/respond`, { response }),
+  deleteExpertiseInquiry: (id) => apiClient.delete(`/expertise/${id}`),
+  bulkUpdateExpertiseInquiries: (ids, action) =>
+    apiClient.post("/expertise/bulk", { ids, action }),
+
   // Sidebar Content
   getSidebarContent: () => apiClient.get("/sidebar"),
   createSidebarContent: (content) => apiClient.post("/sidebar", content),
@@ -88,6 +98,7 @@ export const publicAPI = {
   submitInquiry: (inquiry) => apiClient.post("/inquiries", inquiry),
   submitGeneralInquiry: (inquiry) =>
     apiClient.post("/inquiries/general", inquiry),
+  submitExpertiseInquiry: (inquiry) => apiClient.post("/expertise", inquiry),
 
   // Sidebar Content
   getSidebarContent: () => apiClient.get("/sidebar/public"),
