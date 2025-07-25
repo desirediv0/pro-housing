@@ -49,8 +49,6 @@ import {
   trumptower,
 } from "@/assets";
 import { useRouter } from "next/navigation";
-import LogoSlider from "@/components/LogoSlider";
-import ExpertiseSection from "@/components/ExpertiseSection";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
