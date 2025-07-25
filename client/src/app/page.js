@@ -11,13 +11,10 @@ import {
   Bed,
   Bath,
   Square,
-  Clock,
   CheckCircle,
   Calendar,
   CreditCard,
   Crown,
-  Shield,
-  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,6 +49,7 @@ import {
   trumptower,
 } from "@/assets";
 import { useRouter } from "next/navigation";
+import LogoSlider from "@/components/LogoSlider";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -1108,50 +1106,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Property Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-            {[
-              {
-                number: "9K+",
-                label: "Certified Properties",
-                subLabel: "from Direct Sellers",
-                icon: Building,
-              },
-              {
-                number: "700+",
-                label: "New Listings",
-                subLabel: "Added Daily",
-                icon: Square,
-              },
-              {
-                number: "24/7",
-                label: "Support",
-                subLabel: "Available",
-                icon: Clock,
-              },
-              {
-                number: "100%",
-                label: "Verified",
-                subLabel: "Properties",
-                icon: CheckCircle,
-              },
-            ].map((stat, index) => (
-              <div key={index} className="group">
-                <Card className="border-0 shadow-sm hover:shadow transition-all duration-300 bg-white text-center p-4">
-                  <div className="w-10 h-10 bg-[#1A3B4C]/5 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <stat.icon className="h-5 w-5 text-[#1A3B4C]" />
-                  </div>
-                  <div className="text-xl font-bold text-[#1A3B4C] mb-0.5">
-                    {stat.number}
-                  </div>
-                  <div className="text-sm font-medium text-gray-800">
-                    {stat.label}
-                  </div>
-                  <div className="text-xs text-gray-500">{stat.subLabel}</div>
-                </Card>
-              </div>
-            ))}
-          </div>
+          {/* LOGO LOOPS */}
+          <LogoSlider />
         </div>
       </div>
 
