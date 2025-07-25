@@ -36,6 +36,19 @@ import logo22 from "./logos/22.webp";
 import logo23 from "./logos/23.webp";
 import logo24 from "./logos/24.webp";
 
+import logo25 from "./logos/25.webp";
+import logo26 from "./logos/26.webp";
+import logo27 from "./logos/27.webp";
+import logo28 from "./logos/28.webp";
+import logo29 from "./logos/29.webp";
+import logo30 from "./logos/30.webp";
+import logo31 from "./logos/31.webp";
+import logo32 from "./logos/32.webp";
+import logo33 from "./logos/33.webp";
+import logo34 from "./logos/34.webp";
+import logo35 from "./logos/35.webp";
+import logo36 from "./logos/36.webp";
+
 export {
   buildersfloor,
   dlfcamellias,
@@ -69,4 +82,16 @@ export {
   logo22,
   logo23,
   logo24,
+  logo25,
+  logo26,
+  logo27,
+  logo28,
+  logo29,
+  logo30,
+  logo31,
+  logo32,
+  logo33,
+  logo34,
+  logo35,
+  logo36,
 };

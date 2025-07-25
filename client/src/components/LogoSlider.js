@@ -25,6 +25,18 @@ import {
   logo22,
   logo23,
   logo24,
+  logo25,
+  logo26,
+  logo27,
+  logo28,
+  logo29,
+  logo30,
+  logo31,
+  logo32,
+  logo33,
+  logo34,
+  logo35,
+  logo36,
 } from "@/assets";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -57,6 +69,18 @@ export default function LogoSlider() {
     { src: logo22, alt: "logo" },
     { src: logo23, alt: "logo" },
     { src: logo24, alt: "logo" },
+    { src: logo25, alt: "logo" },
+    { src: logo26, alt: "logo" },
+    { src: logo27, alt: "logo" },
+    { src: logo28, alt: "logo" },
+    { src: logo29, alt: "logo" },
+    { src: logo30, alt: "logo" },
+    { src: logo31, alt: "logo" },
+    { src: logo32, alt: "logo" },
+    { src: logo33, alt: "logo" },
+    { src: logo34, alt: "logo" },
+    { src: logo35, alt: "logo" },
+    { src: logo36, alt: "logo" },
   ];
 
   return (
