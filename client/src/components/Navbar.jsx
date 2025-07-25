@@ -13,6 +13,7 @@ import {
   Sparkles,
   MessageCircle,
   ExternalLink,
+  Calculator,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -195,6 +196,19 @@ const Navbar = () => {
                         </div>
                       </div>
                     </Link>
+                    <div className="border-t border-gray-200/40 my-3"></div>
+                    <Link
+                      href="/emi-calculator"
+                      className="flex items-center px-4 py-3 text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-200 font-semibold group"
+                    >
+                      <Calculator className="h-4 w-4 mr-3 group-hover:scale-110 transition-transform" />
+                      <div>
+                        <div>EMI Calculator</div>
+                        <div className="text-xs text-[#1A3B4C]/70">
+                          Calculate loan EMI
+                        </div>
+                      </div>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -215,6 +229,16 @@ const Navbar = () => {
               >
                 <Phone className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 <span>Contact</span>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] group-hover:w-full transition-all duration-300"></div>
+              </Link>
+
+              {/* EMI Calculator */}
+              <Link
+                href="/emi-calculator"
+                className="text-gray-800 hover:text-[#1A3B4C] font-semibold transition-all duration-300 flex items-center space-x-2 group relative"
+              >
+                <Calculator className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+                <span>EMI Calculator</span>
                 <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] group-hover:w-full transition-all duration-300"></div>
               </Link>
 
@@ -312,6 +336,15 @@ const Navbar = () => {
                 >
                   <Phone className="h-5 w-5" />
                   <span>Contact</span>
+                </Link>
+
+                <Link
+                  href="/emi-calculator"
+                  className="flex items-center space-x-3 px-4 py-3 text-gray-800 hover:text-[#1A3B4C] hover:bg-[#1A3B4C]/10 rounded-xl transition-all duration-300 font-semibold"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Calculator className="h-5 w-5" />
+                  <span>EMI Calculator</span>
                 </Link>
 
                 {/* Admin Panel - Mobile (Only for authenticated admins) */}
@@ -425,25 +458,14 @@ const Navbar = () => {
               <span className="text-xs font-medium">Properties</span>
             </Link>
 
-            {/* Instagram */}
-            <button
-              onClick={() =>
-                window.open(
-                  "https://www.instagram.com/prohousing_india?igsh=dTc3YzV6MjNuZ2Qz",
-                  "_blank"
-                )
-              }
-              className="flex flex-col items-center justify-center p-3 text-gray-600 hover:text-pink-600 transition-all duration-300"
+            {/* EMI Calculator */}
+            <Link
+              href="/emi-calculator"
+              className="flex flex-col items-center justify-center p-3 text-gray-600 hover:text-[#1A3B4C] transition-all duration-300"
             >
-              <svg
-                className="h-5 w-5 mb-1"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-              </svg>
-              <span className="text-xs font-medium">Instagram</span>
-            </button>
+              <Calculator className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">EMI</span>
+            </Link>
 
             {/* YouTube */}
             <button

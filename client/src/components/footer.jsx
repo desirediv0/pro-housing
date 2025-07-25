@@ -272,10 +272,10 @@ const Footer = () => {
                   <Mail className="h-5 w-5 text-white" />
                 </div>
                 <a
-                  href="mailto:info@prohousing.com"
+                  href="mailto:Founder.prohousing@gmail.com"
                   className="text-white/80 hover:text-white transition-all duration-300"
                 >
-                  info@prohousing.com
+                  Founder.prohousing@gmail.com
                 </a>
               </li>
             </ul>

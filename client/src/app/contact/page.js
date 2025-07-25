@@ -126,8 +126,8 @@ export default function ContactPage() {
       icon: Mail,
       title: "Email Us",
       description: "Send us a message",
-      value: "info@prohousing.com",
-      action: "mailto:info@prohousing.com",
+      value: "Founder.prohousing@gmail.com",
+      action: "mailto:Founder.prohousing@gmail.com",
     },
     {
       icon: MapPin,

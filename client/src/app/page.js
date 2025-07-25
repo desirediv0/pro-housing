@@ -25,7 +25,6 @@ import { publicAPI } from "@/lib/api-functions";
 import Link from "next/link";
 import { SimpleAreaDisplay } from "@/components/ui/area-converter";
 import CTA from "@/components/CTA";
-import EMICalculator from "@/components/ui/emi-calculator";
 import Image from "next/image";
 import {
   Select,
@@ -1779,11 +1778,6 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-
-      {/* EMI Calculator Section */}
-      <section className="py-12 bg-white">
-        <EMICalculator />
-      </section>
 
       {/* Premium Testimonials Section */}
       <section className="py-24 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
