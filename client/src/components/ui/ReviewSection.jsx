@@ -241,7 +241,7 @@ const ReviewSection = ({ propertyId, propertyTitle }) => {
                     </h4>
                   )}
 
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed break-words overflow-hidden">
                     {review.comment}
                   </p>
 
