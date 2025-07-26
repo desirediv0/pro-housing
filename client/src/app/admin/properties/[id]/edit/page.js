@@ -183,18 +183,9 @@ export default function EditProperty() {
     const fetchProperty = async () => {
       try {
         setPageLoading(true);
-        console.log("Fetching property with ID:", propertyId);
         const property = await adminAPI.getPropertyById(propertyId);
-        console.log("Fetched property:", property);
 
         if (property) {
-          // Format date for input field
-          const formatDate = (dateString) => {
-            if (!dateString) return "";
-            const date = new Date(dateString);
-            return date.toISOString().split("T")[0];
-          };
-
           setFormData({
             title: property.title || "",
             description: property.description || "",
@@ -396,9 +387,31 @@ export default function EditProperty() {
         (fileItem) => fileItem.type === "video" && fileItem.file
       );
 
+      // Compress new images if they haven't been compressed already
+      const compressedImageFiles = [];
+      for (const fileItem of imageFiles) {
+        try {
+          if (!fileItem.compressed) {
+            const { compressImage } = await import("@/utils/imageCompression");
+            const compressedFile = await compressImage(fileItem.file, {
+              maxWidth: 1920,
+              maxHeight: 1080,
+              quality: 0.85,
+              maxSizeMB: 5,
+            });
+            compressedImageFiles.push(compressedFile);
+          } else {
+            compressedImageFiles.push(fileItem.file);
+          }
+        } catch (error) {
+          console.warn("Image compression failed, using original file:", error);
+          compressedImageFiles.push(fileItem.file);
+        }
+      }
+
       // Add new images
-      imageFiles.forEach((fileItem) => {
-        submitData.append("images", fileItem.file);
+      compressedImageFiles.forEach((file) => {
+        submitData.append("images", file);
       });
 
       // Add new videos
@@ -1357,6 +1370,13 @@ export default function EditProperty() {
                 maxFiles={15}
                 acceptVideo={true}
                 existingFiles={[...existingImages, ...existingVideos]}
+                enableCompression={true}
+                compressionOptions={{
+                  maxWidth: 1920,
+                  maxHeight: 1080,
+                  quality: 0.85,
+                  maxSizeMB: 5,
+                }}
               />
             </div>
           </CardContent>

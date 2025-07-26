@@ -1082,6 +1082,13 @@ export default function CreateProperty() {
               maxFiles={15}
               acceptVideo={true}
               existingFiles={files}
+              enableCompression={true}
+              compressionOptions={{
+                maxWidth: 1920,
+                maxHeight: 1080,
+                quality: 0.85,
+                maxSizeMB: 5,
+              }}
             />
             <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <h4 className="text-sm font-medium text-blue-800 mb-2">
@@ -1097,6 +1104,9 @@ export default function CreateProperty() {
                 <li>
                   • Supported formats: JPG, PNG, WebP for images | MP4, MOV for
                   videos
+                </li>
+                <li className="text-green-700 font-medium">
+                  • Images are automatically compressed for faster uploads
                 </li>
               </ul>
             </div>

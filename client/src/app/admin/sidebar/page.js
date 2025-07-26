@@ -237,23 +237,49 @@ export default function SidebarContentManagement() {
       return;
     }
 
-    // Validate file size
-    const maxSize = type === "image" ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB for images, 50MB for videos
-    if (file.size > maxSize) {
-      toast.error(
-        `File size must be less than ${type === "image" ? "10MB" : "50MB"}`
-      );
-      return;
-    }
-
     try {
       setUploading((prev) => ({ ...prev, [type]: true }));
 
+      let processedFile = file;
+
+      // Compress image if it's an image file
+      if (type === "image" && file.type.startsWith("image/")) {
+        try {
+          const { compressImage } = await import("@/utils/imageCompression");
+          processedFile = await compressImage(file, {
+            maxWidth: 1920,
+            maxHeight: 1080,
+            quality: 0.85,
+            maxSizeMB: 10,
+          });
+
+          console.log(
+            `Image compressed: ${file.size} -> ${processedFile.size} bytes`
+          );
+        } catch (compressionError) {
+          console.warn(
+            "Image compression failed, using original file:",
+            compressionError
+          );
+          processedFile = file;
+        }
+      }
+
+      // Validate file size after compression
+      const maxSize = type === "image" ? 10 * 1024 * 1024 : 50 * 1024 * 1024;
+      if (processedFile.size > maxSize) {
+        toast.error(
+          `File size must be less than ${type === "image" ? "10MB" : "50MB"}`
+        );
+        setUploading((prev) => ({ ...prev, [type]: false }));
+        return;
+      }
+
       let response;
       if (type === "image") {
-        response = await adminAPI.uploadSidebarImage(file);
+        response = await adminAPI.uploadSidebarImage(processedFile);
       } else {
-        response = await adminAPI.uploadSidebarVideo(file);
+        response = await adminAPI.uploadSidebarVideo(processedFile);
       }
 
       if (response.success) {
@@ -262,10 +288,21 @@ export default function SidebarContentManagement() {
           [type === "image" ? "imageUrl" : "videoUrl"]: response.data.url,
         }));
 
+        const originalSize = file.size;
+        const compressedSize = processedFile.size;
+        const compressionRatio = (
+          ((originalSize - compressedSize) / originalSize) *
+          100
+        ).toFixed(1);
+
         toast.success(
           `${
             type.charAt(0).toUpperCase() + type.slice(1)
-          } uploaded successfully!`,
+          } uploaded successfully!${
+            type === "image" && originalSize !== compressedSize
+              ? ` (${compressionRatio}% smaller)`
+              : ""
+          }`,
           {
             icon: type === "image" ? "🖼️" : "🎥",
             style: {
