@@ -3,11 +3,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input, Select, Textarea } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   MessageSquare,
-  Search,
-  Filter,
   Eye,
   Reply,
   Check,
@@ -44,6 +43,8 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import SearchFilter from "@/components/ui/search-filter";
+import { Select } from "@/components/ui/select";
 
 export default function AdminInquiries() {
   const [inquiries, setInquiries] = useState([]);
@@ -641,37 +642,14 @@ export default function AdminInquiries() {
 
       {/* Filters */}
       <Card className="shadow-lg border-0">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-          <CardTitle className="flex items-center">
-            <Filter className="h-5 w-5 mr-2 text-gray-600" />
-            Filters & Search
-          </CardTitle>
-        </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search by name, email, phone, or message..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange("search", e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            <Select
-              value={filters.status}
-              onChange={(e) => handleFilterChange("status", e.target.value)}
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </div>
+          <SearchFilter
+            filters={filters}
+            onFiltersChange={setFilters}
+            searchPlaceholder="Search by name, email, phone, or message..."
+            statusOptions={statusOptions.filter((opt) => opt.value !== "")}
+            debounceMs={500}
+          />
         </CardContent>
       </Card>
 

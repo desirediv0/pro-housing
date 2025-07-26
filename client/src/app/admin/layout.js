@@ -16,6 +16,7 @@ import {
   User,
   ChevronRight,
   Star,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -30,6 +31,7 @@ const sidebarItems = [
     icon: Star,
   },
   { name: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+  { name: "Expertise", href: "/admin/expertise", icon: FileText },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Sidebar Content", href: "/admin/sidebar", icon: Sidebar },
   { name: "Settings", href: "/admin/settings", icon: Settings },

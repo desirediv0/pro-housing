@@ -3,17 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Building,
-  Search,
   Plus,
   Eye,
   Edit,
   Trash2,
   MapPin,
   Calendar,
-  Filter,
   Bed,
   Bath,
   Square,
@@ -33,6 +31,7 @@ import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import SearchFilter from "@/components/ui/search-filter";
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState([]);
@@ -67,9 +66,7 @@ export default function AdminProperties() {
     { value: "DUPLEX", label: "Duplex" },
     { value: "PENTHOUSE", label: "Penthouse" },
     { value: "STUDIO", label: "Studio" },
-    { value: "BUILDER_FLOOR", label: "Builder Floor" },
     { value: "PLOT", label: "Plot" },
-    { value: "FARM_LAND", label: "Farm Land" },
     { value: "FARMHOUSE", label: "Farmhouse" },
     { value: "COMMERCIAL", label: "Commercial" },
     { value: "WAREHOUSE", label: "Warehouse" },
@@ -706,80 +703,22 @@ export default function AdminProperties() {
 
       {/* Filters */}
       <Card className="shadow-lg border-0 bg-white">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
-          <CardTitle className="flex items-center text-gray-900">
-            <Filter className="h-5 w-5 mr-2" />
-            Filters & Search
-          </CardTitle>
-        </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-            {/* Search */}
-            <div className="lg:col-span-2">
-              <Input
-                placeholder="Search properties..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                className="w-full"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <select
-              value={filters.status}
-              onChange={(e) => handleFilterChange("status", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Property Type Filter */}
-            <select
-              value={filters.propertyType}
-              onChange={(e) =>
-                handleFilterChange("propertyType", e.target.value)
-              }
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {propertyTypes.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Listing Type Filter */}
-            <select
-              value={filters.listingType}
-              onChange={(e) =>
-                handleFilterChange("listingType", e.target.value)
-              }
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {listingTypes.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            {/* Highlight Filter */}
-            <select
-              value={filters.highlight}
-              onChange={(e) => handleFilterChange("highlight", e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {highlightOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <SearchFilter
+            filters={filters}
+            onFiltersChange={setFilters}
+            searchPlaceholder="Search properties..."
+            statusOptions={statusOptions.filter((opt) => opt.value !== "")}
+            categoryOptions={propertyTypes.filter((opt) => opt.value !== "")}
+            priceRangeOptions={[
+              { value: "0-500000", label: "Under ₹5L" },
+              { value: "500000-1000000", label: "₹5L - ₹10L" },
+              { value: "1000000-5000000", label: "₹10L - ₹50L" },
+              { value: "5000000-10000000", label: "₹50L - ₹1Cr" },
+              { value: "10000000+", label: "Above ₹1Cr" },
+            ]}
+            debounceMs={500}
+          />
 
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">

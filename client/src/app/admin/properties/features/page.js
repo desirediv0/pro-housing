@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input, Select } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import PropertyCard from "@/components/ui/PropertyCard";
 import {
   Star,
@@ -11,8 +11,6 @@ import {
   Zap,
   Crown,
   Gift,
-  Search,
-  Filter,
   RefreshCw,
   Settings,
   CheckSquare,
@@ -20,6 +18,7 @@ import {
 } from "lucide-react";
 import { adminAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
+import SearchFilter from "@/components/ui/search-filter";
 
 export default function PropertyFeaturesManagement() {
   const [properties, setProperties] = useState([]);
@@ -247,44 +246,18 @@ export default function PropertyFeaturesManagement() {
         <CardContent>
           <div className="space-y-4">
             {/* Search and Filters */}
-            <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-64">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    className="pl-10"
-                    placeholder="Search properties..."
-                    value={filters.search}
-                    onChange={(e) =>
-                      handleFilterChange("search", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-
-              <Select
-                value={filters.highlight}
-                onValueChange={(value) =>
-                  handleFilterChange("highlight", value)
-                }
-              >
-                {highlights.map((highlight) => (
-                  <option key={highlight.value} value={highlight.value}>
-                    {highlight.label}
-                  </option>
-                ))}
-              </Select>
-
-              <Select
-                value={filters.status}
-                onValueChange={(value) => handleFilterChange("status", value)}
-              >
-                <option value="">All Status</option>
-                <option value="AVAILABLE">Available</option>
-                <option value="SOLD">Sold</option>
-                <option value="RENTED">Rented</option>
-              </Select>
-            </div>
+            <SearchFilter
+              filters={filters}
+              onFiltersChange={setFilters}
+              searchPlaceholder="Search properties..."
+              statusOptions={[
+                { value: "AVAILABLE", label: "Available" },
+                { value: "SOLD", label: "Sold" },
+                { value: "RENTED", label: "Rented" },
+              ]}
+              categoryOptions={highlights.filter((h) => h.value !== "")}
+              debounceMs={500}
+            />
 
             {/* Bulk Actions */}
             {selectedProperties.length > 0 && (

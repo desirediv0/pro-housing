@@ -10,7 +10,11 @@
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "studio": "prisma studio",
-    "push": "prisma db push"
+    "push": "prisma db push",
+    "setup": "node setup-env.js && node scripts/createDemoAdmin.js && node seed-properties.js",
+    "setup-env": "node setup-env.js",
+    "create-admin": "node scripts/createDemoAdmin.js",
+    "seed": "node seed-properties.js"
   },
   "keywords": [],
   "author": "",

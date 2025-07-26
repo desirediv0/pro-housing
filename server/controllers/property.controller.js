@@ -240,8 +240,8 @@ export const getAllProperties = asyncHandler(async (req, res) => {
         { locality: { contains: search, mode: "insensitive" } },
       ],
     }),
-    ...(propertyType && { propertyType }),
-    ...(listingType && { listingType }),
+    ...(propertyType && { propertyType: propertyType.toUpperCase() }),
+    ...(listingType && { listingType: listingType.toUpperCase() }),
     ...(city && { city: { contains: city, mode: "insensitive" } }),
     ...(state && { state: { contains: state, mode: "insensitive" } }),
     ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
@@ -250,8 +250,8 @@ export const getAllProperties = asyncHandler(async (req, res) => {
     ...(bathrooms && { bathrooms: parseInt(bathrooms) }),
     ...(furnished !== undefined && { furnished: furnished === "true" }),
     ...(parking !== undefined && { parking: parking === "true" }),
-    ...(status && { status }),
-    ...(highlight && { highlight }),
+    ...(status && { status: status.toUpperCase() }),
+    ...(highlight && { highlight: highlight.toUpperCase() }),
   };
 
   // Handle price range filter

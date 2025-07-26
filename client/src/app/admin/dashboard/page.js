@@ -422,6 +422,18 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/admin/expertise">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-6 text-center">
+              <FileText className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
+              <h3 className="font-semibold text-lg">Expertise Inquiries</h3>
+              <p className="text-gray-600 text-sm">
+                Manage consultation requests
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );

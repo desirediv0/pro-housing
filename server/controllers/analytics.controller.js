@@ -643,6 +643,11 @@ const getRecentActivities = async (req, res) => {
 
     // Add inquiry activities
     recentInquiries.forEach((inquiry) => {
+      // Skip inquiries without properties or with null properties
+      if (!inquiry.property) {
+        return;
+      }
+
       activities.push({
         id: `inquiry_${inquiry.id}`,
         type: "inquiry",
