@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -53,7 +53,7 @@ export default function PropertiesPageClient({ searchParams }) {
     message: "",
   });
 
-  // Search filters
+  // Search filters with proper initialization
   const [filters, setFilters] = useState({
     search: "",
     location: "",
@@ -71,6 +71,7 @@ export default function PropertiesPageClient({ searchParams }) {
   });
 
   const [filtersInitialized, setFiltersInitialized] = useState(false);
+  const searchTimeoutRef = useRef(null);
 
   const fetchProperties = useCallback(async () => {
     setLoading(true);
@@ -80,20 +81,31 @@ export default function PropertiesPageClient({ searchParams }) {
         limit: 12,
         ...filters,
       };
-      // Remove empty filters
+      
+      // Remove empty filters and "all" values
       Object.keys(params).forEach((key) => {
-        if (!params[key]) delete params[key];
+        if (!params[key] || params[key] === "" || params[key] === "all") {
+          delete params[key];
+        }
       });
 
+      console.log("Fetching properties with params:", params);
+      console.log("API URL:", `${process.env.NODE_ENV === "development" ? "http://localhost:4001/api" : process.env.NEXT_PUBLIC_API_URL || "https://prohousing.in/api"}/properties/public`);
+      
       const response = await publicAPI.getAllProperties(params);
+      console.log("API Response:", response);
+      
       // Handle API response
       const data = response.data.data || response.data || {};
+      console.log("Processed data:", data);
       setProperties(data.data || data || []);
       setTotalPages(data.pagination?.pages || 1);
       setTotalProperties(data.pagination?.total || 0);
     } catch (error) {
       console.error("Error fetching properties:", error);
+      console.error("Error details:", error.response?.data);
       setProperties([]);
+      toast.error("Failed to fetch properties. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -121,42 +133,68 @@ export default function PropertiesPageClient({ searchParams }) {
     setFiltersInitialized(true);
   }, [searchParams]);
 
+  // Debounced search effect
   useEffect(() => {
     if (filtersInitialized) {
-      fetchProperties();
-    }
-  }, [filters, filtersInitialized]);
+      // Clear existing timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
 
-  const updateURL = (newFilters) => {
+      // Set new timeout for search
+      searchTimeoutRef.current = setTimeout(() => {
+        fetchProperties();
+      }, 500); // 500ms debounce
+
+      return () => {
+        if (searchTimeoutRef.current) {
+          clearTimeout(searchTimeoutRef.current);
+        }
+      };
+    }
+  }, [filters, filtersInitialized, fetchProperties]);
+
+  const updateURL = useCallback((newFilters) => {
     const params = new URLSearchParams();
     Object.entries(newFilters).forEach(([key, value]) => {
-      if (value && key !== "limit") {
+      if (value && value !== "" && value !== "all" && key !== "limit") {
         params.set(key, value);
       }
     });
     const queryString = params.toString();
     const newURL = queryString ? `/properties?${queryString}` : "/properties";
     router.push(newURL, { scroll: false });
-  };
+  }, [router]);
 
-  const handleFilterChange = (filterName, value) => {
+  const handleFilterChange = useCallback((filterName, value) => {
+    console.log("PropertiesPageClient: handleFilterChange called with:", filterName, value);
     const newFilters = {
       ...filters,
       [filterName]: value,
       page: filterName === "page" ? value : 1, // Reset to page 1 for new searches
     };
+    console.log("PropertiesPageClient: New filters:", newFilters);
     setFilters(newFilters);
     setCurrentPage(newFilters.page);
     updateURL(newFilters);
-  };
+  }, [filters, updateURL]);
 
-  const handleSearch = (e) => {
+  const handleSearch = useCallback((e) => {
     e.preventDefault();
     const newFilters = { ...filters, page: 1 };
     setFilters(newFilters);
     setCurrentPage(1);
     updateURL(newFilters);
-  };
+  }, [filters, updateURL]);
+
+  const handleSearchInputChange = useCallback((e) => {
+    const value = e.target.value;
+    setFilters(prev => ({
+      ...prev,
+      search: value,
+      page: 1
+    }));
+  }, []);
 
   const handleInquiry = (property) => {
     setSelectedProperty(property);
@@ -195,7 +233,7 @@ export default function PropertiesPageClient({ searchParams }) {
     }
   };
 
-  const clearAllFilters = () => {
+  const clearAllFilters = useCallback(() => {
     const clearedFilters = {
       search: "",
       type: "",
@@ -213,7 +251,7 @@ export default function PropertiesPageClient({ searchParams }) {
     setFilters(clearedFilters);
     setCurrentPage(1);
     updateURL(clearedFilters);
-  };
+  }, [updateURL]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
@@ -267,12 +305,7 @@ export default function PropertiesPageClient({ searchParams }) {
                     type="text"
                     placeholder="Search by title, location, or property type..."
                     value={filters.search}
-                    onChange={(e) =>
-                      setFilters((prev) => ({
-                        ...prev,
-                        search: e.target.value,
-                      }))
-                    }
+                    onChange={handleSearchInputChange}
                     className="h-14 pl-12 pr-6 text-lg rounded-2xl border-gray-200 focus:border-[#1A3B4C] focus:ring-[#1A3B4C] bg-white shadow-sm"
                   />
                 </div>

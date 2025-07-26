@@ -526,13 +526,6 @@ export const updateProperty = asyncHandler(async (req, res) => {
 
             if (existingImage) {
               await prisma.propertyImage.delete({ where: { id: image.id } });
-              console.log(
-                `Successfully deleted image ${image.id} from database`
-              );
-            } else {
-              console.log(
-                `Image ${image.id} not found in database, skipping database deletion`
-              );
             }
           } catch (dbError) {
             console.error(
@@ -567,11 +560,6 @@ export const updateProperty = asyncHandler(async (req, res) => {
 
           if (existingVideo) {
             await prisma.propertyVideo.delete({ where: { id: video.id } });
-            console.log(`Successfully deleted video ${video.id} from database`);
-          } else {
-            console.log(
-              `Video ${video.id} not found in database, skipping database deletion`
-            );
           }
         } catch (dbError) {
           console.error(
@@ -696,8 +684,6 @@ export const deleteProperty = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Property not found");
   }
 
-  console.log(`Deleting property: ${property.title} (ID: ${property.id})`);
-
   // Collect all file URLs to delete
   const filesToDelete = [];
 
@@ -720,8 +706,6 @@ export const deleteProperty = asyncHandler(async (req, res) => {
     }
   });
 
-  console.log(`Found ${filesToDelete.length} files to delete from S3`);
-
   // Delete all files from S3 (don't let S3 errors block database deletion)
   try {
     const deleteResults = await Promise.allSettled(
@@ -731,10 +715,6 @@ export const deleteProperty = asyncHandler(async (req, res) => {
     const successfulDeletes = deleteResults.filter(
       (result) => result.status === "fulfilled" && result.value?.success
     ).length;
-
-    console.log(
-      `Successfully deleted ${successfulDeletes}/${filesToDelete.length} files from S3`
-    );
   } catch (error) {
     console.error("Error deleting files from S3:", error);
     // Continue with database deletion even if S3 cleanup fails
@@ -744,8 +724,6 @@ export const deleteProperty = asyncHandler(async (req, res) => {
   await prisma.property.delete({
     where: { id: property.id },
   });
-
-  console.log(`Property ${propertyId} deleted successfully from database`);
 
   res
     .status(200)
@@ -1356,35 +1334,35 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
     }, ${property.state}`,
   }));
 
-  res.status(200).json(
-    new ApiResponsive(
-      200,
-      {
-        data: formattedProperties,
-        pagination: {
-          total,
-          pages: Math.ceil(total / validLimit),
-          currentPage: validPage,
-          limit: validLimit,
-          hasMore: skip + validLimit < total,
-        },
-        filters: {
-          totalProperties: total,
-          appliedFilters: {
-            search,
-            location,
-            type,
-            price,
-            bedrooms,
-            bathrooms,
-            furnished,
-            parking,
-          },
-        },
+  const responseData = {
+    data: formattedProperties,
+    pagination: {
+      total,
+      pages: Math.ceil(total / validLimit),
+      currentPage: validPage,
+      limit: validLimit,
+      hasMore: skip + validLimit < total,
+    },
+    filters: {
+      totalProperties: total,
+      appliedFilters: {
+        search,
+        location,
+        type,
+        price,
+        bedrooms,
+        bathrooms,
+        furnished,
+        parking,
       },
-      "Properties retrieved successfully"
-    )
-  );
+    },
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponsive(200, responseData, "Properties retrieved successfully")
+    );
 });
 
 // Get Public Property by Slug

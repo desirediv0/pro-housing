@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import PropertyCard from "@/components/ui/PropertyCard";
 import {
   Star,
@@ -72,19 +71,41 @@ export default function PropertyFeaturesManagement() {
 
   // Debounced filters for API calls
   const [debouncedFilters, setDebouncedFilters] = useState(filters);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [previousFilters, setPreviousFilters] = useState(null);
 
-  const fetchProperties = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await adminAPI.getAllProperties(debouncedFilters);
-      setProperties(response.data.data.properties || []);
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-      toast.error("Failed to load properties");
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedFilters]);
+  const fetchProperties = useCallback(
+    async (filtersToUse = debouncedFilters) => {
+      // Prevent unnecessary API calls if filters haven't changed
+      if (
+        previousFilters &&
+        JSON.stringify(previousFilters) === JSON.stringify(filtersToUse)
+      ) {
+        console.log(
+          "Features page: Skipping API call - filters haven't changed"
+        );
+        return;
+      }
+
+      try {
+        setLoading(true);
+        console.log(
+          "Features page: Fetching properties with filters:",
+          filtersToUse
+        );
+        const response = await adminAPI.getAllProperties(filtersToUse);
+        console.log("Features page: API response:", response);
+        setProperties(response.data.data.properties || []);
+        setPreviousFilters(filtersToUse);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+        toast.error("Failed to load properties");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [previousFilters]
+  );
 
   const fetchStats = useCallback(async () => {
     try {
@@ -120,21 +141,37 @@ export default function PropertyFeaturesManagement() {
 
   // Initial load - only run once
   useEffect(() => {
-    fetchProperties();
-    fetchStats();
-  }, []); // Empty dependency array for initial load only
+    const initializeData = async () => {
+      await fetchProperties();
+      await fetchStats();
+      setIsInitialLoad(false);
+    };
 
-  // Fetch properties when debounced filters change
-  useEffect(() => {
-    if (debouncedFilters !== filters) {
-      fetchProperties();
+    if (isInitialLoad) {
+      initializeData();
     }
-  }, [debouncedFilters, fetchProperties]);
+  }, [isInitialLoad, fetchProperties, fetchStats]);
+
+  // Fetch properties when debounced filters change (but not on initial load)
+  useEffect(() => {
+    if (!isInitialLoad) {
+      fetchProperties(debouncedFilters);
+    }
+  }, [debouncedFilters, isInitialLoad, fetchProperties]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
+      page: 1, // Reset to first page when filtering
+    }));
+  };
+
+  const handleFiltersChange = (newFilters) => {
+    console.log("Features page: handleFiltersChange called with:", newFilters);
+    setFilters((prev) => ({
+      ...prev,
+      ...newFilters,
       page: 1, // Reset to first page when filtering
     }));
   };
@@ -169,7 +206,7 @@ export default function PropertyFeaturesManagement() {
           : `${selectedProperties.length} properties highlight removed`
       );
       setSelectedProperties([]);
-      fetchProperties();
+      fetchProperties(debouncedFilters);
       fetchStats();
     } catch (error) {
       console.error("Error updating highlights:", error);
@@ -210,7 +247,7 @@ export default function PropertyFeaturesManagement() {
         </div>
         <Button
           onClick={() => {
-            fetchProperties();
+            fetchProperties(debouncedFilters);
             fetchStats();
           }}
           variant="outline"
@@ -277,14 +314,15 @@ export default function PropertyFeaturesManagement() {
             {/* Search and Filters */}
             <SearchFilter
               filters={filters}
-              onFiltersChange={setFilters}
+              onFiltersChange={handleFiltersChange}
               searchPlaceholder="Search properties..."
               statusOptions={[
                 { value: "AVAILABLE", label: "Available" },
                 { value: "SOLD", label: "Sold" },
                 { value: "RENTED", label: "Rented" },
               ]}
-              categoryOptions={highlights.filter((h) => h.value !== "")}
+              serviceTypeOptions={highlights.filter((h) => h.value !== "")}
+              highlightOptions={highlights.filter((h) => h.value !== "")}
             />
 
             {/* Bulk Actions */}

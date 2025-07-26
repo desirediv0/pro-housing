@@ -21,6 +21,7 @@ const SearchFilter = ({
   serviceTypeOptions = [],
   categoryOptions = [],
   priceRangeOptions = [],
+  highlightOptions = [],
   showAdvancedFilters = true,
   debounceMs = 500,
 }) => {
@@ -75,6 +76,7 @@ const SearchFilter = ({
       status: "all",
       serviceType: "all",
       category: "all",
+      highlight: "all",
       priceRange: "all",
       minPrice: "",
       maxPrice: "",
@@ -195,6 +197,31 @@ const SearchFilter = ({
                   <SelectContent>
                     <SelectItem value="all">All Services</SelectItem>
                     {serviceTypeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Highlight Filter */}
+            {highlightOptions.length > 0 && (
+              <div className="w-full md:w-48">
+                <Label htmlFor="highlight">Highlight</Label>
+                <Select
+                  value={localFilters.highlight || "all"}
+                  onValueChange={(value) =>
+                    handleFilterChange("highlight", value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Highlights" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Highlights</SelectItem>
+                    {highlightOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -340,6 +367,9 @@ const SearchFilter = ({
                 break;
               case "category":
                 label = `Category: ${value}`;
+                break;
+              case "highlight":
+                label = `Highlight: ${value}`;
                 break;
               case "propertyType":
                 label = `Type: ${value}`;
