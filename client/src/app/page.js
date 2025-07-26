@@ -42,6 +42,12 @@ import {
   card1,
   card2,
   card3,
+  card4,
+  card5,
+  card6,
+  card7,
+  card8,
+  card9,
   dlfcamellias,
   glfcyberhub,
   m3m,
@@ -917,6 +923,35 @@ export default function HomePage() {
                   src: card3,
                   alt: "DLF Privana North",
                   search: "DLF Privana North",
+                },
+                {
+                  src: card4,
+                  alt: "Cloverdale SPR",
+                  search: "Cloverdale SPR",
+                },
+                {
+                  src: card5,
+                  alt: "Cloverdale SPR",
+                },
+                {
+                  src: card6,
+                  alt: "Cloverdale SPR",
+                  search: "Cloverdale SPR",
+                },
+                {
+                  src: card7,
+                  alt: "Cloverdale SPR",
+                  search: "Cloverdale SPR",
+                },
+                {
+                  src: card8,
+                  alt: "Cloverdale SPR",
+                  search: "Cloverdale SPR",
+                },
+                {
+                  src: card9,
+                  alt: "Cloverdale SPR",
+                  search: "Cloverdale SPR",
                 },
               ].map((img) => (
                 <CarouselItem

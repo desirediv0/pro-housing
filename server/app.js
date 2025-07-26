@@ -11,6 +11,7 @@ import expertiseRoutes from "./routes/expertise.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import sidebarRoutes from "./routes/sidebar.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
 
 // Import upload configuration
 import { createUploadDirs, UPLOAD_FOLDER } from "./config/upload.js";
@@ -92,6 +93,7 @@ app.use("/api/expertise", expertiseRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/sidebar", sidebarRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Health check route
 app.get("/api/health", (req, res) => {

@@ -92,6 +92,7 @@ model Property {
   images    PropertyImage[]
   videos    PropertyVideo[]
   inquiries Inquiry[]
+  reviews   PropertyReview[]
 
   @@map("properties")
 }
@@ -189,6 +190,36 @@ model ExpertiseInquiry {
   updatedAt DateTime @updatedAt
 
   @@map("expertise_inquiries")
+}
+
+// Property Review Model - User reviews for properties
+model PropertyReview {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // Reviewer information
+  reviewerName  String
+  reviewerEmail String?
+  reviewerPhone String?
+
+  // Review content
+  rating  Int // 1-5 stars
+  title   String? // Review title/headline
+  comment String
+
+  // Review status - PENDING, APPROVED, REJECTED
+  status ReviewStatus @default(PENDING)
+
+  // Admin response (for rejected reviews)
+  adminResponse String?
+  respondedAt   DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("property_reviews")
 }
 
 // Analytics & Reports
@@ -297,4 +328,10 @@ enum ExpertiseInquiryStatus {
   RESPONDED
   CLOSED
   SPAM
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

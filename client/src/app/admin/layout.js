@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Star,
   FileText,
+  MessageCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -31,6 +32,7 @@ const sidebarItems = [
     icon: Star,
   },
   { name: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+  { name: "Reviews", href: "/admin/reviews", icon: MessageCircle },
   { name: "Expertise", href: "/admin/expertise", icon: FileText },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
   { name: "Sidebar Content", href: "/admin/sidebar", icon: Sidebar },

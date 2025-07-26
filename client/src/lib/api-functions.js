@@ -52,6 +52,18 @@ export const adminAPI = {
   bulkUpdateExpertiseInquiries: (ids, action) =>
     apiClient.post("/expertise/bulk", { ids, action }),
 
+  // Reviews
+  getAllReviews: (params) => apiClient.get("/reviews", { params }),
+  getReview: (id) => apiClient.get(`/reviews/${id}`),
+  updateReviewStatus: (id, status) =>
+    apiClient.put(`/reviews/${id}`, { status }),
+  respondToReview: (id, response) =>
+    apiClient.put(`/reviews/${id}`, { adminResponse: response }),
+  deleteReview: (id) => apiClient.delete(`/reviews/${id}`),
+  bulkUpdateReviews: (ids, action) =>
+    apiClient.post("/reviews/bulk", { reviewIds: ids, action }),
+  getReviewStats: () => apiClient.get("/reviews/stats"),
+
   // Sidebar Content
   getSidebarContent: () => apiClient.get("/sidebar"),
   createSidebarContent: (content) => apiClient.post("/sidebar", content),
@@ -99,6 +111,13 @@ export const publicAPI = {
   submitGeneralInquiry: (inquiry) =>
     apiClient.post("/inquiries/general", inquiry),
   submitExpertiseInquiry: (inquiry) => apiClient.post("/expertise", inquiry),
+
+  // Reviews
+  submitReview: (review) => apiClient.post("/reviews", review),
+  getPropertyReviews: (propertyId, params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiClient.get(`/reviews/property/${propertyId}?${queryString}`);
+  },
 
   // Sidebar Content
   getSidebarContent: () => apiClient.get("/sidebar/public"),

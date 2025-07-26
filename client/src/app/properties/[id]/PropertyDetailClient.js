@@ -40,6 +40,7 @@ import {
 import Link from "next/link";
 import { AreaConverter } from "@/components/ui/area-converter";
 import Image from "next/image";
+import ReviewSection from "@/components/ui/ReviewSection";
 
 const amenityIcons = {
   furnished: {
@@ -900,6 +901,12 @@ Please share more details about this property.`;
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Reviews Section */}
+              <ReviewSection
+                propertyId={property.id}
+                propertyTitle={property.title}
+              />
             </div>
           </div>
 

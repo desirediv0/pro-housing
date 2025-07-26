@@ -25,6 +25,7 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  MessageCircle,
 } from "lucide-react";
 import { adminAPI } from "@/lib/api-functions";
 import Link from "next/link";
@@ -431,6 +432,16 @@ export default function AdminDashboard() {
               <p className="text-gray-600 text-sm">
                 Manage consultation requests
               </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/admin/reviews">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-6 text-center">
+              <MessageCircle className="h-12 w-12 text-orange-600 mx-auto mb-4" />
+              <h3 className="font-semibold text-lg">Property Reviews</h3>
+              <p className="text-gray-600 text-sm">Moderate customer reviews</p>
             </CardContent>
           </Card>
         </Link>

@@ -7,6 +7,12 @@ import trumptower from "./trump-towers-gurugram.jpg";
 import card1 from "./card1.jpg";
 import card2 from "./card2.jpg";
 import card3 from "./card3.jpeg";
+import card4 from "./card4.jpeg";
+import card5 from "./card5.jpeg";
+import card6 from "./card6.jpeg";
+import card7 from "./card7.jpeg";
+import card8 from "./card8.jpeg";
+import card9 from "./card9.jpeg";
 
 // Logos
 import logo1 from "./logos/one.webp";
@@ -58,6 +64,12 @@ export {
   card1,
   card2,
   card3,
+  card4,
+  card5,
+  card6,
+  card7,
+  card8,
+  card9,
   logo1,
   logo2,
   logo3,
