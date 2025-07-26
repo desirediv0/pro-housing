@@ -16,8 +16,17 @@ const getAllInquiries = async (req, res) => {
       sortOrder = "desc",
     } = req.query;
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const take = parseInt(limit);
+    // Ensure page and limit are valid numbers
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    // Validate and set defaults
+    const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
+    const validLimit =
+      Number.isInteger(limitNum) && limitNum > 0 ? limitNum : 10;
+
+    const skip = (validPage - 1) * validLimit;
+    const take = validLimit;
 
     // Build filters
     const where = {};
@@ -80,11 +89,11 @@ const getAllInquiries = async (req, res) => {
       data: {
         inquiries,
         pagination: {
-          currentPage: parseInt(page),
+          currentPage: validPage,
           totalPages,
           totalInquiries,
-          hasNext: parseInt(page) < totalPages,
-          hasPrev: parseInt(page) > 1,
+          hasNext: validPage < totalPages,
+          hasPrev: validPage > 1,
         },
         statusStats,
       },

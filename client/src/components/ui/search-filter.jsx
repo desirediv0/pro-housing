@@ -80,6 +80,9 @@ const SearchFilter = ({
       maxPrice: "",
       location: "",
       propertyType: "all",
+      // Preserve pagination parameters
+      page: localFilters.page || 1,
+      limit: localFilters.limit || 10,
     };
     setLocalFilters(clearedFilters);
     // Convert "all" values to empty strings for parent component
@@ -90,10 +93,15 @@ const SearchFilter = ({
       ])
     );
     onFiltersChange(processedClearedFilters);
-  }, [onFiltersChange]);
+  }, [onFiltersChange, localFilters.page, localFilters.limit]);
 
-  const hasActiveFilters = Object.values(localFilters).some(
-    (value) => value && value !== "" && value !== "all"
+  const hasActiveFilters = Object.entries(localFilters).some(
+    ([key, value]) =>
+      value &&
+      value !== "" &&
+      value !== "all" &&
+      key !== "page" &&
+      key !== "limit"
   );
 
   return (
@@ -309,7 +317,15 @@ const SearchFilter = ({
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2">
           {Object.entries(localFilters).map(([key, value]) => {
-            if (!value || value === "" || value === "all") return null;
+            // Skip pagination parameters and empty values
+            if (
+              !value ||
+              value === "" ||
+              value === "all" ||
+              key === "page" ||
+              key === "limit"
+            )
+              return null;
 
             let label = "";
             switch (key) {

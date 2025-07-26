@@ -88,26 +88,28 @@ export default function PropertyFeaturesManagement() {
 
   const fetchStats = useCallback(async () => {
     try {
-      // Get count of properties by highlight
-      const highlights = ["FEATURED", "TRENDING", "HOT_DEAL", "PREMIUM", "NEW"];
-      const statsPromises = highlights.map(async (highlight) => {
-        const response = await adminAPI.getAllProperties({
-          highlight,
-          limit: 1,
-        });
-        return {
-          [highlight.toLowerCase()]: response.data.data.pagination?.total || 0,
-        };
-      });
+      // Get all properties to calculate stats locally instead of multiple API calls
+      const response = await adminAPI.getAllProperties({ limit: 1000 });
+      const allProperties = response.data.data.properties || [];
 
-      const results = await Promise.all(statsPromises);
-      const newStats = results.reduce((acc, stat) => ({ ...acc, ...stat }), {});
+      const newStats = {
+        featured: allProperties.filter((p) => p.highlight === "FEATURED")
+          .length,
+        trending: allProperties.filter((p) => p.highlight === "TRENDING")
+          .length,
+        hotDeals: allProperties.filter((p) => p.highlight === "HOT_DEAL")
+          .length,
+        premium: allProperties.filter((p) => p.highlight === "PREMIUM").length,
+        new: allProperties.filter((p) => p.highlight === "NEW").length,
+      };
+
       setStats(newStats);
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
   }, []);
 
+  // Debounce filters
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilters(filters);
@@ -116,10 +118,18 @@ export default function PropertyFeaturesManagement() {
     return () => clearTimeout(timer);
   }, [filters]);
 
+  // Initial load - only run once
   useEffect(() => {
     fetchProperties();
     fetchStats();
-  }, [fetchProperties, fetchStats]);
+  }, []); // Empty dependency array for initial load only
+
+  // Fetch properties when debounced filters change
+  useEffect(() => {
+    if (debouncedFilters !== filters) {
+      fetchProperties();
+    }
+  }, [debouncedFilters, fetchProperties]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
@@ -198,7 +208,14 @@ export default function PropertyFeaturesManagement() {
             Manage featured, trending, and highlighted properties
           </p>
         </div>
-        <Button onClick={fetchProperties} variant="outline" size="sm">
+        <Button
+          onClick={() => {
+            fetchProperties();
+            fetchStats();
+          }}
+          variant="outline"
+          size="sm"
+        >
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
         </Button>
@@ -229,7 +246,7 @@ export default function PropertyFeaturesManagement() {
         />
         <StatCard
           title="Hot Deals"
-          count={stats.hot_deal || 0}
+          count={stats.hotDeals || 0}
           icon={Zap}
           color="text-orange-600"
           highlight="HOT_DEAL"

@@ -266,7 +266,14 @@ export const changeAdminPassword = asyncHandler(async (req, res) => {
 // Get All Admins (Super Admin functionality)
 export const getAllAdmins = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, search } = req.query;
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+
+  // Validate pagination parameters
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
+  const validLimit = Number.isInteger(limitNum) && limitNum > 0 ? limitNum : 10;
+
+  const skip = (validPage - 1) * validLimit;
 
   const whereClause = search
     ? {
@@ -288,7 +295,7 @@ export const getAllAdmins = asyncHandler(async (req, res) => {
         updatedAt: true,
       },
       skip,
-      take: parseInt(limit),
+      take: validLimit,
       orderBy: { createdAt: "desc" },
     }),
     prisma.admin.count({ where: whereClause }),
@@ -301,9 +308,9 @@ export const getAllAdmins = asyncHandler(async (req, res) => {
         admins,
         pagination: {
           total,
-          pages: Math.ceil(total / parseInt(limit)),
-          currentPage: parseInt(page),
-          limit: parseInt(limit),
+          pages: Math.ceil(total / validLimit),
+          currentPage: validPage,
+          limit: validLimit,
         },
       },
       "Admins retrieved successfully"

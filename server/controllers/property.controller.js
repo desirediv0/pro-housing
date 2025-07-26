@@ -227,7 +227,13 @@ export const getAllProperties = asyncHandler(async (req, res) => {
     sortOrder = "desc",
   } = req.query;
 
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  // Validate pagination parameters
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
+  const validLimit = Number.isInteger(limitNum) && limitNum > 0 ? limitNum : 10;
+
+  const skip = (validPage - 1) * validLimit;
 
   // Build where clause
   const whereClause = {
@@ -273,7 +279,7 @@ export const getAllProperties = asyncHandler(async (req, res) => {
         },
       },
       skip,
-      take: parseInt(limit),
+      take: validLimit,
       orderBy: { [sortBy]: sortOrder },
     }),
     prisma.property.count({ where: whereClause }),
@@ -286,9 +292,9 @@ export const getAllProperties = asyncHandler(async (req, res) => {
         properties,
         pagination: {
           total,
-          pages: Math.ceil(total / parseInt(limit)),
-          currentPage: parseInt(page),
-          limit: parseInt(limit),
+          pages: Math.ceil(total / validLimit),
+          currentPage: validPage,
+          limit: validLimit,
         },
       },
       "Properties retrieved successfully"
@@ -1120,7 +1126,14 @@ export const bulkUpdateHighlights = asyncHandler(async (req, res) => {
 export const getPropertiesByHighlight = asyncHandler(async (req, res) => {
   const { highlight } = req.params;
   const { page = 1, limit = 12 } = req.query;
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+
+  // Validate pagination parameters
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
+  const validLimit = Number.isInteger(limitNum) && limitNum > 0 ? limitNum : 12;
+
+  const skip = (validPage - 1) * validLimit;
 
   const validHighlights = [
     "NEW",
@@ -1149,7 +1162,7 @@ export const getPropertiesByHighlight = asyncHandler(async (req, res) => {
         },
       },
       skip,
-      take: parseInt(limit),
+      take: validLimit,
       orderBy: { createdAt: "desc" },
     }),
     prisma.property.count({
@@ -1180,9 +1193,9 @@ export const getPropertiesByHighlight = asyncHandler(async (req, res) => {
         properties: formattedProperties,
         pagination: {
           total,
-          pages: Math.ceil(total / parseInt(limit)),
-          currentPage: parseInt(page),
-          limit: parseInt(limit),
+          pages: Math.ceil(total / validLimit),
+          currentPage: validPage,
+          limit: validLimit,
         },
       },
       `${highlight} properties retrieved successfully`
@@ -1249,7 +1262,13 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
     sortOrder = "desc",
   } = req.query;
 
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  // Validate pagination parameters
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
+  const validLimit = Number.isInteger(limitNum) && limitNum > 0 ? limitNum : 10;
+
+  const skip = (validPage - 1) * validLimit;
 
   // Build comprehensive search where clause
   const whereClause = {
@@ -1317,7 +1336,7 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
         },
       },
       skip,
-      take: parseInt(limit),
+      take: validLimit,
       orderBy: { [sortBy]: sortOrder },
     }),
     prisma.property.count({ where: whereClause }),
@@ -1344,10 +1363,10 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
         data: formattedProperties,
         pagination: {
           total,
-          pages: Math.ceil(total / parseInt(limit)),
-          currentPage: parseInt(page),
-          limit: parseInt(limit),
-          hasMore: skip + parseInt(limit) < total,
+          pages: Math.ceil(total / validLimit),
+          currentPage: validPage,
+          limit: validLimit,
+          hasMore: skip + validLimit < total,
         },
         filters: {
           totalProperties: total,
