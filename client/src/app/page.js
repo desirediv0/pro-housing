@@ -926,32 +926,33 @@ export default function HomePage() {
                 },
                 {
                   src: card4,
-                  alt: "Cloverdale SPR",
-                  search: "Cloverdale SPR",
+                  alt: "Signature Global City 93",
+                  search: "Signature Global City 93",
                 },
                 {
                   src: card5,
-                  alt: "Cloverdale SPR",
+                  alt: "Signature Global City 93",
+                  search: "Signature Global City 93",
                 },
                 {
                   src: card6,
-                  alt: "Cloverdale SPR",
-                  search: "Cloverdale SPR",
+                  alt: "Ultra Luxurious",
+                  search: "ultra luxurious",
                 },
                 {
                   src: card7,
-                  alt: "Cloverdale SPR",
-                  search: "Cloverdale SPR",
+                  alt: "M3M Soulitude",
+                  search: "M3M Soulitude",
                 },
                 {
                   src: card8,
-                  alt: "Cloverdale SPR",
-                  search: "Cloverdale SPR",
+                  alt: "M3M Soulitude",
+                  search: "M3M Soulitude",
                 },
                 {
                   src: card9,
-                  alt: "Cloverdale SPR",
-                  search: "Cloverdale SPR",
+                  alt: "Vista Casa Luxuries",
+                  search: "Vista Casa Luxuries",
                 },
               ].map((img) => (
                 <CarouselItem
