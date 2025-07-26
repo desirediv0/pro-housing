@@ -81,7 +81,7 @@ export default function PropertiesPageClient({ searchParams }) {
         limit: 12,
         ...filters,
       };
-      
+
       // Remove empty filters and "all" values
       Object.keys(params).forEach((key) => {
         if (!params[key] || params[key] === "" || params[key] === "all") {
@@ -89,15 +89,11 @@ export default function PropertiesPageClient({ searchParams }) {
         }
       });
 
-      console.log("Fetching properties with params:", params);
-      console.log("API URL:", `${process.env.NODE_ENV === "development" ? "http://localhost:4001/api" : process.env.NEXT_PUBLIC_API_URL || "https://prohousing.in/api"}/properties/public`);
-      
       const response = await publicAPI.getAllProperties(params);
-      console.log("API Response:", response);
-      
+
       // Handle API response
       const data = response.data.data || response.data || {};
-      console.log("Processed data:", data);
+
       setProperties(data.data || data || []);
       setTotalPages(data.pagination?.pages || 1);
       setTotalProperties(data.pagination?.total || 0);
@@ -154,45 +150,53 @@ export default function PropertiesPageClient({ searchParams }) {
     }
   }, [filters, filtersInitialized, fetchProperties]);
 
-  const updateURL = useCallback((newFilters) => {
-    const params = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value && value !== "" && value !== "all" && key !== "limit") {
-        params.set(key, value);
-      }
-    });
-    const queryString = params.toString();
-    const newURL = queryString ? `/properties?${queryString}` : "/properties";
-    router.push(newURL, { scroll: false });
-  }, [router]);
+  const updateURL = useCallback(
+    (newFilters) => {
+      const params = new URLSearchParams();
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (value && value !== "" && value !== "all" && key !== "limit") {
+          params.set(key, value);
+        }
+      });
+      const queryString = params.toString();
+      const newURL = queryString ? `/properties?${queryString}` : "/properties";
+      router.push(newURL, { scroll: false });
+    },
+    [router]
+  );
 
-  const handleFilterChange = useCallback((filterName, value) => {
-    console.log("PropertiesPageClient: handleFilterChange called with:", filterName, value);
-    const newFilters = {
-      ...filters,
-      [filterName]: value,
-      page: filterName === "page" ? value : 1, // Reset to page 1 for new searches
-    };
-    console.log("PropertiesPageClient: New filters:", newFilters);
-    setFilters(newFilters);
-    setCurrentPage(newFilters.page);
-    updateURL(newFilters);
-  }, [filters, updateURL]);
+  const handleFilterChange = useCallback(
+    (filterName, value) => {
+      const newFilters = {
+        ...filters,
+        [filterName]: value,
+        page: filterName === "page" ? value : 1, // Reset to page 1 for new searches
+      };
 
-  const handleSearch = useCallback((e) => {
-    e.preventDefault();
-    const newFilters = { ...filters, page: 1 };
-    setFilters(newFilters);
-    setCurrentPage(1);
-    updateURL(newFilters);
-  }, [filters, updateURL]);
+      setFilters(newFilters);
+      setCurrentPage(newFilters.page);
+      updateURL(newFilters);
+    },
+    [filters, updateURL]
+  );
+
+  const handleSearch = useCallback(
+    (e) => {
+      e.preventDefault();
+      const newFilters = { ...filters, page: 1 };
+      setFilters(newFilters);
+      setCurrentPage(1);
+      updateURL(newFilters);
+    },
+    [filters, updateURL]
+  );
 
   const handleSearchInputChange = useCallback((e) => {
     const value = e.target.value;
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       search: value,
-      page: 1
+      page: 1,
     }));
   }, []);
 

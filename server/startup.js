@@ -56,10 +56,10 @@ async function setupAndStart() {
 
     // Start the server
     console.log("\n5. Starting Pro Housing Server...");
-    console.log("📍 Server will be available at: http://localhost:5000");
-    console.log("📍 API endpoints: http://localhost:5000/api");
-    console.log("📍 Upload endpoint: http://localhost:5000/api/upload");
-    console.log("📍 Health check: http://localhost:5000/api/health");
+    console.log("📍 Server will be available at: http://localhost:4001");
+    console.log("📍 API endpoints: http://localhost:4001/api");
+    console.log("📍 Upload endpoint: http://localhost:4001/api/upload");
+    console.log("📍 Health check: http://localhost:4001/api/health");
     console.log("📁 Upload folder: ./uploads");
     console.log("\n💡 Use the Postman collection for easy API testing");
     console.log("💡 Check README.md for detailed API documentation\n");

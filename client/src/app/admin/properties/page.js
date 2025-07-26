@@ -31,7 +31,7 @@ import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import SearchFilter from "@/components/ui/search-filter";
+import CustomSearchFilter from "@/components/ui/custom-search-filter";
 
 export default function AdminProperties() {
   const [properties, setProperties] = useState([]);
@@ -58,7 +58,16 @@ export default function AdminProperties() {
     rented: 0,
   });
 
+  // Refs to prevent infinite loops
   const isFetchingRef = useRef(false);
+  const filtersRef = useRef(filters);
+  const fetchPropertiesRef = useRef(null);
+  const initialLoadDoneRef = useRef(false);
+
+  // Update ref when filters change
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   const propertyTypes = [
     { value: "", label: "All Types" },
@@ -93,150 +102,152 @@ export default function AdminProperties() {
     { value: "WITHDRAWN", label: "Withdrawn" },
   ];
 
-  const listingTypes = [
-    { value: "", label: "All Listings" },
-    { value: "SALE", label: "For Sale" },
-    { value: "RENT", label: "For Rent" },
-    { value: "LEASE", label: "For Lease" },
-  ];
-
-  const highlightOptions = [
-    { value: "", label: "All Highlights" },
-    { value: "FEATURED", label: "Featured" },
-    { value: "NEW", label: "New" },
-    { value: "TRENDING", label: "Trending" },
-    { value: "HOT_DEAL", label: "Hot Deal" },
-    { value: "PREMIUM", label: "Premium" },
-  ];
-
-  const fetchProperties = useCallback(async () => {
-    if (isFetchingRef.current) {
-      console.log("🚫 Skipping API call - already fetching");
-      return; // Prevent multiple simultaneous calls
-    }
-
-    try {
-      isFetchingRef.current = true;
-      setLoading(true);
-      console.log("🔄 Fetching properties with filters:", filters);
-
-      const response = await adminAPI.getProperties(filters);
-      console.log("API Response:", response);
-
-      // Handle the response structure properly
-      let data;
-      if (response.data && response.data.data) {
-        data = response.data.data;
-      } else if (response.data) {
-        data = response.data;
-      } else {
-        data = response;
+  // Create fetchProperties function and store in ref
+  const createFetchProperties = useCallback(() => {
+    return async () => {
+      if (isFetchingRef.current) {
+        return;
       }
 
-      console.log("Parsed data:", data);
+      try {
+        isFetchingRef.current = true;
+        setLoading(true);
 
-      const propertiesList = data.properties || data || [];
-      const paginationData = data.pagination || {
-        total: propertiesList.length,
-        pages: 1,
-        currentPage: 1,
-        limit: propertiesList.length,
-      };
+        const response = await adminAPI.getProperties(filtersRef.current);
 
-      setProperties(propertiesList);
-      setPagination(paginationData);
+        // Handle the response structure properly
+        let data;
+        if (response.data && response.data.data) {
+          data = response.data.data;
+        } else if (response.data) {
+          data = response.data;
+        } else {
+          data = response;
+        }
 
-      // Calculate stats from the actual data
-      const total = propertiesList.length;
-      const available = propertiesList.filter(
-        (p) => p.status === "AVAILABLE"
-      ).length;
-      const sold = propertiesList.filter((p) => p.status === "SOLD").length;
-      const rented = propertiesList.filter((p) => p.status === "RENTED").length;
+        const propertiesList = data.properties || data || [];
+        const paginationData = data.pagination || {
+          total: propertiesList.length,
+          pages: 1,
+          currentPage: filtersRef.current.page || 1,
+          limit: filtersRef.current.limit || 12,
+        };
 
-      setStats({ total, available, sold, rented });
+        setProperties(propertiesList);
+        setPagination(paginationData);
 
-      console.log("✅ Properties loaded:", propertiesList.length);
-    } catch (error) {
-      console.error("❌ Error fetching properties:", error);
-      toast.error("Failed to load properties. Please try again.", {
-        icon: "❌",
-        style: {
-          borderRadius: "10px",
-          background: "#EF4444",
-          color: "#fff",
-        },
-      });
-      // Set empty state on error
-      setProperties([]);
-      setPagination({ total: 0, pages: 1, currentPage: 1 });
-      setStats({ total: 0, available: 0, sold: 0, rented: 0 });
-    } finally {
-      setLoading(false);
-      isFetchingRef.current = false;
-      console.log("🏁 Fetch completed");
+        // Calculate stats from the actual data
+        const total = propertiesList.length;
+        const available = propertiesList.filter(
+          (p) => p.status === "AVAILABLE"
+        ).length;
+        const sold = propertiesList.filter((p) => p.status === "SOLD").length;
+        const rented = propertiesList.filter(
+          (p) => p.status === "RENTED"
+        ).length;
+
+        setStats({ total, available, sold, rented });
+
+        console.log("✅ Properties loaded:", propertiesList.length);
+      } catch (error) {
+        console.error("❌ Error fetching properties:", error);
+        toast.error("Failed to load properties. Please try again.", {
+          icon: "❌",
+          style: {
+            borderRadius: "10px",
+            background: "#EF4444",
+            color: "#fff",
+          },
+        });
+        // Set empty state on error
+        setProperties([]);
+        setPagination({ total: 0, pages: 1, currentPage: 1 });
+        setStats({ total: 0, available: 0, sold: 0, rented: 0 });
+      } finally {
+        setLoading(false);
+        isFetchingRef.current = false;
+        console.log("🏁 Fetch completed");
+      }
+    };
+  }, []);
+
+  // Initialize fetchProperties function
+  useEffect(() => {
+    fetchPropertiesRef.current = createFetchProperties();
+  }, [createFetchProperties]);
+
+  // Initial load
+  useEffect(() => {
+    if (fetchPropertiesRef.current && !initialLoadDoneRef.current) {
+      initialLoadDoneRef.current = true;
+      fetchPropertiesRef.current();
+    }
+  }, []);
+
+  // Handle filter changes - removed debouncing to prevent loops
+  useEffect(() => {
+    if (!fetchPropertiesRef.current || !initialLoadDoneRef.current) return;
+
+    // Only fetch if filters have actually changed
+    const currentFiltersStr = JSON.stringify(filters);
+    const prevFiltersStr = JSON.stringify(filtersRef.current);
+
+    if (currentFiltersStr !== prevFiltersStr) {
+      console.log("🔄 Filters changed, fetching properties...");
+      fetchPropertiesRef.current();
     }
   }, [filters]);
 
-  // Call fetchProperties on component mount and when filters change
-  useEffect(() => {
-    fetchProperties();
-
-    // Cleanup function to cancel ongoing requests
-    return () => {
-      isFetchingRef.current = false;
-    };
-  }, [fetchProperties]);
-
   const handleFilterChange = useCallback((newFilters) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...newFilters,
-      page: 1, // Reset to first page when filtering
-    }));
+    setFilters((prev) => {
+      const updated = {
+        ...prev,
+        ...newFilters,
+        page: 1, // Reset to first page when filtering
+      };
+      console.log("📝 Updated filters:", updated);
+      return updated;
+    });
   }, []);
 
-  const handleSearch = useCallback(
-    (e) => {
-      e.preventDefault();
-      fetchProperties();
-    },
-    [fetchProperties]
-  );
-
-  const handleDelete = useCallback(
-    async (id) => {
-      if (
-        window.confirm(
-          "Are you sure you want to delete this property? This action cannot be undone."
-        )
-      ) {
-        try {
-          await adminAPI.deleteProperty(id);
-          toast.success("Property deleted successfully", {
-            icon: "🗑️",
-            style: {
-              borderRadius: "10px",
-              background: "#10B981",
-              color: "#fff",
-            },
-          });
-          fetchProperties();
-        } catch (error) {
-          console.error("Error deleting property:", error);
-          toast.error("Failed to delete property", {
-            icon: "❌",
-            style: {
-              borderRadius: "10px",
-              background: "#EF4444",
-              color: "#fff",
-            },
-          });
+  const handleDelete = useCallback(async (id) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this property? This action cannot be undone."
+      )
+    ) {
+      try {
+        await adminAPI.deleteProperty(id);
+        toast.success("Property deleted successfully", {
+          icon: "🗑️",
+          style: {
+            borderRadius: "10px",
+            background: "#10B981",
+            color: "#fff",
+          },
+        });
+        if (fetchPropertiesRef.current) {
+          fetchPropertiesRef.current();
         }
+      } catch (error) {
+        console.error("Error deleting property:", error);
+        toast.error("Failed to delete property", {
+          icon: "❌",
+          style: {
+            borderRadius: "10px",
+            background: "#EF4444",
+            color: "#fff",
+          },
+        });
       }
-    },
-    [fetchProperties]
-  );
+    }
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    if (fetchPropertiesRef.current) {
+      fetchPropertiesRef.current();
+    }
+  }, []);
 
   const formatPrice = useCallback((price) => {
     return new Intl.NumberFormat("en-IN", {
@@ -738,7 +749,7 @@ export default function AdminProperties() {
       {/* Filters */}
       <Card className="shadow-lg border-0 bg-white">
         <CardContent className="p-6">
-          <SearchFilter
+          <CustomSearchFilter
             filters={filters}
             onFiltersChange={handleFilterChange}
             searchPlaceholder="Search properties..."
@@ -773,7 +784,7 @@ export default function AdminProperties() {
                 List
               </Button>
             </div>
-            <Button onClick={fetchProperties} variant="outline" size="sm">
+            <Button onClick={handleRefresh} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-1" />
               Refresh
             </Button>
