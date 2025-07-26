@@ -12,12 +12,15 @@ import {
   ArrowUpRight,
   Calculator,
   FileText,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { publicAPI } from "@/lib/api-functions";
 
 const ExpertiseSection = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -130,6 +133,18 @@ const ExpertiseSection = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) =>
+      prev + 2 >= expertiseCards.length ? 0 : prev + 2
+    );
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) =>
+      prev - 2 < 0 ? Math.max(0, expertiseCards.length - 2) : prev - 2
+    );
   };
 
   const renderForm = (serviceType) => {
@@ -288,6 +303,25 @@ const ExpertiseSection = () => {
     );
   };
 
+  const renderCard = (card) => (
+    <div key={card.id} className="text-center flex flex-col h-full">
+      <div className="flex-1">
+        <div className="flex justify-center mb-4">{card.icon}</div>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          {card.title}
+        </h3>
+        <p className="text-gray-600 text-sm mb-6">{card.description}</p>
+      </div>
+      <Button
+        onClick={() => setActiveModal(card.id)}
+        className="mt-auto w-full bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 rounded-lg px-4 py-2 flex items-center justify-center space-x-2"
+      >
+        <span>{card.buttonText}</span>
+        <ArrowUpRight className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+
   return (
     <div className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -301,29 +335,49 @@ const ExpertiseSection = () => {
           </p>
         </div>
 
-        {/* Expertise Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {expertiseCards.map((card) => (
+        {/* Desktop Grid Layout */}
+        <div className="hidden lg:grid lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {expertiseCards.map((card) => renderCard(card))}
+        </div>
+
+        {/* Mobile/Tablet Scrollable Carousel */}
+        <div className="lg:hidden">
+          <div className="relative">
+            {/* Scrollable Container */}
             <div
-              key={card.id}
-              className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300"
+              className="flex gap-2 overflow-x-auto scrollbar-hide px-1"
+              style={{
+                WebkitOverflowScrolling: "touch",
+                scrollSnapType: "x mandatory",
+              }}
+              tabIndex={0}
             >
-              <div className="text-center">
-                <div className="flex justify-center mb-4">{card.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {card.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">{card.description}</p>
-                <Button
-                  onClick={() => setActiveModal(card.id)}
-                  className="w-full bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 rounded-lg px-4 py-2 flex items-center justify-center space-x-2"
+              {expertiseCards.map((card, idx) => (
+                <div
+                  key={card.id}
+                  className="w-1/2 flex-shrink-0 snap-start"
+                  style={{ scrollSnapAlign: "start" }}
                 >
-                  <span>{card.buttonText}</span>
-                  <ArrowUpRight className="h-4 w-4" />
-                </Button>
-              </div>
+                  <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 md:p-6 hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
+                    {renderCard(card)}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+            {/* Optional: You can add left/right arrows for mobile if you want, but drag/scroll is main UX */}
+          </div>
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-6 space-x-2">
+            {Array.from(
+              { length: Math.ceil(expertiseCards.length / 2) },
+              (_, index) => (
+                <span
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors bg-gray-300 inline-block`}
+                />
+              )
+            )}
+          </div>
         </div>
 
         {/* Modal */}
