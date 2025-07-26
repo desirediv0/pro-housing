@@ -185,6 +185,11 @@ export default function AboutPage() {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <Button
+              onClick={() => {
+                if (confirm("Do you want to call +91 90909 08081?")) {
+                  window.open("tel:+919090908081");
+                }
+              }}
               size="lg"
               className="bg-white text-[#1A3B4C] hover:bg-gray-100 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >

@@ -28,6 +28,7 @@ import { Input, Label, Textarea } from "@/components/ui/form";
 import { publicAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import Testimonials from "@/components/Testimonials";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -136,13 +137,6 @@ export default function ContactPage() {
       value: "89/2 sector 39 gurugram haryana",
       action: "#",
     },
-    {
-      icon: Clock,
-      title: "Office Hours",
-      description: "We're here to help",
-      value: "Mon - Sat: 9:00 AM - 7:00 PM",
-      action: "#",
-    },
   ];
 
   const features = [
@@ -170,28 +164,54 @@ export default function ContactPage() {
 
   const testimonials = [
     {
-      name: "Raj Sharma",
+      name: "Arun Sharma",
       role: "Property Buyer",
-      image: "/user1.jpg",
+      content:
+        "Found my dream apartment in Sector 48, Gurugram through Pro Housing. Their team was extremely professional and helped me negotiate the best price. The entire process from property viewing to documentation was seamless.",
       rating: 5,
-      comment:
-        "Excellent service! The team helped me find my dream home within my budget. Highly recommended!",
+      location: "Sector 48, Gurugram",
+      date: "2 weeks ago",
+      propertyType: "3 BHK Apartment",
     },
     {
-      name: "Priya Patel",
-      role: "Property Seller",
-      image: "/user3.jpg",
+      name: "Priya Malhotra",
+      role: "Home Owner",
+      content:
+        "Pro Housing helped me sell my property in DLF Phase 5 at the best market price. Their market analysis and property valuation was spot on. The team's dedication and regular updates made the selling process stress-free.",
       rating: 5,
-      comment:
-        "Professional and efficient. They sold my property at the best price in the market.",
+      location: "DLF Phase 5, Gurugram",
+      date: "1 month ago",
+      propertyType: "4 BHK Villa",
     },
     {
-      name: "Amit Kumar",
-      role: "Investor",
-      image: "/user2.jpg",
+      name: "Rajat Verma",
+      role: "First-time Buyer",
+      content:
+        "As a first-time homebuyer in Gurugram, I was quite nervous. Pro Housing's team guided me through every step, from shortlisting properties in Golf Course Road to handling all the paperwork. Highly recommend their services!",
       rating: 5,
-      comment:
-        "Great investment advice and market insights. I've invested in multiple properties through them.",
+      location: "Golf Course Road, Gurugram",
+      date: "3 weeks ago",
+      propertyType: "2 BHK Apartment",
+    },
+    {
+      name: "Neha Gupta",
+      role: "Property Investor",
+      content:
+        "Pro Housing has been instrumental in building my property portfolio in Gurugram. Their investment advice and market insights for Sohna Road properties were invaluable. The rental management services are excellent too.",
+      rating: 5,
+      location: "Sohna Road, Gurugram",
+      date: "1 week ago",
+      propertyType: "Commercial Space",
+    },
+    {
+      name: "Vikram Singh",
+      role: "NRI Investor",
+      content:
+        "Managing property investment from abroad was made easy by Pro Housing. They helped me acquire a premium property in Sector 60 and are managing it perfectly. Their virtual tours and detailed reports are excellent.",
+      rating: 5,
+      location: "Sector 60, Gurugram",
+      date: "2 months ago",
+      propertyType: "Luxury Apartment",
     },
   ];
 
@@ -231,7 +251,7 @@ export default function ContactPage() {
 
       {/* Contact Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
             return (
@@ -618,46 +638,7 @@ export default function ContactPage() {
               Housing.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card
-                key={index}
-                className="shadow-xl border-0 bg-white hover:shadow-2xl transition-all duration-300"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <Image
-                      src={testimonial.image || "/placeholder.svg"}
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full mr-4 object-cover"
-                      width={64}
-                      height={64}
-                    />
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
-                        {testimonial.name}
-                      </h4>
-                      <p className="text-gray-600 text-sm">
-                        {testimonial.role}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 text-yellow-400 fill-current"
-                      />
-                    ))}
-                  </div>
-                  <Quote className="h-8 w-8 text-gray-300 mb-3" />
-                  <p className="text-gray-700 italic leading-relaxed">
-                    &apos;{testimonial.comment}&apos;
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <Testimonials testimonials={testimonials} />
         </div>
       </div>
 
