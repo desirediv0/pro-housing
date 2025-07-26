@@ -87,10 +87,10 @@ export default function LogoSlider() {
     <div className="overflow-hidden py-8 bg-white">
       <div className="text-center mb-8">
         <h3 className="text-xl font-semibold text-gray-700 mb-2">
-          Trusted by Leading Banks
+          Trusted by Developers
         </h3>
         <p className="text-gray-500">
-          Partnered with top financial institutions across India
+          Partnered with top developers across India
         </p>
       </div>
       <div className="relative w-full">
