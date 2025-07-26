@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
   Settings,
   CheckSquare,
   Square,
+  Filter,
 } from "lucide-react";
 import { adminAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
@@ -69,15 +70,13 @@ export default function PropertyFeaturesManagement() {
     { value: "NEW", label: "New", icon: Gift, color: "text-green-600" },
   ];
 
-  useEffect(() => {
-    fetchProperties();
-    fetchStats();
-  }, [filters]);
+  // Debounced filters for API calls
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
 
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.getAllProperties(filters);
+      const response = await adminAPI.getAllProperties(debouncedFilters);
       setProperties(response.data.data.properties || []);
     } catch (error) {
       console.error("Error fetching properties:", error);
@@ -85,9 +84,9 @@ export default function PropertyFeaturesManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedFilters]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       // Get count of properties by highlight
       const highlights = ["FEATURED", "TRENDING", "HOT_DEAL", "PREMIUM", "NEW"];
@@ -107,7 +106,20 @@ export default function PropertyFeaturesManagement() {
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFilters(filters);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [filters]);
+
+  useEffect(() => {
+    fetchProperties();
+    fetchStats();
+  }, [fetchProperties, fetchStats]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
@@ -256,7 +268,6 @@ export default function PropertyFeaturesManagement() {
                 { value: "RENTED", label: "Rented" },
               ]}
               categoryOptions={highlights.filter((h) => h.value !== "")}
-              debounceMs={500}
             />
 
             {/* Bulk Actions */}
