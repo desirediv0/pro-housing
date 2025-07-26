@@ -290,7 +290,9 @@ export default function AboutPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">
-                  <h4 className="text-xl font-bold mb-2">Our Mumbai Office</h4>
+                  <h4 className="text-xl font-bold mb-2">
+                    Our Gurugram Office
+                  </h4>
                   <p className="text-white/90">
                     Where innovation meets tradition
                   </p>
@@ -346,7 +348,7 @@ export default function AboutPage() {
       </motion.section>
 
       {/* Our Team */}
-      <motion.section
+      {/* <motion.section
         className="py-20"
         variants={containerVariants}
         initial="hidden"
@@ -399,7 +401,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-      </motion.section>
+      </motion.section> */}
 
       {/* Awards & Recognition */}
       <motion.section
