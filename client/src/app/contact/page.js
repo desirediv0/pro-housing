@@ -509,7 +509,7 @@ export default function ContactPage() {
                 {/* Map placeholder - Replace with actual map */}
                 <div className="h-64 bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3500.1234567890123!2d77.12345678901234!3d28.98765432109876!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d17957da3b1e7%3A0xe31b6d39c72cc555!2sJindal%20Global%20City%20Sector%2035%20Sonipat!5e0!3m2!1sen!2sin!4v1749832130063!5m2!1sen!2sin"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6983.177298602003!2d77.05923744251169!3d28.94026010199202!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390daf0e208d00d9%3A0x4ca8cbfc3e07f682!2sJindal%20Global%20City!5e0!3m2!1sen!2sin!4v1753681361053!5m2!1sen!2sin"
                     width="600"
                     height="450"
                     style={{ border: 0 }}
@@ -530,7 +530,7 @@ export default function ContactPage() {
                   <Button
                     onClick={() => {
                       window.open(
-                        "https://www.google.com/maps/place/Jindal+Global+City+Sector+35+Sonipat/@28.98765432109876,77.12345678901234,15z/data=!4m6!3m5!1s0x390d17957da3b1e7:0xe31b6d39c72cc555!8m2!3d28.98765432109876!4d77.12345678901234!16s%2Fg%2F11c4028q7c?entry=ttu&g_ep=EgoyMDI1MDIxMi4wIKXMDSoASAFQAw%3D%3D",
+                        "https://www.google.com/maps/place/Jindal+Global+City/@28.94026010199202,77.05923744251169,15z/data=!4m6!3m5!1s0x390daf0e208d00d9:0x4ca8cbfc3e07f682!8m2!3d28.94026010199202!4d77.05923744251169!16s%2Fg%2F11c4028q7c?entry=ttu",
                         "_blank"
                       );
                     }}
