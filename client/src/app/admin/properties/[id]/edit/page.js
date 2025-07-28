@@ -347,6 +347,65 @@ export default function EditProperty() {
     setLoading(true);
 
     try {
+      // Validation for required fields
+      const requiredFields = {
+        title: "Property Title",
+        description: "Description",
+        price: "Price",
+        propertyType: "Property Type",
+        listingType: "Listing Type",
+        area: "Area",
+        address: "Address",
+        city: "City",
+        state: "State",
+        pincode: "Pincode",
+      };
+
+      const missingFields = [];
+
+      for (const [field, label] of Object.entries(requiredFields)) {
+        if (!formData[field] || formData[field].toString().trim() === "") {
+          missingFields.push(label);
+        }
+      }
+
+      if (missingFields.length > 0) {
+        toast.error(
+          `Please fill in the following required fields: ${missingFields.join(
+            ", "
+          )}`,
+          {
+            icon: "⚠️",
+            style: {
+              borderRadius: "10px",
+              background: "#F59E0B",
+              color: "#fff",
+            },
+            duration: 5000,
+          }
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Check if there are any images (existing or new)
+      const imageFiles = newFiles.filter(
+        (fileItem) => fileItem.type === "image" && fileItem.file
+      );
+
+      if (existingImages.length === 0 && imageFiles.length === 0) {
+        toast.error("At least one image is required for the property", {
+          icon: "📷",
+          style: {
+            borderRadius: "10px",
+            background: "#F59E0B",
+            color: "#fff",
+          },
+        });
+        setLoading(false);
+        return;
+      }
+
       const submitData = new FormData();
 
       // Add all form fields
@@ -379,10 +438,6 @@ export default function EditProperty() {
         submitData.append("videosToDelete", JSON.stringify(videosToDelete));
       }
 
-      // Handle new image files
-      const imageFiles = newFiles.filter(
-        (fileItem) => fileItem.type === "image" && fileItem.file
-      );
       const videoFiles = newFiles.filter(
         (fileItem) => fileItem.type === "video" && fileItem.file
       );
