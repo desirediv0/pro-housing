@@ -248,7 +248,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="text-white/80 leading-relaxed">
-                    89/2 sector 39 gurugram, haryana, India
+                    B205 Jindal Global City Sector 35, Sonipat, India
                   </p>
                 </div>
               </li>

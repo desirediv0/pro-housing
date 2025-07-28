@@ -134,7 +134,7 @@ export default function ContactPage() {
       icon: MapPin,
       title: "Visit Us",
       description: "Our office location",
-      value: "89/2 sector 39 gurugram haryana",
+      value: "B205, Jindal Global City Sector 35,Sonipat",
       action: "#",
     },
   ];
@@ -229,6 +229,7 @@ export default function ContactPage() {
     { value: "apartment", label: "Apartment" },
     { value: "house", label: "House" },
     { value: "villa", label: "Villa" },
+    { value: "builder-floor", label: "Builder Floor" },
     { value: "commercial", label: "Commercial" },
     { value: "land", label: "Land" },
   ];
@@ -508,7 +509,7 @@ export default function ContactPage() {
                 {/* Map placeholder - Replace with actual map */}
                 <div className="h-64 bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d112233.29749885356!2d76.88093205871327!3d28.470795407460887!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d17957da3b1e7%3A0xe31b6d39c72cc555!2sDesire%20Div%20-%20Website%20Designing%20Company%20in%20Gurgaon!5e0!3m2!1sen!2sin!4v1749832130063!5m2!1sen!2sin"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3500.1234567890123!2d77.12345678901234!3d28.98765432109876!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d17957da3b1e7%3A0xe31b6d39c72cc555!2sJindal%20Global%20City%20Sector%2035%20Sonipat!5e0!3m2!1sen!2sin!4v1749832130063!5m2!1sen!2sin"
                     width="600"
                     height="450"
                     style={{ border: 0 }}
@@ -522,13 +523,14 @@ export default function ContactPage() {
                     Visit Our Office
                   </h4>
                   <p className="text-gray-600 mb-4">
-                    Come visit our modern office in the heart of Bandra. Our
-                    team is ready to assist you with all your real estate needs.
+                    Come visit our modern office in Jindal Global City, Sector
+                    35, Sonipat. Our team is ready to assist you with all your
+                    real estate needs.
                   </p>
                   <Button
                     onClick={() => {
                       window.open(
-                        "https://www.google.com/maps/place/Desire+Div+-+Website+Designing+Company+in+Gurgaon/@28.4707954,76.8809321,15z/data=!4m6!3m5!1s0x390d17957da3b1e7:0xe31b6d39c72cc555!8m2!3d28.4707954!4d76.8809321!16s%2Fg%2F11c4028q7c?entry=ttu&g_ep=EgoyMDI1MDIxMi4wIKXMDSoASAFQAw%3D%3D",
+                        "https://www.google.com/maps/place/Jindal+Global+City+Sector+35+Sonipat/@28.98765432109876,77.12345678901234,15z/data=!4m6!3m5!1s0x390d17957da3b1e7:0xe31b6d39c72cc555!8m2!3d28.98765432109876!4d77.12345678901234!16s%2Fg%2F11c4028q7c?entry=ttu&g_ep=EgoyMDI1MDIxMi4wIKXMDSoASAFQAw%3D%3D",
                         "_blank"
                       );
                     }}
