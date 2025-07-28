@@ -176,13 +176,6 @@ export default function CreateProperty() {
     }));
   };
 
-  const handleSelectChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleLocationChange = (locationData) => {
     setFormData((prev) => ({
       ...prev,
