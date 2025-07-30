@@ -132,9 +132,17 @@ export default function ContactPage() {
     },
     {
       icon: MapPin,
-      title: "Visit Us",
-      description: "Our office location",
-      value: "B205, Jindal Global City Sector 35,Sonipat",
+      title: "Corporate Office",
+      description: "Our corporate address",
+      value: "89/2 Sector 39, Gurugram",
+      action: "#",
+    },
+    {
+      icon: Building,
+      title: "Registered Office",
+      description: "Our registered address",
+      value:
+        "Dahaliya Builders Pvt Ltd, B-205, Jindal Global City, GT Road, Sonipat",
       action: "#",
     },
   ];
@@ -252,7 +260,7 @@ export default function ContactPage() {
 
       {/* Contact Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {contactInfo.map((info, index) => {
             const Icon = info.icon;
             return (
@@ -277,14 +285,14 @@ export default function ContactPage() {
                           window.open(info.action);
                         }
                       }}
-                      className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-lg transition-colors duration-200"
+                      className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-base transition-colors duration-200"
                     >
                       {info.value}
                     </button>
                   ) : (
                     <a
                       href={info.action}
-                      className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-lg transition-colors duration-200"
+                      className="text-[#1A3B4C] hover:text-[#0A2B3C] font-semibold text-base transition-colors duration-200"
                     >
                       {info.value}
                     </a>

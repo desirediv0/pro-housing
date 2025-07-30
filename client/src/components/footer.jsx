@@ -247,8 +247,25 @@ const Footer = () => {
                   <MapPin className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-white/80 leading-relaxed">
-                    B205 Jindal Global City Sector 35, Sonipat, India
+                  <p className="text-white/80 leading-relaxed font-semibold">
+                    Corporate Address:
+                  </p>
+                  <p className="text-white/80 text-sm leading-relaxed">
+                    89/2 Sector 39, Gurugram
+                  </p>
+                </div>
+              </li>
+              <li className="flex items-start group">
+                <div className="w-10 h-10 backdrop-blur-sm rounded-xl flex items-center justify-center mr-4 mt-1 group-hover:bg-white/20 transition-all duration-300 border border-white/20">
+                  <Building className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="text-white/80 leading-relaxed font-semibold">
+                    Registered Address:
+                  </p>
+                  <p className="text-white/80 text-sm leading-relaxed">
+                    Dahaliya Builders Pvt Ltd, B-205, Jindal Global City, GT
+                    Road, Sonipat
                   </p>
                 </div>
               </li>
