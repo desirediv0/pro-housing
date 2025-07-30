@@ -588,7 +588,24 @@ export default function HomePage() {
                                 <SelectLabel className="text-[#1A3B4C] font-semibold px-3 py-2 text-sm">
                                   Popular Cities
                                 </SelectLabel>
-                                {["Gurugram"].map((city) => (
+                                {[
+                                  "Gurugram",
+                                  "New Delhi",
+                                  "Sonipat",
+                                  "Noida",
+                                  "Mumbai",
+                                  "Dehradun",
+                                  "Faridabad",
+                                  "Haridwar",
+                                  "Jaipur",
+                                  "Karnal",
+                                  "Mohali",
+                                  "Panchkula",
+                                  "Chandigarh",
+                                  "Panipat",
+                                  "Neemrana",
+                                  "Naugaon",
+                                ].map((city) => (
                                   <SelectItem
                                     key={city}
                                     value={city}
