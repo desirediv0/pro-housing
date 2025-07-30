@@ -39,6 +39,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
+  b1,
+  b2,
+  b3,
+  b4,
+  b5,
   card1,
   card2,
   card3,
@@ -80,10 +85,41 @@ export default function HomePage() {
 
   const [carouselIndex, setCarouselIndex] = useState(0);
 
+  // Hero carousel states
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+
+  // Hero carousel data
+  const heroSlides = [
+    {
+      image: b1,
+    },
+    {
+      image: b2,
+    },
+    {
+      image: b3,
+    },
+    {
+      image: b4,
+    },
+    {
+      image: b5,
+    },
+  ];
+
   useEffect(() => {
     fetchFeaturedProperties();
     fetchSidebarContent();
     fetchCategoryData();
+  }, []);
+
+  // Auto-change hero carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchFeaturedProperties = async () => {
@@ -280,18 +316,26 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Enhanced Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1A3B4C] via-[#2A4B5C] to-[#3A5B6C]">
-          <div className="absolute inset-0 backdrop-blur-[100px]">
-            {/* Animated Circles */}
-            <div className="absolute top-20 left-20 w-72 h-72 bg-[#1A3B4C]/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-            <div className="absolute top-40 right-20 w-72 h-72 bg-[#2A4B5C]/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-[#3A5B6C]/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
-
-            {/* Additional Dynamic Circles */}
-            <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-yellow-300/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse"></div>
-            <div className="absolute bottom-1/3 right-1/4 w-56 h-56 bg-blue-300/20 rounded-full mix-blend-multiply filter blur-2xl animate-pulse animation-delay-3000"></div>
-          </div>
+        {/* Auto-Changing Hero Carousel Background */}
+        <div className="absolute inset-0">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentHeroSlide ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30"></div>
+            </div>
+          ))}
         </div>
 
         {/* Floating Property Elements */}
@@ -780,6 +824,49 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+          <div className="flex space-x-2">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentHeroSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentHeroSlide
+                    ? "bg-yellow-300 scale-125"
+                    : "bg-white/50 hover:bg-white/75"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Carousel Navigation Arrows */}
+        <button
+          onClick={() =>
+            setCurrentHeroSlide(
+              currentHeroSlide === 0
+                ? heroSlides.length - 1
+                : currentHeroSlide - 1
+            )
+          }
+          className="absolute left-4 top-1/4 md:top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
+        >
+          <ArrowRight className="w-6 h-6 rotate-180" />
+        </button>
+        <button
+          onClick={() =>
+            setCurrentHeroSlide(
+              currentHeroSlide === heroSlides.length - 1
+                ? 0
+                : currentHeroSlide + 1
+            )
+          }
+          className="absolute right-4 top-1/4 md:top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
+        >
+          <ArrowRight className="w-6 h-6" />
+        </button>
       </div>
 
       {/* Expertise Section */}

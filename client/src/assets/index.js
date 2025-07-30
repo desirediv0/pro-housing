@@ -57,6 +57,12 @@ import logo36 from "./logos/36.webp";
 import logo37 from "./logos/37.jpeg";
 import logo38 from "./logos/38.jpeg";
 
+import b1 from "./b1.jpg";
+import b2 from "./b2.jpg";
+import b3 from "./b3.jpg";
+import b4 from "./b4.jpg";
+import b5 from "./b5.jpg";
+
 export {
   buildersfloor,
   dlfcamellias,
@@ -110,4 +116,9 @@ export {
   logo36,
   logo37,
   logo38,
+  b1,
+  b2,
+  b3,
+  b4,
+  b5,
 };
