@@ -868,7 +868,7 @@ export default function HomePage() {
                 : currentHeroSlide - 1
             )
           }
-          className="absolute left-4 top-1/4 md:top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
+          className="hidden absolute left-4 top-1/4 md:top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full md:flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
         >
           <ArrowRight className="w-6 h-6 rotate-180" />
         </button>
@@ -880,7 +880,7 @@ export default function HomePage() {
                 : currentHeroSlide + 1
             )
           }
-          className="absolute right-4 top-1/4 md:top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
+          className="hidden absolute right-4 top-1/4 md:top-1/2 transform -translate-y-1/2 z-20 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full md:flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
         >
           <ArrowRight className="w-6 h-6" />
         </button>
