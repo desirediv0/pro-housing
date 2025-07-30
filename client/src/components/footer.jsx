@@ -289,7 +289,7 @@ const Footer = () => {
               <p className="text-white/70 text-sm">
                 © {new Date().getFullYear()} Pro Housing. All rights reserved.
               </p>
-              <div className="text-white/50 text-xs mt-1">
+              {/* <div className="text-white/50 text-xs mt-1">
                 Made with{" "}
                 <a
                   href="https://desirediv.com"
@@ -301,7 +301,7 @@ const Footer = () => {
                   Desire Div
                 </a>
                 ❤️ for your dream home
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center space-x-6">
