@@ -9,11 +9,16 @@ import {
   Calendar,
   Percent,
   IndianRupee,
+  Car,
+  Building,
+  Car as CarIcon,
+  Calculator as CalculatorIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Label } from "./label";
 
 export default function EMICalculator() {
+  const [calculatorType, setCalculatorType] = useState("home"); // "home", "car", "general"
   const [propertyValue, setPropertyValue] = useState(5000000);
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [interestRate, setInterestRate] = useState(8.5);
@@ -21,6 +26,122 @@ export default function EMICalculator() {
   const [emi, setEmi] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalInterest, setTotalInterest] = useState(0);
+
+  // Enhanced calculator type configurations
+  const calculatorConfigs = {
+    home: {
+      title: "Home Loan EMI",
+      description: "Calculate your home loan EMI with current market rates",
+      icon: Building,
+      defaultAmount: 5000000,
+      defaultDownPayment: 20,
+      defaultInterest: 8.5,
+      defaultTenure: 20,
+      amountLabel: "Property Value",
+      downPaymentLabel: "Down Payment",
+      tenureLabel: "Loan Tenure",
+      minAmount: 1000000,
+      maxAmount: 100000000,
+      minDownPayment: 10,
+      maxDownPayment: 50,
+      minInterest: 6.5,
+      maxInterest: 12.0,
+      minTenure: 5,
+      maxTenure: 30,
+      quickAmounts: [
+        { label: "25L", value: 2500000 },
+        { label: "50L", value: 5000000 },
+        { label: "1Cr", value: 10000000 },
+        { label: "2Cr", value: 20000000 },
+        { label: "5Cr", value: 50000000 },
+        { label: "10Cr", value: 100000000 },
+      ],
+      features: [
+        "Lowest interest rates",
+        "Longest repayment period",
+        "Tax benefits available",
+        "Flexible down payment",
+      ],
+    },
+    car: {
+      title: "Car Loan EMI",
+      description: "Calculate your car loan EMI with competitive rates",
+      icon: CarIcon,
+      defaultAmount: 800000,
+      defaultDownPayment: 15,
+      defaultInterest: 12.5,
+      defaultTenure: 7,
+      amountLabel: "Car Value",
+      downPaymentLabel: "Down Payment",
+      tenureLabel: "Loan Tenure",
+      minAmount: 300000,
+      maxAmount: 10000000,
+      minDownPayment: 10,
+      maxDownPayment: 40,
+      minInterest: 8.0,
+      maxInterest: 18.0,
+      minTenure: 1,
+      maxTenure: 8,
+      quickAmounts: [
+        { label: "3L", value: 300000 },
+        { label: "5L", value: 500000 },
+        { label: "8L", value: 800000 },
+        { label: "12L", value: 1200000 },
+        { label: "20L", value: 2000000 },
+        { label: "30L", value: 3000000 },
+      ],
+      features: [
+        "Quick approval process",
+        "Competitive interest rates",
+        "Flexible tenure options",
+        "Minimal documentation",
+      ],
+    },
+    general: {
+      title: "Personal Loan EMI",
+      description:
+        "Calculate EMI for personal loans, business loans, or any other loan",
+      icon: CalculatorIcon,
+      defaultAmount: 1000000,
+      defaultDownPayment: 0,
+      defaultInterest: 15.0,
+      defaultTenure: 5,
+      amountLabel: "Loan Amount",
+      downPaymentLabel: "Processing Fee",
+      tenureLabel: "Loan Tenure",
+      minAmount: 50000,
+      maxAmount: 5000000,
+      minDownPayment: 0,
+      maxDownPayment: 5,
+      minInterest: 10.0,
+      maxInterest: 24.0,
+      minTenure: 1,
+      maxTenure: 7,
+      quickAmounts: [
+        { label: "50K", value: 50000 },
+        { label: "1L", value: 100000 },
+        { label: "5L", value: 500000 },
+        { label: "10L", value: 1000000 },
+        { label: "25L", value: 2500000 },
+        { label: "50L", value: 5000000 },
+      ],
+      features: [
+        "No collateral required",
+        "Quick disbursement",
+        "Flexible usage",
+        "Minimal documentation",
+      ],
+    },
+  };
+
+  // Update values when calculator type changes
+  useEffect(() => {
+    const config = calculatorConfigs[calculatorType];
+    setPropertyValue(config.defaultAmount);
+    setDownPaymentPercent(config.defaultDownPayment);
+    setInterestRate(config.defaultInterest);
+    setLoanTenure(config.defaultTenure);
+  }, [calculatorType]);
 
   // Calculate EMI and related values
   useEffect(() => {
@@ -73,15 +194,8 @@ export default function EMICalculator() {
 
   const downPayment = (propertyValue * downPaymentPercent) / 100;
   const loanAmount = propertyValue - downPayment;
-
-  const quickAmounts = [
-    { label: "25L", value: 2500000 },
-    { label: "50L", value: 5000000 },
-    { label: "1Cr", value: 10000000 },
-    { label: "2Cr", value: 20000000 },
-    { label: "5Cr", value: 50000000 },
-    { label: "10Cr", value: 100000000 },
-  ];
+  const currentConfig = calculatorConfigs[calculatorType];
+  const IconComponent = currentConfig.icon;
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -103,9 +217,53 @@ export default function EMICalculator() {
             </h2>
           </div>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Calculate your home loan EMI easily with our simple calculator
+            Calculate your loan EMI easily with our comprehensive calculator
           </p>
         </div>
+
+        {/* Calculator Type Selection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          {Object.entries(calculatorConfigs).map(([key, config]) => {
+            const ConfigIcon = config.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => setCalculatorType(key)}
+                className={`p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-lg ${
+                  calculatorType === key
+                    ? "bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white border-[#1A3B4C] shadow-xl transform scale-105"
+                    : "bg-white text-gray-700 border-gray-200 hover:border-[#1A3B4C] hover:bg-[#1A3B4C]/5"
+                }`}
+              >
+                <div className="flex flex-col items-center space-y-4">
+                  <div
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                      calculatorType === key
+                        ? "bg-white/20"
+                        : "bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C]"
+                    }`}
+                  >
+                    <ConfigIcon
+                      className={`h-8 w-8 ${
+                        calculatorType === key ? "text-white" : "text-white"
+                      }`}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold mb-2">{config.title}</h3>
+                    <p className="text-sm opacity-80">{config.description}</p>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Calculator Form */}
@@ -118,8 +276,8 @@ export default function EMICalculator() {
             <Card className="border-0 shadow-xl">
               <CardHeader className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white rounded-t-xl">
                 <CardTitle className="flex items-center space-x-2 text-xl">
-                  <Home className="h-6 w-6" />
-                  <span>Calculate Your EMI</span>
+                  <IconComponent className="h-6 w-6" />
+                  <span>{currentConfig.title}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-8 space-y-8">
@@ -128,7 +286,7 @@ export default function EMICalculator() {
                   <div className="flex items-center justify-between">
                     <Label className="text-lg font-semibold text-gray-700 flex items-center">
                       <IndianRupee className="h-5 w-5 mr-2 text-[#1A3B4C]" />
-                      Property Value
+                      {currentConfig.amountLabel}
                     </Label>
                     <span className="text-2xl font-bold text-[#1A3B4C]">
                       {formatCurrency(propertyValue)}
@@ -155,26 +313,24 @@ export default function EMICalculator() {
                   <div className="space-y-2">
                     <input
                       type="range"
-                      min="100000"
-                      max="100000000"
-                      step="100000"
-                      value={Math.min(propertyValue, 100000000)}
+                      min={currentConfig.minAmount}
+                      max={currentConfig.maxAmount}
+                      step={currentConfig.minAmount >= 1000000 ? 100000 : 10000}
+                      value={Math.min(propertyValue, currentConfig.maxAmount)}
                       onChange={(e) =>
                         setPropertyValue(parseInt(e.target.value))
                       }
                       className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                     />
                     <div className="flex justify-between text-sm text-gray-500">
-                      <span>₹1L</span>
-                      <span>₹10L</span>
-                      <span>₹1Cr</span>
-                      <span>₹10Cr+</span>
+                      <span>{formatCurrency(currentConfig.minAmount)}</span>
+                      <span>{formatCurrency(currentConfig.maxAmount)}</span>
                     </div>
                   </div>
 
                   {/* Quick Amount Buttons */}
                   <div className="grid grid-cols-3 gap-3">
-                    {quickAmounts.map((amount) => (
+                    {currentConfig.quickAmounts.map((amount) => (
                       <button
                         key={amount.value}
                         onClick={() => setPropertyValue(amount.value)}
@@ -195,7 +351,7 @@ export default function EMICalculator() {
                   <div className="flex items-center justify-between">
                     <Label className="text-lg font-semibold text-gray-700 flex items-center">
                       <CreditCard className="h-5 w-5 mr-2 text-[#1A3B4C]" />
-                      Down Payment
+                      {currentConfig.downPaymentLabel}
                     </Label>
                     <span className="text-2xl font-bold text-[#1A3B4C]">
                       {formatCurrency(downPayment)} ({downPaymentPercent}%)
@@ -206,8 +362,8 @@ export default function EMICalculator() {
                   <div className="space-y-2">
                     <input
                       type="range"
-                      min="10"
-                      max="50"
+                      min={currentConfig.minDownPayment}
+                      max={currentConfig.maxDownPayment}
                       step="5"
                       value={downPaymentPercent}
                       onChange={(e) =>
@@ -216,10 +372,8 @@ export default function EMICalculator() {
                       className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                     />
                     <div className="flex justify-between text-sm text-gray-500">
-                      <span>10%</span>
-                      <span>20%</span>
-                      <span>30%</span>
-                      <span>50%</span>
+                      <span>{currentConfig.minDownPayment}%</span>
+                      <span>{currentConfig.maxDownPayment}%</span>
                     </div>
                   </div>
                 </div>
@@ -240,8 +394,8 @@ export default function EMICalculator() {
                   <div className="space-y-2">
                     <input
                       type="range"
-                      min="6"
-                      max="15"
+                      min={currentConfig.minInterest}
+                      max={currentConfig.maxInterest}
                       step="0.1"
                       value={interestRate}
                       onChange={(e) =>
@@ -250,10 +404,8 @@ export default function EMICalculator() {
                       className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                     />
                     <div className="flex justify-between text-sm text-gray-500">
-                      <span>6%</span>
-                      <span>8.5%</span>
-                      <span>12%</span>
-                      <span>15%</span>
+                      <span>{currentConfig.minInterest}%</span>
+                      <span>{currentConfig.maxInterest}%</span>
                     </div>
                   </div>
                 </div>
@@ -263,7 +415,7 @@ export default function EMICalculator() {
                   <div className="flex items-center justify-between">
                     <Label className="text-lg font-semibold text-gray-700 flex items-center">
                       <Calendar className="h-5 w-5 mr-2 text-[#1A3B4C]" />
-                      Loan Tenure
+                      {currentConfig.tenureLabel}
                     </Label>
                     <span className="text-2xl font-bold text-[#1A3B4C]">
                       {loanTenure} Years
@@ -274,18 +426,16 @@ export default function EMICalculator() {
                   <div className="space-y-2">
                     <input
                       type="range"
-                      min="5"
-                      max="30"
-                      step="5"
+                      min={currentConfig.minTenure}
+                      max={currentConfig.maxTenure}
+                      step="1"
                       value={loanTenure}
                       onChange={(e) => setLoanTenure(parseInt(e.target.value))}
                       className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                     />
                     <div className="flex justify-between text-sm text-gray-500">
-                      <span>5Y</span>
-                      <span>10Y</span>
-                      <span>20Y</span>
-                      <span>30Y</span>
+                      <span>{currentConfig.minTenure}Y</span>
+                      <span>{currentConfig.maxTenure}Y</span>
                     </div>
                   </div>
                 </div>
@@ -299,6 +449,24 @@ export default function EMICalculator() {
                     <span className="text-2xl font-bold text-[#1A3B4C]">
                       {formatCurrency(loanAmount)}
                     </span>
+                  </div>
+                </div>
+
+                {/* Features Section */}
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-800 mb-3">
+                    Key Features
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {currentConfig.features.map((feature, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center text-sm text-gray-600"
+                      >
+                        <div className="w-2 h-2 bg-[#1A3B4C] rounded-full mr-2"></div>
+                        {feature}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </CardContent>
@@ -318,7 +486,7 @@ export default function EMICalculator() {
               <CardContent className="p-8 text-center">
                 <div className="space-y-6">
                   <div className="flex items-center justify-center space-x-3">
-                    <Calculator className="h-8 w-8" />
+                    <IconComponent className="h-8 w-8" />
                     <h3 className="text-2xl font-bold">Monthly EMI</h3>
                   </div>
                   <div className="text-5xl sm:text-6xl font-bold">
