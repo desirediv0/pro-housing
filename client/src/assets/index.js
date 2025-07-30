@@ -54,6 +54,8 @@ import logo33 from "./logos/33.webp";
 import logo34 from "./logos/34.webp";
 import logo35 from "./logos/35.webp";
 import logo36 from "./logos/36.webp";
+import logo37 from "./logos/37.jpeg";
+import logo38 from "./logos/38.jpeg";
 
 export {
   buildersfloor,
@@ -106,4 +108,6 @@ export {
   logo34,
   logo35,
   logo36,
+  logo37,
+  logo38,
 };
