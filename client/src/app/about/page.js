@@ -232,8 +232,8 @@ export default function AboutPage() {
                   property advice tailored to you.
                 </p>
                 <p>
-                  At <strong>Investor Home Solutions</strong>, every deal is
-                  built on transparency and guided by our core philosophy:{" "}
+                  At <strong>Pro Housing</strong>, every deal is built on
+                  transparency and guided by our core philosophy:{" "}
                   <strong>Honest Advice. Best Deal.</strong>
                 </p>
               </div>
