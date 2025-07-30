@@ -30,7 +30,7 @@ export default function AboutPage() {
     },
     {
       icon: Users,
-      number: "5000+",
+      number: "3000+",
       label: "Happy Clients",
     },
     {
@@ -197,6 +197,76 @@ export default function AboutPage() {
               Get In Touch
             </Button>
           </motion.div>
+        </div>
+      </motion.section>
+
+      {/* Why With Us Section */}
+      <motion.section
+        className="py-20 bg-white"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div className="text-center mb-16" variants={itemVariants}>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              WHY WITH US?
+            </h2>
+            <h3 className="text-2xl font-semibold text-[#1A3B4C] mb-6">
+              Pro Housing, Your Trusted Real Estate Partner
+            </h3>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div variants={itemVariants}>
+              <div className="space-y-6 text-gray-600 text-lg leading-relaxed">
+                <p>
+                  We believe that real estate business is about building trust,
+                  delivering value, and ensuring that every client finds the
+                  right property that truly meets their needs.
+                </p>
+                <p>
+                  With 15+ years of experience, deep market expertise, our
+                  commitment remains unwavering—honesty, integrity, and the best
+                  property advice tailored to you.
+                </p>
+                <p>
+                  At <strong>Investor Home Solutions</strong>, every deal is
+                  built on transparency and guided by our core philosophy:{" "}
+                  <strong>Honest Advice. Best Deal.</strong>
+                </p>
+              </div>
+              <div className="mt-8">
+                <Link href="/contact">
+                  <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                    Get Started Today
+                    <TrendingUp className="h-5 w-5 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="relative">
+              <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/main.jpg"
+                  alt="Pro Housing - Your Trusted Real Estate Partner"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-6 left-6 text-white">
+                  <h4 className="text-xl font-bold mb-2">
+                    Honest Advice. Best Deal.
+                  </h4>
+                  <p className="text-white/90">
+                    Your trusted partner in real estate
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </motion.section>
 

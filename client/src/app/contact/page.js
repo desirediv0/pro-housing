@@ -160,7 +160,7 @@ export default function ContactPage() {
     },
     {
       icon: Users,
-      title: "5000+ Happy Clients",
+      title: "3000+ Happy Clients",
       description: "Successfully helped thousands find homes",
     },
     {
