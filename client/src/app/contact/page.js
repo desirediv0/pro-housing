@@ -151,7 +151,7 @@ export default function ContactPage() {
     {
       icon: Shield,
       title: "Trusted Service",
-      description: "10+ years of excellence in real estate",
+      description: "9+ years of excellence in real estate",
     },
     {
       icon: Award,

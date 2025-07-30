@@ -40,7 +40,7 @@ export default function AboutPage() {
     },
     {
       icon: Award,
-      number: "15+",
+      number: "9+",
       label: "Years Experience",
     },
   ];
@@ -78,7 +78,7 @@ export default function AboutPage() {
       position: "CEO & Founder",
       image: "/user1.jpg",
       description:
-        "15+ years in real estate industry with expertise in luxury properties.",
+        "9+ years in real estate industry with expertise in luxury properties.",
       social: {
         linkedin: "#",
         twitter: "#",
@@ -89,7 +89,7 @@ export default function AboutPage() {
       position: "Head of Sales",
       image: "/user3.jpg",
       description:
-        "Expert in property valuation and market analysis with 12+ years experience.",
+        "Expert in property valuation and market analysis with 8+ years experience.",
       social: {
         linkedin: "#",
         twitter: "#",
@@ -227,7 +227,7 @@ export default function AboutPage() {
                   right property that truly meets their needs.
                 </p>
                 <p>
-                  With 15+ years of experience, deep market expertise, our
+                  With 9+ years of experience, deep market expertise, our
                   commitment remains unwavering—honesty, integrity, and the best
                   property advice tailored to you.
                 </p>
@@ -324,7 +324,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 text-gray-600 text-lg leading-relaxed">
                 <p>
-                  Founded in 2008, Pro Housing began with a simple vision: to
+                  Founded in 2016, Pro Housing began with a simple vision: to
                   make real estate transactions transparent, efficient, and
                   stress-free for everyone involved.
                 </p>
