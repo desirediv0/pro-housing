@@ -10,6 +10,11 @@ import {
 import { deleteFromS3 } from "../utils/deleteFromS3.js";
 import { updateAnalytics } from "./analytics.controller.js";
 import { createSlug } from "../helper/Slug.js";
+import {
+  parsePriceToNumber,
+  createPriceFilter,
+  isPriceGreaterThanOrEqual,
+} from "../utils/priceUtils.js";
 
 // Create Property
 export const createProperty = asyncHandler(async (req, res) => {
@@ -68,9 +73,31 @@ export const createProperty = asyncHandler(async (req, res) => {
     );
   }
 
-  // Validate price
-  if (price <= 0) {
-    throw new ApiError(400, "Price must be greater than 0");
+  // Validate price format (should be "amount unit" like "33 CR" or "50 LAKH")
+  if (!price || typeof price !== "string") {
+    throw new ApiError(
+      400,
+      "Price must be provided in format 'amount unit' (e.g., '33 CR', '50 LAKH')"
+    );
+  }
+
+  const priceParts = price.trim().split(" ");
+  if (priceParts.length !== 2) {
+    throw new ApiError(
+      400,
+      "Price must be in format 'amount unit' (e.g., '33 CR', '50 LAKH')"
+    );
+  }
+
+  const amount = parseFloat(priceParts[0]);
+  const unit = priceParts[1].toUpperCase();
+
+  if (isNaN(amount) || amount <= 0) {
+    throw new ApiError(400, "Price amount must be a valid positive number");
+  }
+
+  if (!["CR", "LAKH"].includes(unit)) {
+    throw new ApiError(400, "Price unit must be 'CR' (Crore) or 'LAKH'");
   }
 
   // Handle main image upload
@@ -100,7 +127,7 @@ export const createProperty = asyncHandler(async (req, res) => {
     title: title.trim(),
     slug,
     description: description.trim(),
-    price: parseFloat(price),
+    price: price.trim().toUpperCase(), // Store as "amount unit" format
     propertyType,
     listingType,
     address: address.trim(),
@@ -250,8 +277,7 @@ export const getAllProperties = asyncHandler(async (req, res) => {
     ...(listingType && { listingType: listingType.toUpperCase() }),
     ...(city && { city: { contains: city, mode: "insensitive" } }),
     ...(state && { state: { contains: state, mode: "insensitive" } }),
-    ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
-    ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
+    // Price filtering will be handled in application code since price is stored as string
     ...(bedrooms && { bedrooms: parseInt(bedrooms) }),
     ...(bathrooms && { bathrooms: parseInt(bathrooms) }),
     ...(furnished !== undefined && { furnished: furnished === "true" }),
@@ -260,30 +286,36 @@ export const getAllProperties = asyncHandler(async (req, res) => {
     ...(highlight && { highlight: highlight.toUpperCase() }),
   };
 
-  // Handle price range filter
-  if (minPrice && maxPrice) {
-    whereClause.price = {
-      gte: parseFloat(minPrice),
-      lte: parseFloat(maxPrice),
-    };
+  // Price filtering will be handled in application code since price is stored as string
+
+  let properties = await prisma.property.findMany({
+    where: whereClause,
+    include: {
+      images: { orderBy: { order: "asc" } },
+      videos: true,
+      _count: {
+        select: { inquiries: true },
+      },
+    },
+    orderBy: { [sortBy]: sortOrder },
+  });
+
+  // Apply price filtering in application code
+  if (minPrice || maxPrice) {
+    properties = properties.filter((property) => {
+      const propertyPrice = parsePriceToNumber(property.price);
+      const minPriceNum = minPrice ? parsePriceToNumber(minPrice) : 0;
+      const maxPriceNum = maxPrice ? parsePriceToNumber(maxPrice) : Infinity;
+
+      return propertyPrice >= minPriceNum && propertyPrice <= maxPriceNum;
+    });
   }
 
-  const [properties, total] = await Promise.all([
-    prisma.property.findMany({
-      where: whereClause,
-      include: {
-        images: { orderBy: { order: "asc" } },
-        videos: true,
-        _count: {
-          select: { inquiries: true },
-        },
-      },
-      skip,
-      take: validLimit,
-      orderBy: { [sortBy]: sortOrder },
-    }),
-    prisma.property.count({ where: whereClause }),
-  ]);
+  // Apply pagination after filtering
+  const total = properties.length;
+  const startIndex = skip;
+  const endIndex = skip + validLimit;
+  properties = properties.slice(startIndex, endIndex);
 
   res.status(200).json(
     new ApiResponsive(
@@ -397,7 +429,7 @@ export const updateProperty = asyncHandler(async (req, res) => {
   const updateData = {
     ...(title && { title: title.trim() }),
     ...(description && { description: description.trim() }),
-    ...(price && { price: parseFloat(price) }),
+    ...(price && { price: price.trim().toUpperCase() }), // Store as "amount unit" format
     ...(propertyType && { propertyType }),
     ...(listingType && { listingType }),
     ...(address && { address: address.trim() }),
@@ -1283,10 +1315,19 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
   // Handle price range filters
   if (price) {
     const priceRanges = {
-      "0-25": { gte: 0, lte: 2500000 },
-      "25-50": { gte: 2500000, lte: 5000000 },
-      "50-100": { gte: 5000000, lte: 10000000 },
-      "100+": { gte: 10000000 },
+      "0-25": {
+        gte: parsePriceToNumber("0 LAKH"),
+        lte: parsePriceToNumber("25 LAKH"),
+      },
+      "25-50": {
+        gte: parsePriceToNumber("25 LAKH"),
+        lte: parsePriceToNumber("50 LAKH"),
+      },
+      "50-100": {
+        gte: parsePriceToNumber("50 LAKH"),
+        lte: parsePriceToNumber("1 CR"),
+      },
+      "100+": { gte: parsePriceToNumber("1 CR") },
     };
 
     if (priceRanges[price]) {
@@ -1294,31 +1335,38 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
     }
   }
 
+  // Price filtering will be handled in application code since price is stored as string
+
+  let properties = await prisma.property.findMany({
+    where: whereClause,
+    include: {
+      images: {
+        orderBy: { order: "asc" },
+        take: 3, // Limit images for performance
+      },
+      _count: {
+        select: { inquiries: true },
+      },
+    },
+    orderBy: { [sortBy]: sortOrder },
+  });
+
+  // Apply price filtering in application code
   if (minPrice || maxPrice) {
-    whereClause.price = {
-      ...(minPrice && { gte: parseFloat(minPrice) }),
-      ...(maxPrice && { lte: parseFloat(maxPrice) }),
-    };
+    properties = properties.filter((property) => {
+      const propertyPrice = parsePriceToNumber(property.price);
+      const minPriceNum = minPrice ? parsePriceToNumber(minPrice) : 0;
+      const maxPriceNum = maxPrice ? parsePriceToNumber(maxPrice) : Infinity;
+
+      return propertyPrice >= minPriceNum && propertyPrice <= maxPriceNum;
+    });
   }
 
-  const [properties, total] = await Promise.all([
-    prisma.property.findMany({
-      where: whereClause,
-      include: {
-        images: {
-          orderBy: { order: "asc" },
-          take: 3, // Limit images for performance
-        },
-        _count: {
-          select: { inquiries: true },
-        },
-      },
-      skip,
-      take: validLimit,
-      orderBy: { [sortBy]: sortOrder },
-    }),
-    prisma.property.count({ where: whereClause }),
-  ]);
+  // Apply pagination after filtering
+  const total = properties.length;
+  const startIndex = skip;
+  const endIndex = skip + validLimit;
+  properties = properties.slice(startIndex, endIndex);
 
   // Add formatted data for frontend
   const formattedProperties = properties.map((property) => ({
@@ -1462,7 +1510,7 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
       OR: [
         { highlight: "PREMIUM" },
         { highlight: "FEATURED" },
-        { price: { gte: 5000000 } }, // High value properties for investment
+        // Price filtering will be handled in application code since price is stored as string
         { listingType: "LEASE" },
       ],
     };
@@ -1473,7 +1521,7 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
     };
   }
 
-  const properties = await prisma.property.findMany({
+  let properties = await prisma.property.findMany({
     where: whereClause,
     include: {
       images: {
@@ -1484,13 +1532,22 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
         select: { inquiries: true },
       },
     },
-    take: parseInt(limit),
     orderBy: [
       { highlight: "asc" }, // Featured properties first
       { views: "desc" }, // Popular properties
       { createdAt: "desc" }, // Latest properties
     ],
   });
+
+  // For invest category, filter properties with price >= 50 LAKH
+  if (category === "invest") {
+    properties = properties.filter((property) =>
+      isPriceGreaterThanOrEqual(property.price, "50 LAKH")
+    );
+  }
+
+  // Apply limit after filtering
+  properties = properties.slice(0, parseInt(limit));
 
   // Format properties for frontend
   const formattedProperties = properties.map((property) => ({
@@ -1552,17 +1609,27 @@ export const getPropertyCategoriesStats = asyncHandler(async (req, res) => {
   }
 
   // Investment properties count (high value properties)
-  const investmentCount = await prisma.property.count({
+  // Since price is stored as string, we need to handle this differently
+  const allProperties = await prisma.property.findMany({
     where: {
       isActive: true,
       OR: [
         { highlight: "PREMIUM" },
         { highlight: "FEATURED" },
-        { price: { gte: 5000000 } },
         { listingType: "LEASE" },
       ],
     },
+    select: {
+      price: true,
+    },
   });
+
+  // Filter properties with price >= 50 LAKH
+  const highValueProperties = allProperties.filter((property) =>
+    isPriceGreaterThanOrEqual(property.price, "50 LAKH")
+  );
+
+  const investmentCount = highValueProperties.length;
 
   stats.invest = investmentCount;
 

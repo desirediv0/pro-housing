@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import PropertyCard from "@/components/ui/PropertyCard";
@@ -72,31 +72,24 @@ export default function PropertyFeaturesManagement() {
   // Debounced filters for API calls
   const [debouncedFilters, setDebouncedFilters] = useState(filters);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [previousFilters, setPreviousFilters] = useState(null);
+  const previousFiltersRef = useRef(null);
 
   const fetchProperties = useCallback(
     async (filtersToUse = debouncedFilters) => {
       // Prevent unnecessary API calls if filters haven't changed
+      const filtersString = JSON.stringify(filtersToUse);
       if (
-        previousFilters &&
-        JSON.stringify(previousFilters) === JSON.stringify(filtersToUse)
+        previousFiltersRef.current &&
+        previousFiltersRef.current === filtersString
       ) {
-        console.log(
-          "Features page: Skipping API call - filters haven't changed"
-        );
         return;
       }
 
       try {
         setLoading(true);
-        console.log(
-          "Features page: Fetching properties with filters:",
-          filtersToUse
-        );
         const response = await adminAPI.getAllProperties(filtersToUse);
-        console.log("Features page: API response:", response);
         setProperties(response.data.data.properties || []);
-        setPreviousFilters(filtersToUse);
+        previousFiltersRef.current = filtersString;
       } catch (error) {
         console.error("Error fetching properties:", error);
         toast.error("Failed to load properties");
@@ -104,7 +97,7 @@ export default function PropertyFeaturesManagement() {
         setLoading(false);
       }
     },
-    [previousFilters]
+    []
   );
 
   const fetchStats = useCallback(async () => {
@@ -134,7 +127,7 @@ export default function PropertyFeaturesManagement() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilters(filters);
-    }, 500);
+    }, 300); // Reduced debounce time for better responsiveness
 
     return () => clearTimeout(timer);
   }, [filters]);
@@ -159,22 +152,31 @@ export default function PropertyFeaturesManagement() {
     }
   }, [debouncedFilters, isInitialLoad, fetchProperties]);
 
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-      page: 1, // Reset to first page when filtering
-    }));
-  };
+  const handleFilterChange = useCallback((key, value) => {
+    setFilters((prev) => {
+      const newFilters = {
+        ...prev,
+        [key]: value,
+        page: 1, // Reset to first page when filtering
+      };
 
-  const handleFiltersChange = (newFilters) => {
-    console.log("Features page: handleFiltersChange called with:", newFilters);
-    setFilters((prev) => ({
-      ...prev,
-      ...newFilters,
-      page: 1, // Reset to first page when filtering
-    }));
-  };
+      return newFilters;
+    });
+  }, []);
+
+  const handleFiltersChange = useCallback((newFilters) => {
+    // Don't override highlight filter from SearchFilter
+    const { highlight, ...otherFilters } = newFilters;
+    setFilters((prev) => {
+      const updatedFilters = {
+        ...prev,
+        ...otherFilters,
+        page: 1, // Reset to first page when filtering
+      };
+
+      return updatedFilters;
+    });
+  }, []);
 
   const handleSelectProperty = (propertyId) => {
     setSelectedProperties((prev) =>
@@ -206,6 +208,8 @@ export default function PropertyFeaturesManagement() {
           : `${selectedProperties.length} properties highlight removed`
       );
       setSelectedProperties([]);
+      // Reset the previous filters ref to force a fresh fetch
+      previousFiltersRef.current = null;
       fetchProperties(debouncedFilters);
       fetchStats();
     } catch (error) {
@@ -217,9 +221,13 @@ export default function PropertyFeaturesManagement() {
   const StatCard = ({ title, count, icon: Icon, color, highlight }) => (
     <Card
       className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-        filters.highlight === highlight ? "ring-2 ring-indigo-500" : ""
+        filters.highlight === highlight
+          ? "ring-2 ring-indigo-500 bg-indigo-50"
+          : ""
       }`}
-      onClick={() => handleFilterChange("highlight", highlight)}
+      onClick={() => {
+        handleFilterChange("highlight", highlight);
+      }}
     >
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
@@ -247,6 +255,7 @@ export default function PropertyFeaturesManagement() {
         </div>
         <Button
           onClick={() => {
+            previousFiltersRef.current = null; // Reset to force refresh
             fetchProperties(debouncedFilters);
             fetchStats();
           }}
@@ -322,7 +331,7 @@ export default function PropertyFeaturesManagement() {
                 { value: "RENTED", label: "Rented" },
               ]}
               serviceTypeOptions={highlights.filter((h) => h.value !== "")}
-              highlightOptions={highlights.filter((h) => h.value !== "")}
+              highlightOptions={[]} // Disable highlight filter in SearchFilter
             />
 
             {/* Bulk Actions */}

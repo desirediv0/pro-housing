@@ -186,12 +186,28 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
+    // Handle price in "amount unit" format like "33 CR" or "50 LAKH"
+    if (typeof price === "string" && price.includes(" ")) {
+      const parts = price.split(" ");
+      const amount = parseFloat(parts[0]);
+      const unit = parts[1];
+
+      if (!isNaN(amount)) {
+        return `₹${amount.toFixed(2)} ${unit === "CR" ? "Cr" : "Lakh"}`;
+      }
+    }
+
+    // Fallback for old numeric format
+    if (typeof price === "number") {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(price);
+    }
+
+    return `₹${price}`;
   };
 
   const formatDate = (date) => {

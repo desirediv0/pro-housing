@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, Select } from "@/components/ui/form";
 import ImageUpload from "@/components/ui/image-upload";
+import PriceInput from "@/components/ui/price-input";
 import {
   ArrowLeft,
   Save,
@@ -26,7 +27,6 @@ import {
   Building,
   Eye,
   Loader2,
-  IndianRupee,
 } from "lucide-react";
 import { adminAPI } from "@/utils/adminAPI";
 import Link from "next/link";
@@ -615,26 +615,13 @@ export default function EditProperty() {
               </div>
 
               <div>
-                <Label
-                  htmlFor="price"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Price (₹) *
-                </Label>
-
-                <div className="relative mt-1">
-                  <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={handleChange}
-                    placeholder="5000000"
-                    className="pl-10"
-                    required
-                  />
-                </div>
+                <PriceInput
+                  value={formData.price}
+                  onChange={handleChange}
+                  label="Price (₹)"
+                  required={true}
+                  placeholder="Enter property price"
+                />
               </div>
 
               <div>

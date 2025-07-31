@@ -30,7 +30,7 @@ model Property {
   title       String
   slug        String @unique
   description String
-  price       Float
+  price       String // Format: "amount unit" e.g., "33 CR", "50 LAKH"
 
   // Property details
   propertyType PropertyType
