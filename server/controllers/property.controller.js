@@ -1312,30 +1312,33 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
     ...(parking !== undefined && { parking: parking === "true" }),
   };
 
-  // Handle price range filters
+  // Price filtering will be handled in application code since price is stored as string
+  // We'll store the price range for later filtering
+  let priceRangeFilter = null;
   if (price) {
     const priceRanges = {
       "0-25": {
-        gte: parsePriceToNumber("0 LAKH"),
-        lte: parsePriceToNumber("25 LAKH"),
+        min: parsePriceToNumber("0 LAKH"),
+        max: parsePriceToNumber("25 LAKH"),
       },
       "25-50": {
-        gte: parsePriceToNumber("25 LAKH"),
-        lte: parsePriceToNumber("50 LAKH"),
+        min: parsePriceToNumber("25 LAKH"),
+        max: parsePriceToNumber("50 LAKH"),
       },
       "50-100": {
-        gte: parsePriceToNumber("50 LAKH"),
-        lte: parsePriceToNumber("1 CR"),
+        min: parsePriceToNumber("50 LAKH"),
+        max: parsePriceToNumber("1 CR"),
       },
-      "100+": { gte: parsePriceToNumber("1 CR") },
+      "100+": {
+        min: parsePriceToNumber("1 CR"),
+        max: Infinity,
+      },
     };
 
     if (priceRanges[price]) {
-      whereClause.price = priceRanges[price];
+      priceRangeFilter = priceRanges[price];
     }
   }
-
-  // Price filtering will be handled in application code since price is stored as string
 
   let properties = await prisma.property.findMany({
     where: whereClause,
@@ -1352,6 +1355,16 @@ export const getPublicProperties = asyncHandler(async (req, res) => {
   });
 
   // Apply price filtering in application code
+  if (priceRangeFilter) {
+    properties = properties.filter((property) => {
+      const propertyPrice = parsePriceToNumber(property.price);
+      return (
+        propertyPrice >= priceRangeFilter.min &&
+        propertyPrice <= priceRangeFilter.max
+      );
+    });
+  }
+
   if (minPrice || maxPrice) {
     properties = properties.filter((property) => {
       const propertyPrice = parsePriceToNumber(property.price);
