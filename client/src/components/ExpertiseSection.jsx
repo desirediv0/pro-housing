@@ -2,18 +2,15 @@
 
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { Input, Label, Textarea, Select } from "./ui/form";
+import { Input, Label, Textarea } from "./ui/form";
 import {
   X,
   Scale,
-  Clipboard,
   Search,
   Home,
   ArrowUpRight,
   Calculator,
   FileText,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { publicAPI } from "@/lib/api-functions";
 

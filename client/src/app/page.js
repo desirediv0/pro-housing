@@ -1130,9 +1130,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Expertise Section */}
-      <ExpertiseSection />
-
       {/* Housing Edge Services Section */}
       <div className="py-10 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1492,6 +1489,9 @@ export default function HomePage() {
         </div>
       </div>
       <LogoSlider />
+
+      {/* Expertise Section */}
+      <ExpertiseSection />
 
       {/* Property Categories Carousel Section */}
       <div className="py-24 bg-gray-50">
