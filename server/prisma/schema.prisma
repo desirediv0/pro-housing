@@ -292,6 +292,7 @@ enum PropertyType {
   SCHOOL
   PG
   HOSTEL
+  BUILDER_FLOOR
 }
 
 enum ListingType {
