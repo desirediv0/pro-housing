@@ -1261,9 +1261,9 @@ export default function HomePage() {
           </div>
 
           {/* LOGO LOOPS */}
-          <LogoSlider />
         </div>
       </div>
+      <LogoSlider />
 
       {/* Premium Featured Properties Section */}
       <div className="py-24 bg-white">

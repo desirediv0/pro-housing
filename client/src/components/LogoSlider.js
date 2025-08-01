@@ -88,7 +88,7 @@ export default function LogoSlider() {
   const allLogos = [...logos, ...logos, ...logos, ...logos, ...logos];
 
   return (
-    <div className="overflow-hidden py-8 bg-white">
+    <div className="overflow-hidden py-8 bg-[#2a4b5c24]">
       <div className="text-center mb-8">
         <h3 className="text-3xl sm:text-4xl font-bold text-[#1A3B4C] mb-3">
           Trusted Developers
