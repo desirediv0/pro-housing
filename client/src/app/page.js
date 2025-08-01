@@ -902,6 +902,234 @@ export default function HomePage() {
         </button>
       </div>
 
+      {/* Premium Featured Properties Section */}
+      <div className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-16">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-bold font-display text-gray-800 mb-4">
+                Featured Properties
+              </h2>
+              <p className="text-xl text-gray-600">
+                Handpicked premium properties just for you
+              </p>
+            </div>
+            <Link href="/properties">
+              <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0">
+                View All Properties
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="relative">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <CarouselItem
+                      key={i}
+                      className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                    >
+                      <Card className="animate-pulse border-0 shadow-lg">
+                        <div className="h-64 bg-gray-200 rounded-t-xl"></div>
+                        <CardContent className="p-6">
+                          <div className="h-6 bg-gray-200 rounded mb-3"></div>
+                          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex" />
+                <CarouselNext className="hidden md:flex" />
+              </Carousel>
+            </div>
+          ) : featuredProperties.length > 0 ? (
+            <div className="relative">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {featuredProperties.map((property) => (
+                    <CarouselItem
+                      key={property.id}
+                      className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                    >
+                      <div className="group">
+                        <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden">
+                          <div className="relative">
+                            <div className="aspect-video relative overflow-hidden">
+                              <Image
+                                src={
+                                  property.mainImage ||
+                                  property.images?.[0]?.url ||
+                                  "/placeholder-property.jpg" ||
+                                  "/placeholder.svg"
+                                }
+                                alt={property.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                width={400}
+                                height={400}
+                              />
+                              {/* Highlight Badge */}
+                              {property.highlight && (
+                                <div
+                                  className={`absolute top-4 left-4 px-3 py-1 text-xs font-bold text-white rounded-full ${getHighlightColor(
+                                    property.highlight
+                                  )}`}
+                                >
+                                  {property.highlight}
+                                </div>
+                              )}
+                              {/* Status Badge */}
+                              <div
+                                className={`absolute top-4 right-4 px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+                                  property.status
+                                )}`}
+                              >
+                                {property.status?.replace("_", " ")}
+                              </div>
+                            </div>
+                          </div>
+
+                          <CardContent className="p-6">
+                            <div className="space-y-4">
+                              {/* Title and Location */}
+                              <div>
+                                <Link
+                                  href={`/properties/${
+                                    property.slug || property.id
+                                  }`}
+                                >
+                                  <h3 className="text-xl font-bold font-display text-gray-800 line-clamp-2 group-hover:text-[#1A3B4C] transition-colors duration-300 cursor-pointer">
+                                    {property.title}
+                                  </h3>
+                                </Link>
+                                <div className="flex items-center text-sm text-gray-600 mt-2">
+                                  <MapPin className="h-4 w-4 mr-1" />
+                                  <span className="line-clamp-1">
+                                    {property.location ||
+                                      `${
+                                        property.locality
+                                          ? property.locality + ", "
+                                          : ""
+                                      }${property.city}, ${property.state}`}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Features */}
+                              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                {property.bedrooms && (
+                                  <div className="flex items-center">
+                                    <Bed className="h-4 w-4 mr-1" />
+                                    <span>{property.bedrooms} Bed</span>
+                                  </div>
+                                )}
+                                {property.bathrooms && (
+                                  <div className="flex items-center">
+                                    <Bath className="h-4 w-4 mr-1" />
+                                    <span>{property.bathrooms} Bath</span>
+                                  </div>
+                                )}
+                                {property.area && (
+                                  <div className="flex items-center">
+                                    <Square className="h-4 w-4 mr-1" />
+                                    <SimpleAreaDisplay
+                                      value={property.area}
+                                      unit="sq_feet"
+                                      className="text-sm text-gray-600"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Price and Actions */}
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="text-2xl font-bold text-[#1A3B4C]">
+                                    {formatPrice(property.price)}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    {property.listingType === "SALE"
+                                      ? "For Sale"
+                                      : property.listingType === "RENT"
+                                      ? "For Rent"
+                                      : "For Lease"}
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xs text-gray-600">
+                                    {property.propertyType}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex space-x-2">
+                                {/* Call Button - Show number from sidebar content if available */}
+                                <Link
+                                  href={`/properties/${
+                                    property.slug || property.id
+                                  }`}
+                                  className="flex-1"
+                                >
+                                  <Button
+                                    size="sm"
+                                    className="w-full bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] hover:shadow-lg text-white"
+                                  >
+                                    <Calendar className="h-4 w-4 mr-1" />
+                                    Visit
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex" />
+                <CarouselNext className="hidden md:flex" />
+              </Carousel>
+            </div>
+          ) : (
+            <div>
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-16 text-center">
+                  <div className="w-24 h-24 bg-[#1A3B4C]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Building className="h-12 w-12 text-[#1A3B4C]" />
+                  </div>
+                  <h3 className="text-2xl font-bold font-display text-gray-800 mb-4">
+                    No Featured Properties Available
+                  </h3>
+                  <p className="text-gray-600 mb-8">
+                    Check back soon for amazing property listings!
+                  </p>
+                  <Link href="/properties">
+                    <Button className="bg-gradient-to-r  from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl  font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                      Browse All Properties
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Expertise Section */}
       <ExpertiseSection />
 
@@ -1264,234 +1492,6 @@ export default function HomePage() {
         </div>
       </div>
       <LogoSlider />
-
-      {/* Premium Featured Properties Section */}
-      <div className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-16">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-bold font-display text-gray-800 mb-4">
-                Featured Properties
-              </h2>
-              <p className="text-xl text-gray-600">
-                Handpicked premium properties just for you
-              </p>
-            </div>
-            <Link href="/properties">
-              <Button className="bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 mt-6 md:mt-0">
-                View All Properties
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="relative">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-2 md:-ml-4">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <CarouselItem
-                      key={i}
-                      className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
-                    >
-                      <Card className="animate-pulse border-0 shadow-lg">
-                        <div className="h-64 bg-gray-200 rounded-t-xl"></div>
-                        <CardContent className="p-6">
-                          <div className="h-6 bg-gray-200 rounded mb-3"></div>
-                          <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                        </CardContent>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden md:flex" />
-                <CarouselNext className="hidden md:flex" />
-              </Carousel>
-            </div>
-          ) : featuredProperties.length > 0 ? (
-            <div className="relative">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-2 md:-ml-4">
-                  {featuredProperties.slice(0, 6).map((property, index) => (
-                    <CarouselItem
-                      key={property.id}
-                      className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
-                    >
-                      <div className="group">
-                        <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden">
-                          <div className="relative">
-                            <div className="aspect-video relative overflow-hidden">
-                              <Image
-                                src={
-                                  property.mainImage ||
-                                  property.images?.[0]?.url ||
-                                  "/placeholder-property.jpg" ||
-                                  "/placeholder.svg"
-                                }
-                                alt={property.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                width={400}
-                                height={400}
-                              />
-                              {/* Highlight Badge */}
-                              {property.highlight && (
-                                <div
-                                  className={`absolute top-4 left-4 px-3 py-1 text-xs font-bold text-white rounded-full ${getHighlightColor(
-                                    property.highlight
-                                  )}`}
-                                >
-                                  {property.highlight}
-                                </div>
-                              )}
-                              {/* Status Badge */}
-                              <div
-                                className={`absolute top-4 right-4 px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(
-                                  property.status
-                                )}`}
-                              >
-                                {property.status?.replace("_", " ")}
-                              </div>
-                            </div>
-                          </div>
-
-                          <CardContent className="p-6">
-                            <div className="space-y-4">
-                              {/* Title and Location */}
-                              <div>
-                                <Link
-                                  href={`/properties/${
-                                    property.slug || property.id
-                                  }`}
-                                >
-                                  <h3 className="text-xl font-bold font-display text-gray-800 line-clamp-2 group-hover:text-[#1A3B4C] transition-colors duration-300 cursor-pointer">
-                                    {property.title}
-                                  </h3>
-                                </Link>
-                                <div className="flex items-center text-sm text-gray-600 mt-2">
-                                  <MapPin className="h-4 w-4 mr-1" />
-                                  <span className="line-clamp-1">
-                                    {property.location ||
-                                      `${
-                                        property.locality
-                                          ? property.locality + ", "
-                                          : ""
-                                      }${property.city}, ${property.state}`}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Features */}
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                {property.bedrooms && (
-                                  <div className="flex items-center">
-                                    <Bed className="h-4 w-4 mr-1" />
-                                    <span>{property.bedrooms} Bed</span>
-                                  </div>
-                                )}
-                                {property.bathrooms && (
-                                  <div className="flex items-center">
-                                    <Bath className="h-4 w-4 mr-1" />
-                                    <span>{property.bathrooms} Bath</span>
-                                  </div>
-                                )}
-                                {property.area && (
-                                  <div className="flex items-center">
-                                    <Square className="h-4 w-4 mr-1" />
-                                    <SimpleAreaDisplay
-                                      value={property.area}
-                                      unit="sq_feet"
-                                      className="text-sm text-gray-600"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Price and Actions */}
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <div className="text-2xl font-bold text-[#1A3B4C]">
-                                    {formatPrice(property.price)}
-                                  </div>
-                                  <div className="text-sm text-gray-600">
-                                    {property.listingType === "SALE"
-                                      ? "For Sale"
-                                      : property.listingType === "RENT"
-                                      ? "For Rent"
-                                      : "For Lease"}
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xs text-gray-600">
-                                    {property.propertyType}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className="flex space-x-2">
-                                {/* Call Button - Show number from sidebar content if available */}
-                                <Link
-                                  href={`/properties/${
-                                    property.slug || property.id
-                                  }`}
-                                  className="flex-1"
-                                >
-                                  <Button
-                                    size="sm"
-                                    className="w-full bg-gradient-to-r from-[#1A3B4C] to-[#2A4B5C] hover:shadow-lg text-white"
-                                  >
-                                    <Calendar className="h-4 w-4 mr-1" />
-                                    Visit
-                                  </Button>
-                                </Link>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden md:flex" />
-                <CarouselNext className="hidden md:flex" />
-              </Carousel>
-            </div>
-          ) : (
-            <div>
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-16 text-center">
-                  <div className="w-24 h-24 bg-[#1A3B4C]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Building className="h-12 w-12 text-[#1A3B4C]" />
-                  </div>
-                  <h3 className="text-2xl font-bold font-display text-gray-800 mb-4">
-                    No Featured Properties Available
-                  </h3>
-                  <p className="text-gray-600 mb-8">
-                    Check back soon for amazing property listings!
-                  </p>
-                  <Link href="/properties">
-                    <Button className="bg-gradient-to-r  from-[#1A3B4C] to-[#2A4B5C] text-white px-8 py-3 rounded-xl  font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                      Browse All Properties
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Property Categories Carousel Section */}
       <div className="py-24 bg-gray-50">
