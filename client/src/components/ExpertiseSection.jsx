@@ -96,11 +96,8 @@ const ExpertiseSection = () => {
         serviceType: serviceType.charAt(0).toUpperCase() + serviceType.slice(1),
       };
 
-      console.log("Submitting data:", submitData);
-
       // Send to backend
       const response = await publicAPI.submitExpertiseInquiry(submitData);
-      console.log("API Response:", response);
 
       const result = response.data;
 
@@ -321,7 +318,7 @@ const ExpertiseSection = () => {
 
   return (
     <div className="py-16 bg-white">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Section Title */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
