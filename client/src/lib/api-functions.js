@@ -27,7 +27,8 @@ export const adminAPI = {
   // Analytics
   getDashboardStats: () => apiClient.get("/analytics/dashboard"),
   getAnalyticsData: (params) => apiClient.get("/analytics/data", { params }),
-  getPropertyAnalytics: (params) => apiClient.get("/analytics/properties", { params }),
+  getPropertyAnalytics: (params) =>
+    apiClient.get("/analytics/properties", { params }),
   exportAnalytics: (params) => apiClient.get("/analytics/export", { params }),
   getRecentActivities: (limit = 10) =>
     apiClient.get(`/analytics/recent-activities?limit=${limit}`),
