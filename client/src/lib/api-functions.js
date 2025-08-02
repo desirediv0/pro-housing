@@ -26,21 +26,23 @@ export const adminAPI = {
 
   // Analytics
   getDashboardStats: () => apiClient.get("/analytics/dashboard"),
+  getAnalyticsData: (params) => apiClient.get("/analytics/data", { params }),
+  getPropertyAnalytics: (params) => apiClient.get("/analytics/properties", { params }),
+  exportAnalytics: (params) => apiClient.get("/analytics/export", { params }),
   getRecentActivities: (limit = 10) =>
     apiClient.get(`/analytics/recent-activities?limit=${limit}`),
-  getPropertyAnalytics: (id) => apiClient.get(`/analytics/property/${id}`),
-  exportAnalytics: (format) =>
-    apiClient.get(`/analytics/export?format=${format}`),
 
   // Inquiries
   getAllInquiries: (params) => apiClient.get("/inquiries", { params }),
+  getInquiryById: (id) => apiClient.get(`/inquiries/${id}`),
   updateInquiryStatus: (id, status) =>
-    apiClient.put(`/inquiries/${id}`, { status }),
+    apiClient.patch(`/inquiries/${id}/status`, { status }),
   respondToInquiry: (id, response) =>
     apiClient.post(`/inquiries/${id}/respond`, { response }),
   deleteInquiry: (id) => apiClient.delete(`/inquiries/${id}`),
-  bulkUpdateInquiries: (ids, action) =>
-    apiClient.post("/inquiries/bulk", { ids, action }),
+  bulkUpdateInquiries: (inquiryIds, data) =>
+    apiClient.patch("/inquiries/bulk", { inquiryIds, ...data }),
+  getInquiryStats: (params) => apiClient.get("/inquiries/stats", { params }),
 
   // Expertise Inquiries
   getAllExpertiseInquiries: (params) => apiClient.get("/expertise", { params }),

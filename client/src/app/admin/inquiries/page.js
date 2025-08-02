@@ -38,7 +38,7 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
-import { adminAPI } from "@/utils/adminAPI";
+import { adminAPI } from "@/lib/api-functions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -88,8 +88,11 @@ export default function AdminInquiries() {
       setLoading(true);
       const response = await adminAPI.getAllInquiries(filters);
 
-      if (response.success && response.data) {
-        const { inquiries, pagination, statusStats } = response.data;
+      // Handle both direct response and nested response structure
+      const responseData = response.data || response;
+
+      if (responseData.success && responseData.data) {
+        const { inquiries, pagination, statusStats } = responseData.data;
 
         // Set inquiries
         setInquiries(inquiries || []);
@@ -113,7 +116,7 @@ export default function AdminInquiries() {
           SPAM: statusStats?.SPAM || 0,
         });
       } else {
-        throw new Error(response.message || "Failed to fetch inquiries");
+        throw new Error(responseData.message || "Failed to fetch inquiries");
       }
     } catch (error) {
       console.error("Error fetching inquiries:", error);
@@ -164,7 +167,10 @@ export default function AdminInquiries() {
       const response = await adminAPI.updateInquiryStatus(inquiryId, newStatus);
       console.log("Status update response:", response);
 
-      if (response.success) {
+      // Handle both direct response and nested response structure
+      const responseData = response.data || response;
+
+      if (responseData.success) {
         toast.success("Inquiry status updated successfully", {
           icon: "✅",
           style: {
@@ -186,7 +192,7 @@ export default function AdminInquiries() {
         // Also refresh data to get latest from server
         fetchInquiries();
       } else {
-        throw new Error(response.message || "Failed to update status");
+        throw new Error(responseData.message || "Failed to update status");
       }
     } catch (error) {
       console.error("Error updating inquiry status:", error);
@@ -220,7 +226,10 @@ export default function AdminInquiries() {
       );
       console.log("Response send result:", response);
 
-      if (response.success) {
+      // Handle both direct response and nested response structure
+      const responseData = response.data || response;
+
+      if (responseData.success) {
         setSelectedInquiry(null);
         setResponseText("");
 
@@ -250,7 +259,7 @@ export default function AdminInquiries() {
         // Also refresh data to get latest from server
         fetchInquiries();
       } else {
-        throw new Error(response.message || "Failed to send response");
+        throw new Error(responseData.message || "Failed to send response");
       }
     } catch (error) {
       console.error("Error sending response:", error);
@@ -298,11 +307,34 @@ export default function AdminInquiries() {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(price);
+    // If price is already a formatted string (like "150.85 CR"), return it as is
+    if (
+      typeof price === "string" &&
+      (price.includes("CR") || price.includes("L") || price.includes("K"))
+    ) {
+      return `₹${price}`;
+    }
+
+    // If price is a number, format it
+    if (typeof price === "number") {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(price);
+    }
+
+    // If price is a string number, convert and format
+    if (typeof price === "string" && !isNaN(parseFloat(price))) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(parseFloat(price));
+    }
+
+    // Default fallback
+    return price || "Price N/A";
   };
 
   const formatDate = (dateString) => {

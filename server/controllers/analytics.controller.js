@@ -411,7 +411,6 @@ const getPropertyAnalytics = async (req, res) => {
       by: ["propertyType"],
       _count: { id: true },
       _sum: { views: true, clicks: true },
-      _avg: { price: true },
       where: {
         createdAt: { gte: startDate },
       },
@@ -422,7 +421,6 @@ const getPropertyAnalytics = async (req, res) => {
       by: ["listingType"],
       _count: { id: true },
       _sum: { views: true, clicks: true },
-      _avg: { price: true },
       where: {
         createdAt: { gte: startDate },
       },

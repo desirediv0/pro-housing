@@ -49,54 +49,58 @@ export default function AdminAnalytics() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      // Fetch properties data for analytics
-      const propertiesResponse = await adminAPI.getAllProperties({
-        limit: 1000,
-      });
-      const properties = propertiesResponse.data.data.properties || [];
 
-      // Calculate analytics
-      const totalProperties = properties.length;
-      const totalViews = properties.reduce((sum, p) => sum + (p.views || 0), 0);
-      const totalClicks = properties.reduce(
-        (sum, p) => sum + (p.clicks || 0),
-        0
-      );
-      const availableProperties = properties.filter(
-        (p) => p.status === "AVAILABLE"
-      ).length;
-      const soldProperties = properties.filter(
-        (p) => p.status === "SOLD"
-      ).length;
-      const rentedProperties = properties.filter(
-        (p) => p.status === "RENTED"
-      ).length;
+      // Fetch dashboard stats
+      try {
+        const dashboardResponse = await adminAPI.getDashboardStats();
+        console.log("Dashboard response:", dashboardResponse);
 
-      // Top properties by views
-      const topProperties = properties
-        .sort((a, b) => (b.views || 0) - (a.views || 0))
-        .slice(0, 5);
+        // Handle both direct response and nested response structure
+        const dashboardData = dashboardResponse.data || dashboardResponse;
 
-      // Recent properties
-      const recentProperties = properties
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5);
+        if (dashboardData.success && dashboardData.data) {
+          const data = dashboardData.data;
 
-      setAnalytics({
-        totalProperties,
-        totalViews,
-        totalInquiries: 0, // This would come from inquiries API
-        totalClicks,
-        availableProperties,
-        soldProperties,
-        rentedProperties,
-        topProperties,
-        recentProperties,
-        inquiriesStats: {},
-        monthlyStats: [],
-      });
+          setAnalytics((prev) => ({
+            ...prev,
+            totalProperties: data.overview?.totalProperties || 0,
+            totalViews: data.overview?.todayViews || 0,
+            totalInquiries: data.overview?.totalInquiries || 0,
+            totalClicks: 0, // This would come from analytics data
+            availableProperties: data.overview?.availableProperties || 0,
+            soldProperties: data.overview?.soldProperties || 0,
+            rentedProperties: data.overview?.rentedProperties || 0,
+          }));
+        }
+      } catch (dashboardError) {
+        console.error("Error fetching dashboard stats:", dashboardError);
+        // Don't show toast for dashboard error, just log it
+      }
+
+      // Fetch property analytics for top properties
+      try {
+        const propertyAnalyticsResponse = await adminAPI.getPropertyAnalytics();
+        console.log("Property analytics response:", propertyAnalyticsResponse);
+
+        // Handle both direct response and nested response structure
+        const propertyData =
+          propertyAnalyticsResponse.data || propertyAnalyticsResponse;
+
+        if (propertyData.success && propertyData.data) {
+          const data = propertyData.data;
+
+          setAnalytics((prev) => ({
+            ...prev,
+            topProperties: data.topViewedProperties || [],
+            recentProperties: data.topViewedProperties?.slice(0, 5) || [],
+          }));
+        }
+      } catch (propertyError) {
+        console.error("Error fetching property analytics:", propertyError);
+        // Don't show toast for property analytics error, just log it
+      }
     } catch (error) {
-      console.error("Error fetching analytics:", error);
+      console.error("Error in fetchAnalytics:", error);
       toast.error("Failed to load analytics data", {
         icon: "📊",
         style: {
@@ -111,11 +115,34 @@ export default function AdminAnalytics() {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(price);
+    // If price is already a formatted string (like "150.85 CR"), return it as is
+    if (
+      typeof price === "string" &&
+      (price.includes("CR") || price.includes("L") || price.includes("K"))
+    ) {
+      return `₹${price}`;
+    }
+
+    // If price is a number, format it
+    if (typeof price === "number") {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(price);
+    }
+
+    // If price is a string number, convert and format
+    if (typeof price === "string" && !isNaN(parseFloat(price))) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(parseFloat(price));
+    }
+
+    // Default fallback
+    return price || "Price N/A";
   };
 
   const StatCard = ({
@@ -125,79 +152,105 @@ export default function AdminAnalytics() {
     trend,
     trendValue,
     color = "blue",
-  }) => (
-    <Card
-      className={`bg-gradient-to-r from-${color}-50 to-${color}-100 border-0 shadow-lg hover:shadow-xl transition-all duration-200`}
-    >
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">{title}</p>
-            <p className={`text-3xl font-bold text-${color}-600`}>{value}</p>
-            {trend && (
-              <div
-                className={`flex items-center mt-2 text-sm ${
-                  trend === "up" ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {trend === "up" ? (
-                  <ArrowUpRight className="h-4 w-4 mr-1" />
-                ) : (
-                  <ArrowDownRight className="h-4 w-4 mr-1" />
-                )}
-                <span>{trendValue}% vs last month</span>
-              </div>
-            )}
-          </div>
-          <Icon className={`h-12 w-12 text-${color}-600`} />
-        </div>
-      </CardContent>
-    </Card>
-  );
+  }) => {
+    const colorClasses = {
+      blue: "from-blue-50 to-blue-100 text-blue-600",
+      green: "from-green-50 to-green-100 text-green-600",
+      purple: "from-purple-50 to-purple-100 text-purple-600",
+      orange: "from-orange-50 to-orange-100 text-orange-600",
+      red: "from-red-50 to-red-100 text-red-600",
+      yellow: "from-yellow-50 to-yellow-100 text-yellow-600",
+    };
 
-  const PropertyCard = ({ property, rank }) => (
-    <div className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
-      <div
-        className={`w-8 h-8 rounded-full bg-gradient-to-r ${
-          rank === 1
-            ? "from-yellow-400 to-yellow-600"
-            : rank === 2
-            ? "from-gray-300 to-gray-500"
-            : rank === 3
-            ? "from-amber-600 to-amber-800"
-            : "from-blue-400 to-blue-600"
-        } flex items-center justify-center text-white font-bold text-sm`}
+    const bgClass =
+      colorClasses[color]?.split(" ")[0] +
+        " " +
+        colorClasses[color]?.split(" ")[1] || "from-blue-50 to-blue-100";
+    const textClass = colorClasses[color]?.split(" ")[2] || "text-blue-600";
+
+    return (
+      <Card
+        className={`bg-gradient-to-r ${bgClass} border-0 shadow-lg hover:shadow-xl transition-all duration-200`}
       >
-        {rank}
-      </div>
-      <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
-        <Image
-          src={property.mainImage || "/placeholder-property.jpg"}
-          alt={property.title}
-          className="w-full h-full object-cover"
-          width={64}
-          height={64}
-        />
-      </div>
-      <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-gray-900 truncate">
-          {property.title}
-        </h4>
-        <p className="text-xs text-gray-500 truncate">
-          {property.city}, {property.state}
-        </p>
-        <div className="flex items-center space-x-3 mt-1">
-          <div className="flex items-center text-xs text-gray-600">
-            <Eye className="h-3 w-3 mr-1" />
-            {property.views || 0} views
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">{title}</p>
+              <p className={`text-3xl font-bold ${textClass}`}>{value}</p>
+              {trend && (
+                <div
+                  className={`flex items-center mt-2 text-sm ${
+                    trend === "up" ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {trend === "up" ? (
+                    <ArrowUpRight className="h-4 w-4 mr-1" />
+                  ) : (
+                    <ArrowDownRight className="h-4 w-4 mr-1" />
+                  )}
+                  <span>{trendValue}% vs last month</span>
+                </div>
+              )}
+            </div>
+            <Icon className={`h-12 w-12 ${textClass}`} />
           </div>
-          <div className="text-xs font-medium text-indigo-600">
-            {formatPrice(property.price)}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const PropertyCard = ({ property, rank }) => {
+    const getRankColor = (rank) => {
+      switch (rank) {
+        case 1:
+          return "from-yellow-400 to-yellow-600";
+        case 2:
+          return "from-gray-300 to-gray-500";
+        case 3:
+          return "from-amber-600 to-amber-800";
+        default:
+          return "from-blue-400 to-blue-600";
+      }
+    };
+
+    return (
+      <div className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow">
+        <div
+          className={`w-8 h-8 rounded-full bg-gradient-to-r ${getRankColor(
+            rank
+          )} flex items-center justify-center text-white font-bold text-sm`}
+        >
+          {rank}
+        </div>
+        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200">
+          <Image
+            src={property.mainImage || "/placeholder-property.jpg"}
+            alt={property.title}
+            className="w-full h-full object-cover"
+            width={64}
+            height={64}
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-semibold text-gray-900 truncate">
+            {property.title}
+          </h4>
+          <p className="text-xs text-gray-500 truncate">
+            {property.city}, {property.state}
+          </p>
+          <div className="flex items-center space-x-3 mt-1">
+            <div className="flex items-center text-xs text-gray-600">
+              <Eye className="h-3 w-3 mr-1" />
+              {property.views || 0} views
+            </div>
+            <div className="text-xs font-medium text-indigo-600">
+              {formatPrice(property.price)}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -212,7 +265,10 @@ export default function AdminAnalytics() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Select value={dateRange} onValueChange={setDateRange}>
+          <Select
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value)}
+          >
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
             <option value="90">Last 3 months</option>
