@@ -73,31 +73,58 @@ export const createProperty = asyncHandler(async (req, res) => {
     );
   }
 
-  // Validate price format (should be "amount unit" like "33 CR" or "50 LAKH")
+  // Validate price format (supports both single price and price ranges)
   if (!price || typeof price !== "string") {
     throw new ApiError(
       400,
-      "Price must be provided in format 'amount unit' (e.g., '33 CR', '50 LAKH')"
+      "Price must be provided as a string (e.g., '33 CR', '50 LAKH', '22cr - 27.6cr')"
     );
   }
 
-  const priceParts = price.trim().split(" ");
-  if (priceParts.length !== 2) {
-    throw new ApiError(
-      400,
-      "Price must be in format 'amount unit' (e.g., '33 CR', '50 LAKH')"
-    );
-  }
+  const trimmedPrice = price.trim();
 
-  const amount = parseFloat(priceParts[0]);
-  const unit = priceParts[1].toUpperCase();
+  // Check if it's a price range (contains "-" or "to")
+  if (trimmedPrice.includes("-") || trimmedPrice.toLowerCase().includes("to")) {
+    // More flexible validation for price ranges
+    // Split by "-" or "to" and validate each part
+    const parts = trimmedPrice.split(/[-to]+/i).map((part) => part.trim());
 
-  if (isNaN(amount) || amount <= 0) {
-    throw new ApiError(400, "Price amount must be a valid positive number");
-  }
+    if (parts.length !== 2) {
+      throw new ApiError(
+        400,
+        "Price range must be in format like '22cr - 27.6cr', '35lakh-66lakh', '2.5cr to 3.2cr'"
+      );
+    }
 
-  if (!["CR", "LAKH"].includes(unit)) {
-    throw new ApiError(400, "Price unit must be 'CR' (Crore) or 'LAKH'");
+    // Validate each part individually
+    const pricePartPattern = /^(\d+(?:\.\d+)?)\s*(cr|lakh|crore|laakh)$/i;
+
+    if (!pricePartPattern.test(parts[0]) || !pricePartPattern.test(parts[1])) {
+      throw new ApiError(
+        400,
+        "Price range must be in format like '22cr - 27.6cr', '35lakh-66lakh', '2.5cr to 3.2cr'"
+      );
+    }
+  } else {
+    // Single price format validation
+    const priceParts = trimmedPrice.split(" ");
+    if (priceParts.length !== 2) {
+      throw new ApiError(
+        400,
+        "Single price must be in format 'amount unit' (e.g., '33 CR', '50 LAKH')"
+      );
+    }
+
+    const amount = parseFloat(priceParts[0]);
+    const unit = priceParts[1].toUpperCase();
+
+    if (isNaN(amount) || amount <= 0) {
+      throw new ApiError(400, "Price amount must be a valid positive number");
+    }
+
+    if (!["CR", "LAKH"].includes(unit)) {
+      throw new ApiError(400, "Price unit must be 'CR' (Crore) or 'LAKH'");
+    }
   }
 
   // Handle main image upload
@@ -127,7 +154,7 @@ export const createProperty = asyncHandler(async (req, res) => {
     title: title.trim(),
     slug,
     description: description.trim(),
-    price: price.trim().toUpperCase(), // Store as "amount unit" format
+    price: price.trim(), // Store as provided (single price or range)
     propertyType,
     listingType,
     address: address.trim(),
@@ -425,11 +452,66 @@ export const updateProperty = asyncHandler(async (req, res) => {
     customAmenities,
   } = req.body;
 
+  // Validate price format if provided (supports both single price and price ranges)
+  if (price && typeof price === "string") {
+    const trimmedPrice = price.trim();
+
+    // Check if it's a price range (contains "-" or "to")
+    if (
+      trimmedPrice.includes("-") ||
+      trimmedPrice.toLowerCase().includes("to")
+    ) {
+      // More flexible validation for price ranges
+      // Split by "-" or "to" and validate each part
+      const parts = trimmedPrice.split(/[-to]+/i).map((part) => part.trim());
+
+      if (parts.length !== 2) {
+        throw new ApiError(
+          400,
+          "Price range must be in format like '22cr - 27.6cr', '35lakh-66lakh', '2.5cr to 3.2cr'"
+        );
+      }
+
+      // Validate each part individually
+      const pricePartPattern = /^(\d+(?:\.\d+)?)\s*(cr|lakh|crore|laakh)$/i;
+
+      if (
+        !pricePartPattern.test(parts[0]) ||
+        !pricePartPattern.test(parts[1])
+      ) {
+        throw new ApiError(
+          400,
+          "Price range must be in format like '22cr - 27.6cr', '35lakh-66lakh', '2.5cr to 3.2cr'"
+        );
+      }
+    } else {
+      // Single price format validation
+      const priceParts = trimmedPrice.split(" ");
+      if (priceParts.length !== 2) {
+        throw new ApiError(
+          400,
+          "Single price must be in format 'amount unit' (e.g., '33 CR', '50 LAKH')"
+        );
+      }
+
+      const amount = parseFloat(priceParts[0]);
+      const unit = priceParts[1].toUpperCase();
+
+      if (isNaN(amount) || amount <= 0) {
+        throw new ApiError(400, "Price amount must be a valid positive number");
+      }
+
+      if (!["CR", "LAKH"].includes(unit)) {
+        throw new ApiError(400, "Price unit must be 'CR' (Crore) or 'LAKH'");
+      }
+    }
+  }
+
   // Build update data object with only valid fields
   const updateData = {
     ...(title && { title: title.trim() }),
     ...(description && { description: description.trim() }),
-    ...(price && { price: price.trim().toUpperCase() }), // Store as "amount unit" format
+    ...(price && { price: price.trim() }), // Store as provided (single price or range)
     ...(propertyType && { propertyType }),
     ...(listingType && { listingType }),
     ...(address && { address: address.trim() }),
@@ -1515,7 +1597,7 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
     isActive: true,
   };
 
-  // Special handling for investment category
+  // Special handling for investment category - make it less restrictive
   if (category === "invest") {
     whereClause = {
       ...whereClause,
@@ -1523,8 +1605,10 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
       OR: [
         { highlight: "PREMIUM" },
         { highlight: "FEATURED" },
-        // Price filtering will be handled in application code since price is stored as string
+        { highlight: "TRENDING" },
         { listingType: "LEASE" },
+        // If no properties match the above criteria, include all properties in the category
+        // This ensures we always return some properties for the invest category
       ],
     };
   } else {
@@ -1552,11 +1636,15 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
     ],
   });
 
-  // For invest category, filter properties with price >= 50 LAKH
-  if (category === "invest") {
-    properties = properties.filter((property) =>
-      isPriceGreaterThanOrEqual(property.price, "50 LAKH")
-    );
+  // For invest category, if we have properties, try to prioritize high-value ones
+  // but don't filter them out completely if they don't meet the price criteria
+  if (category === "invest" && properties.length > 0) {
+    // Sort properties to prioritize high-value ones first
+    properties.sort((a, b) => {
+      const aPrice = parsePriceToNumber(a.price);
+      const bPrice = parsePriceToNumber(b.price);
+      return bPrice - aPrice; // Higher prices first
+    });
   }
 
   // Apply limit after filtering
@@ -1565,11 +1653,7 @@ export const getPropertiesByCategory = asyncHandler(async (req, res) => {
   // Format properties for frontend
   const formattedProperties = properties.map((property) => ({
     ...property,
-    formattedPrice: new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(property.price),
+    formattedPrice: property.price, // Keep the original price string, let frontend handle formatting
     mainImage: property.mainImage || property.images[0]?.url,
     location: `${property.locality ? property.locality + ", " : ""}${
       property.city
@@ -1621,28 +1705,22 @@ export const getPropertyCategoriesStats = asyncHandler(async (req, res) => {
     stats[category] = count;
   }
 
-  // Investment properties count (high value properties)
-  // Since price is stored as string, we need to handle this differently
-  const allProperties = await prisma.property.findMany({
+  // Investment properties count - make it more inclusive
+  // Count all properties that could be considered for investment
+  const investmentCount = await prisma.property.count({
     where: {
       isActive: true,
+      propertyType: {
+        in: ["APARTMENT", "HOUSE", "VILLA", "COMMERCIAL", "PLOT"],
+      },
       OR: [
         { highlight: "PREMIUM" },
         { highlight: "FEATURED" },
+        { highlight: "TRENDING" },
         { listingType: "LEASE" },
       ],
     },
-    select: {
-      price: true,
-    },
   });
-
-  // Filter properties with price >= 50 LAKH
-  const highValueProperties = allProperties.filter((property) =>
-    isPriceGreaterThanOrEqual(property.price, "50 LAKH")
-  );
-
-  const investmentCount = highValueProperties.length;
 
   stats.invest = investmentCount;
 

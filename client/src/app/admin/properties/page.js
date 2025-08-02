@@ -250,17 +250,42 @@ export default function AdminProperties() {
   }, []);
 
   const formatPrice = useCallback((price) => {
-    // Handle price in "amount unit" format like "33 CR" or "50 LAKH"
+    // Handle price ranges like "10 CR - 15 CR" or "50 LAKH - 75 LAKH"
+    if (typeof price === "string" && price.includes(" - ")) {
+      const parts = price.split(" - ");
+      const minPart = parts[0].trim();
+      const maxPart = parts[1].trim();
+
+      // Parse min and max parts
+      const minMatch = minPart.match(/^(\d+(?:\.\d+)?)\s*(CR|LAKH)$/i);
+      const maxMatch = maxPart.match(/^(\d+(?:\.\d+)?)\s*(CR|LAKH)$/i);
+
+      if (minMatch && maxMatch) {
+        const minAmount = parseFloat(minMatch[1]);
+        const maxAmount = parseFloat(maxMatch[1]);
+        const unit = minMatch[2].toUpperCase();
+
+        if (!isNaN(minAmount) && !isNaN(maxAmount)) {
+          const unitDisplay = unit === "CR" ? "Cr" : "Lakh";
+          return `₹${minAmount.toFixed(2)} - ${maxAmount.toFixed(
+            2
+          )} ${unitDisplay}`;
+        }
+      }
+    }
+
+    // Handle single price in "amount unit" format like "33 CR" or "50 LAKH"
     if (typeof price === "string" && price.includes(" ")) {
       const parts = price.split(" ");
       const amount = parseFloat(parts[0]);
       const unit = parts[1];
-      
+
       if (!isNaN(amount)) {
-        return `₹${amount.toFixed(2)} ${unit === "CR" ? "Cr" : "Lakh"}`;
+        const unitDisplay = unit === "CR" ? "Cr" : "Lakh";
+        return `₹${amount.toFixed(2)} ${unitDisplay}`;
       }
     }
-    
+
     // Fallback for old numeric format
     if (typeof price === "number") {
       return new Intl.NumberFormat("en-IN", {
@@ -269,7 +294,7 @@ export default function AdminProperties() {
         maximumFractionDigits: 0,
       }).format(price);
     }
-    
+
     return `₹${price}`;
   }, []);
 

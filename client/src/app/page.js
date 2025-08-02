@@ -177,10 +177,19 @@ export default function HomePage() {
               category,
               6
             );
-            // Ensure we get proper array from API response
-            let categoryData = response.data.data || response.data || [];
-            if (categoryData.data && Array.isArray(categoryData.data)) {
-              categoryData = categoryData.data;
+
+            // Enhanced data extraction logic to handle the API response structure
+            let categoryData = [];
+            
+            if (response && response.data) {
+              // Handle the nested structure: response.data.data (this is the correct structure)
+              if (response.data.data && Array.isArray(response.data.data)) {
+                categoryData = response.data.data;
+              } 
+              // Handle direct array in response.data (fallback)
+              else if (Array.isArray(response.data)) {
+                categoryData = response.data;
+              }
             }
 
             propertiesData[category] = Array.isArray(categoryData)
@@ -216,14 +225,57 @@ export default function HomePage() {
   };
 
   const formatPrice = (price) => {
-    // Handle price in "amount unit" format like "33 CR" or "50 LAKH"
+    // Handle null, undefined, or empty values
+    if (!price || price === "null" || price === "undefined") {
+      return "Price on request";
+    }
+
+    // Handle price ranges like "10 CR - 18 CR" or "50 LAKH - 75 LAKH"
+    if (typeof price === "string" && price.includes(" - ")) {
+      const parts = price.split(" - ");
+      const minPart = parts[0].trim();
+      const maxPart = parts[1].trim();
+
+      // Parse min and max parts - handle both "10 CR" and "10CR" formats
+      const minMatch = minPart.match(/^(\d+(?:\.\d+)?)\s*(CR|LAKH)$/i);
+      const maxMatch = maxPart.match(/^(\d+(?:\.\d+)?)\s*(CR|LAKH)$/i);
+
+      if (minMatch && maxMatch) {
+        const minAmount = parseFloat(minMatch[1]);
+        const maxAmount = parseFloat(maxMatch[1]);
+        const unit = minMatch[2].toUpperCase();
+
+        if (!isNaN(minAmount) && !isNaN(maxAmount)) {
+          const unitDisplay = unit === "CR" ? "Cr" : "Lakh";
+          return `₹${minAmount.toFixed(2)} - ${maxAmount.toFixed(
+            2
+          )} ${unitDisplay}`;
+        }
+      }
+    }
+
+    // Handle single price in "amount unit" format like "33 CR" or "50 LAKH"
     if (typeof price === "string" && price.includes(" ")) {
       const parts = price.split(" ");
       const amount = parseFloat(parts[0]);
       const unit = parts[1];
 
       if (!isNaN(amount)) {
-        return `₹${amount.toFixed(2)} ${unit === "CR" ? "Cr" : "Lakh"}`;
+        const unitDisplay = unit === "CR" ? "Cr" : "Lakh";
+        return `₹${amount.toFixed(2)} ${unitDisplay}`;
+      }
+    }
+
+    // Handle single price without space like "33CR" or "50LAKH"
+    if (typeof price === "string") {
+      const match = price.match(/^(\d+(?:\.\d+)?)(CR|LAKH)$/i);
+      if (match) {
+        const amount = parseFloat(match[1]);
+        const unit = match[2].toUpperCase();
+        if (!isNaN(amount)) {
+          const unitDisplay = unit === "CR" ? "Cr" : "Lakh";
+          return `₹${amount.toFixed(2)} ${unitDisplay}`;
+        }
       }
     }
 
@@ -236,6 +288,7 @@ export default function HomePage() {
       }).format(price);
     }
 
+    // If all else fails, return the original price with ₹ symbol
     return `₹${price}`;
   };
 
