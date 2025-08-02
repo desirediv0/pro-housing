@@ -1352,9 +1352,9 @@ export default function HomePage() {
                   alt: "Vista Casa Luxuries",
                   search: "Vista Casa Luxuries",
                 },
-              ].map((img) => (
+              ].map((img, index) => (
                 <CarouselItem
-                  key={img.alt}
+                  key={`carousel-${index}`}
                   className="group px-2 md:basis-1/3 lg:basis-1/3 cursor-pointer"
                   onClick={() => {
                     const params = new URLSearchParams();
