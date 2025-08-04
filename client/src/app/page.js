@@ -1000,7 +1000,7 @@ export default function HomePage() {
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <CarouselItem
                       key={i}
-                      className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                      className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
                     >
                       <Card className="animate-pulse border-0 shadow-lg">
                         <div className="h-64 bg-gray-200 rounded-t-xl"></div>
@@ -1030,7 +1030,7 @@ export default function HomePage() {
                   {featuredProperties.map((property) => (
                     <CarouselItem
                       key={property.id}
-                      className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                      className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
                     >
                       <div className="group">
                         <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden">

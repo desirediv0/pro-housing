@@ -623,20 +623,21 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             </p>
                           </div>
                         )}
-                        {property.builtYear && (
-                          <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                            <div className="flex items-center mb-2">
-                              <Calendar className="h-4 w-4 text-[#1A3B4C] mr-2" />
-                              <p className="text-gray-500 text-sm font-medium">
-                                Built Year
+                        {property.builtYear !== null &&
+                          property.builtYear !== undefined && (
+                            <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
+                              <div className="flex items-center mb-2">
+                                <Calendar className="h-4 w-4 text-[#1A3B4C] mr-2" />
+                                <p className="text-gray-500 text-sm font-medium">
+                                  Built Year
+                                </p>
+                              </div>
+                              <p className="font-bold text-gray-900 text-lg">
+                                {property.builtYear}
                               </p>
                             </div>
-                            <p className="font-bold text-gray-900 text-lg">
-                              {property.builtYear}
-                            </p>
-                          </div>
-                        )}
-                        {property.floor && property.totalFloors && (
+                          )}
+                        {property.totalFloors && (
                           <div className="p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
                             <div className="flex items-center mb-2">
                               <ArrowUpDown className="h-4 w-4 text-[#1A3B4C] mr-2" />
@@ -645,7 +646,12 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                               </p>
                             </div>
                             <p className="font-bold text-gray-900 text-lg">
-                              {property.floor} of {property.totalFloors}
+                              {property.floor !== null &&
+                              property.floor !== undefined
+                                ? property.floor === 0
+                                  ? `Ground Floor of ${property.totalFloors}`
+                                  : `${property.floor} of ${property.totalFloors}`
+                                : `${property.totalFloors} floors`}
                             </p>
                           </div>
                         )}
