@@ -180,12 +180,23 @@ export default function HomePage() {
 
             // Enhanced data extraction logic to handle the API response structure
             let categoryData = [];
-            
+
             if (response && response.data) {
-              // Handle the nested structure: response.data.data (this is the correct structure)
-              if (response.data.data && Array.isArray(response.data.data)) {
+              // Handle the deeply nested structure: response.data.data.data
+              if (
+                response.data.data &&
+                response.data.data.data &&
+                Array.isArray(response.data.data.data)
+              ) {
+                categoryData = response.data.data.data;
+              }
+              // Handle the nested structure: response.data.data (fallback)
+              else if (
+                response.data.data &&
+                Array.isArray(response.data.data)
+              ) {
                 categoryData = response.data.data;
-              } 
+              }
               // Handle direct array in response.data (fallback)
               else if (Array.isArray(response.data)) {
                 categoryData = response.data;
@@ -370,7 +381,8 @@ export default function HomePage() {
   // Get properties for active category
   const getPropertiesForCategory = (category) => {
     const properties = categoryProperties[category];
-    return Array.isArray(properties) ? properties : [];
+    const result = Array.isArray(properties) ? properties : [];
+    return result;
   };
 
   // Get formatted count for category stats
