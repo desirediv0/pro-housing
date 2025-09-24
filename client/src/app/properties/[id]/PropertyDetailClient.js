@@ -830,9 +830,9 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                           </h3>
                           <div className="space-y-4">
                             {property.contactName && (
-                              <div className="flex items-center gap-3 p-4 bg-white rounded-xl">
+                              <div className="flex items-center gap-3 p-4 bg-white rounded-xl min-w-0">
                                 <User className="h-6 w-6 text-[#1A3B4C]" />
-                                <span className="font-semibold text-gray-800 text-lg">
+                                <span className="font-semibold text-gray-800 text-lg break-words max-w-full">
                                   {property.contactName}
                                 </span>
                               </div>
@@ -848,10 +848,10 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                                     window.open(`tel:${property.contactPhone}`);
                                   }
                                 }}
-                                className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group w-full text-left"
+                                className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group w-full text-left min-w-0"
                               >
                                 <Phone className="h-6 w-6 text-[#1A3B4C]" />
-                                <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
+                                <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg break-all max-w-full">
                                   {property.contactPhone}
                                 </span>
                               </button>
@@ -859,10 +859,10 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             {property.contactEmail && (
                               <a
                                 href={`mailto:${property.contactEmail}`}
-                                className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group"
+                                className="flex items-center gap-3 p-4 bg-white rounded-xl  hover:bg-[#1A3B4C]/10 transition-colors group min-w-0"
                               >
                                 <Mail className="h-6 w-6 text-[#1A3B4C]" />
-                                <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
+                                <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg break-words max-w-full">
                                   {property.contactEmail}
                                 </span>
                               </a>
