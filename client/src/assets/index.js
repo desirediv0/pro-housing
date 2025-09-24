@@ -15,27 +15,27 @@ import card8 from "./card8.jpeg";
 import card9 from "./card9.jpeg";
 
 // Logos
-import logo1 from "./logos/one.webp";
+import logo1 from "./logos/one.png";
 import logo2 from "./logos/two.webp";
 import logo3 from "./logos/three.webp";
-import logo4 from "./logos/four.webp";
+import logo4 from "./logos/four.png";
 import logo5 from "./logos/five.webp";
 import logo6 from "./logos/six.webp";
 
-import logo7 from "./logos/seven.webp";
+import logo7 from "./logos/seven.png";
 import logo8 from "./logos/eight.webp";
 import logo9 from "./logos/nine.webp";
 import logo10 from "./logos/ten.webp";
 
 import logo11 from "./logos/11.webp";
 import logo12 from "./logos/12.webp";
-import logo13 from "./logos/13.webp";
-import logo14 from "./logos/14.webp";
+import logo13 from "./logos/13.png";
+import logo14 from "./logos/14.png";
 import logo15 from "./logos/15.webp";
 import logo16 from "./logos/16.webp";
 import logo17 from "./logos/17.webp";
 import logo18 from "./logos/18.webp";
-import logo19 from "./logos/19.webp";
+import logo19 from "./logos/19.png";
 import logo20 from "./logos/20.webp";
 import logo21 from "./logos/21.webp";
 import logo22 from "./logos/22.webp";
@@ -46,16 +46,16 @@ import logo25 from "./logos/25.webp";
 import logo26 from "./logos/26.webp";
 import logo27 from "./logos/27.webp";
 import logo28 from "./logos/28.webp";
-import logo29 from "./logos/29.webp";
+import logo29 from "./logos/29.png";
 import logo30 from "./logos/30.webp";
-import logo31 from "./logos/31.webp";
-import logo32 from "./logos/32.webp";
+import logo31 from "./logos/31.png";
+import logo32 from "./logos/32.png";
 import logo33 from "./logos/33.webp";
 import logo34 from "./logos/34.webp";
 import logo35 from "./logos/35.webp";
-import logo36 from "./logos/36.webp";
-import logo37 from "./logos/37.jpeg";
-import logo38 from "./logos/38.jpeg";
+import logo36 from "./logos/36.png";
+import logo37 from "./logos/37.png";
+import logo38 from "./logos/38.png";
 
 import b1 from "./b1.jpg";
 import b2 from "./b2.jpg";
