@@ -164,11 +164,9 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
       try {
         await navigator.share({
           title: property.title,
-          text: `${property.title}\n\n${
-            property.description
-          }\n\nPrice: ${formatPrice(property.price)}\nLocation: ${
-            property.address
-          }, ${property.city}`,
+          text: `${property.title}\n\n${property.description
+            }\n\nPrice: ${formatPrice(property.price)}\nLocation: ${property.address
+            }, ${property.city}`,
           url: window.location.href,
         });
       } catch (error) {
@@ -177,9 +175,8 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
     } else {
       const shareText = `${property.title}\n\nPrice: ${formatPrice(
         property.price
-      )}\nLocation: ${property.address}, ${property.city}\n\n${
-        window.location.href
-      }`;
+      )}\nLocation: ${property.address}, ${property.city}\n\n${window.location.href
+        }`;
       navigator.clipboard.writeText(shareText);
       toast.success("Property details copied to clipboard!");
     }
@@ -322,7 +319,7 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
         </div>
       </div>
 
-      <div className="container mx-auto px-0 md:px-4 py-4 md:py-8">
+      <div className="max-w-7xl  mx-auto px-0 md:px-4 py-4 md:py-8">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 md:gap-8">
           {/* Main Content */}
           <div className="flex-1">
@@ -360,20 +357,15 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                     {property.images && property.images.length > 0 && (
                       <div className="bg-gray-50 px-4 py-4 md:p-6">
                         <div
-                          className="flex gap-2 md:gap-3 overflow-x-auto pb-2"
-                          style={{
-                            msOverflowStyle: "none",
-                            scrollbarWidth: "none",
-                            WebkitOverflowScrolling: "touch",
-                          }}
+                          className="flex gap-2 md:gap-3 overflow-x-auto pb-2 max-w-[800px]"
+
                         >
                           <button
                             onClick={() => setActiveImageIndex(-1)}
-                            className={`flex-shrink-0 w-[72px] h-[72px] md:w-20 md:h-20 relative rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                              activeImageIndex === -1
-                                ? "border-[#1A3B4C] shadow-md"
-                                : "border-gray-200 hover:border-[#1A3B4C]/50"
-                            }`}
+                            className={`flex-shrink-0 w-[72px] h-[72px] md:w-20 md:h-20 relative rounded-lg overflow-hidden border-2 transition-all duration-200 ${activeImageIndex === -1
+                              ? "border-[#1A3B4C] shadow-md"
+                              : "border-gray-200 hover:border-[#1A3B4C]/50"
+                              }`}
                           >
                             <Image
                               src={property.mainImage || "/placeholder.svg"}
@@ -387,11 +379,10 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             <button
                               key={image.id}
                               onClick={() => setActiveImageIndex(index)}
-                              className={`flex-shrink-0 w-[72px] h-[72px] md:w-20 md:h-20 relative rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                                index === activeImageIndex
-                                  ? "border-[#1A3B4C] shadow-md"
-                                  : "border-gray-200 hover:border-[#1A3B4C]/50"
-                              }`}
+                              className={`flex-shrink-0 w-[72px] h-[72px] md:w-20 md:h-20 relative rounded-lg overflow-hidden border-2 transition-all duration-200 ${index === activeImageIndex
+                                ? "border-[#1A3B4C] shadow-md"
+                                : "border-gray-200 hover:border-[#1A3B4C]/50"
+                                }`}
                             >
                               <Image
                                 src={image.url || "/placeholder.svg"}
@@ -534,62 +525,62 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                     {/* Amenities */}
                     {(activeAmenities.length > 0 ||
                       customAmenities.length > 0) && (
-                      <div>
-                        <h3 className="text-xl font-bold mb-6 text-gray-900">
-                          Amenities & Features
-                        </h3>
-                        <div className="space-y-6">
-                          {/* Standard Amenities */}
-                          {activeAmenities.length > 0 && (
-                            <div>
-                              <h4 className="text-lg font-semibold mb-4 text-gray-800">
-                                Standard Features
-                              </h4>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                                {activeAmenities.map((amenity) => (
-                                  <div
-                                    key={amenity}
-                                    className={`flex items-center gap-3 p-4 ${amenityIcons[amenity]?.bg} border border-[#1A3B4C]/20 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105`}
-                                  >
+                        <div>
+                          <h3 className="text-xl font-bold mb-6 text-gray-900">
+                            Amenities & Features
+                          </h3>
+                          <div className="space-y-6">
+                            {/* Standard Amenities */}
+                            {activeAmenities.length > 0 && (
+                              <div>
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">
+                                  Standard Features
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                                  {activeAmenities.map((amenity) => (
                                     <div
-                                      className={`p-2 bg-white rounded-lg ${amenityIcons[amenity]?.color}`}
+                                      key={amenity}
+                                      className={`flex items-center gap-3 p-4 ${amenityIcons[amenity]?.bg} border border-[#1A3B4C]/20 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105`}
                                     >
-                                      {amenityIcons[amenity]?.icon}
+                                      <div
+                                        className={`p-2 bg-white rounded-lg ${amenityIcons[amenity]?.color}`}
+                                      >
+                                        {amenityIcons[amenity]?.icon}
+                                      </div>
+                                      <span className="font-medium text-gray-800">
+                                        {amenityIcons[amenity]?.label}
+                                      </span>
                                     </div>
-                                    <span className="font-medium text-gray-800">
-                                      {amenityIcons[amenity]?.label}
-                                    </span>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {/* Custom Amenities */}
-                          {customAmenities.length > 0 && (
-                            <div>
-                              <h4 className="text-lg font-semibold mb-4 text-gray-800">
-                                Additional Features
-                              </h4>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                                {customAmenities.map((amenity, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#1A3B4C]/5 to-[#2A4B5C]/5 border border-[#1A3B4C]/20 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
-                                  >
-                                    <div className="p-2 bg-white rounded-lg text-[#1A3B4C]">
-                                      <Check className="h-4 w-4" />
+                            )}
+                            {/* Custom Amenities */}
+                            {customAmenities.length > 0 && (
+                              <div>
+                                <h4 className="text-lg font-semibold mb-4 text-gray-800">
+                                  Additional Features
+                                </h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                                  {customAmenities.map((amenity, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#1A3B4C]/5 to-[#2A4B5C]/5 border border-[#1A3B4C]/20 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+                                    >
+                                      <div className="p-2 bg-white rounded-lg text-[#1A3B4C]">
+                                        <Check className="h-4 w-4" />
+                                      </div>
+                                      <span className="font-medium text-gray-800">
+                                        {amenity}
+                                      </span>
                                     </div>
-                                    <span className="font-medium text-gray-800">
-                                      {amenity}
-                                    </span>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* Additional Details */}
                     <div>
@@ -647,7 +638,7 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             </div>
                             <p className="font-bold text-gray-900 text-lg">
                               {property.floor !== null &&
-                              property.floor !== undefined
+                                property.floor !== undefined
                                 ? property.floor === 0
                                   ? `Ground Floor of ${property.totalFloors}`
                                   : `${property.floor} of ${property.totalFloors}`
@@ -804,19 +795,15 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                             <div className="bg-white p-4 rounded-xl shadow-inner">
                               <div className="aspect-video rounded-lg overflow-hidden">
                                 <iframe
-                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${
-                                    property.longitude
-                                  }!3d${
-                                    property.latitude
-                                  }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
-                                    property.latitude
-                                  ).toFixed(6)}°${
-                                    property.latitude >= 0 ? "N" : "S"
-                                  }%20${Math.abs(property.longitude).toFixed(
-                                    6
-                                  )}°${
-                                    property.longitude >= 0 ? "E" : "W"
-                                  }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
+                                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${property.longitude
+                                    }!3d${property.latitude
+                                    }!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM${Math.abs(
+                                      property.latitude
+                                    ).toFixed(6)}°${property.latitude >= 0 ? "N" : "S"
+                                    }%20${Math.abs(property.longitude).toFixed(
+                                      6
+                                    )}°${property.longitude >= 0 ? "E" : "W"
+                                    }!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin`}
                                   width="100%"
                                   height="100%"
                                   style={{ border: 0 }}
@@ -837,52 +824,52 @@ export default function PropertyDetailClient({ property, sidebarContent }) {
                     {(property.contactName ||
                       property.contactPhone ||
                       property.contactEmail) && (
-                      <div className="bg-gradient-to-r from-[#1A3B4C]/5 to-[#2A4B5C]/5 p-6 rounded-2xl border border-[#1A3B4C]/10">
-                        <h3 className="text-xl font-bold mb-4 text-gray-900">
-                          Contact Information
-                        </h3>
-                        <div className="space-y-4">
-                          {property.contactName && (
-                            <div className="flex items-center gap-3 p-4 bg-white rounded-xl">
-                              <User className="h-6 w-6 text-[#1A3B4C]" />
-                              <span className="font-semibold text-gray-800 text-lg">
-                                {property.contactName}
-                              </span>
-                            </div>
-                          )}
-                          {property.contactPhone && (
-                            <button
-                              onClick={() => {
-                                if (
-                                  confirm(
-                                    `Do you want to call ${property.contactPhone}?`
-                                  )
-                                ) {
-                                  window.open(`tel:${property.contactPhone}`);
-                                }
-                              }}
-                              className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group w-full text-left"
-                            >
-                              <Phone className="h-6 w-6 text-[#1A3B4C]" />
-                              <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
-                                {property.contactPhone}
-                              </span>
-                            </button>
-                          )}
-                          {property.contactEmail && (
-                            <a
-                              href={`mailto:${property.contactEmail}`}
-                              className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group"
-                            >
-                              <Mail className="h-6 w-6 text-[#1A3B4C]" />
-                              <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
-                                {property.contactEmail}
-                              </span>
-                            </a>
-                          )}
+                        <div className="bg-gradient-to-r from-[#1A3B4C]/5 to-[#2A4B5C]/5 p-6 rounded-2xl border border-[#1A3B4C]/10">
+                          <h3 className="text-xl font-bold mb-4 text-gray-900">
+                            Contact Information
+                          </h3>
+                          <div className="space-y-4">
+                            {property.contactName && (
+                              <div className="flex items-center gap-3 p-4 bg-white rounded-xl">
+                                <User className="h-6 w-6 text-[#1A3B4C]" />
+                                <span className="font-semibold text-gray-800 text-lg">
+                                  {property.contactName}
+                                </span>
+                              </div>
+                            )}
+                            {property.contactPhone && (
+                              <button
+                                onClick={() => {
+                                  if (
+                                    confirm(
+                                      `Do you want to call ${property.contactPhone}?`
+                                    )
+                                  ) {
+                                    window.open(`tel:${property.contactPhone}`);
+                                  }
+                                }}
+                                className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group w-full text-left"
+                              >
+                                <Phone className="h-6 w-6 text-[#1A3B4C]" />
+                                <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
+                                  {property.contactPhone}
+                                </span>
+                              </button>
+                            )}
+                            {property.contactEmail && (
+                              <a
+                                href={`mailto:${property.contactEmail}`}
+                                className="flex items-center gap-3 p-4 bg-white rounded-xl hover:bg-[#1A3B4C]/10 transition-colors group"
+                              >
+                                <Mail className="h-6 w-6 text-[#1A3B4C]" />
+                                <span className="font-semibold text-[#1A3B4C] group-hover:text-[#0A2B3C] text-lg">
+                                  {property.contactEmail}
+                                </span>
+                              </a>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -975,17 +962,15 @@ Please share more details about this property.`;
         className="lg:hidden fixed right-0 top-1/2 -translate-y-1/2 bg-[#1A3B4C] text-white p-3 rounded-l-xl shadow-lg hover:bg-[#0A2B3C] transition-all z-40"
       >
         <ChevronLeft
-          className={`h-6 w-6 transition-transform ${
-            sidebarOpen ? "rotate-180" : ""
-          }`}
+          className={`h-6 w-6 transition-transform ${sidebarOpen ? "rotate-180" : ""
+            }`}
         />
       </button>
 
       {/* Mobile Sliding Sidebar */}
       <div
-        className={`lg:hidden fixed top-20 right-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-30 ${
-          sidebarOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`lg:hidden fixed top-20 right-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-30 ${sidebarOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="h-full overflow-y-auto p-6">
           <SidebarContent content={sidebarContent} />
